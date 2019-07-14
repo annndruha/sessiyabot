@@ -2,22 +2,23 @@ import datetime
 import random
 import dictionary
 import wikipedia
+
 from pytz import timezone
 wikipedia.set_lang("RU")
 
 def numerals_days(n):
     if ((10<n) and (n<20)):
-        return 'дней'
+        return 'Г¤Г­ГҐГ©'
     else:
         n = n%10
         if n==0:
-            return 'дней'
+            return 'Г¤Г­ГҐГ©'
         elif n==1:
-            return 'день'
+            return 'Г¤ГҐГ­Гј'
         elif ((n>1) and (n<5)):
-            return 'дня'
+            return 'Г¤Г­Гї'
         elif (n>=5):
-            return 'дней'
+            return 'Г¤Г­ГҐГ©'
 
 def date_and_time_now():
     return datetime.datetime.strftime(datetime.datetime.now(timezone('Europe/Moscow')), "%d.%m.%Y %H:%M:%S")
@@ -37,7 +38,7 @@ def sessiya_mesage(user_id):
         f = open('user_list.txt', 'r+')
     except IOError as e:
         result = date_and_time_now()
-        print('Не удалось открыть файл '+result+ '  UTC\n')
+        print('ГЌГҐ ГіГ¤Г Г«Г®Г±Гј Г®ГІГЄГ°Г»ГІГј ГґГ Г©Г« '+result+ '  UTC\n')
     else:
         for line in f:
             if (line.find(str(user_id))>=0):
@@ -47,29 +48,29 @@ def sessiya_mesage(user_id):
 
 
 
-    #days_from_begin = (today-datetime.date(2019,2,7)).days#При разницы дат получается особый тип, извлекаем из него дни
+    #days_from_begin = (today-datetime.date(2019,2,7)).days#ГЏГ°ГЁ Г°Г Г§Г­ГЁГ¶Г» Г¤Г ГІ ГЇГ®Г«ГіГ·Г ГҐГІГ±Гї Г®Г±Г®ГЎГ»Г© ГІГЁГЇ, ГЁГ§ГўГ«ГҐГЄГ ГҐГ¬ ГЁГ§ Г­ГҐГЈГ® Г¤Г­ГЁ
 
 
     sessiya_begin = datetime.date(int(sessiya_begin[2]),int(sessiya_begin[1]),int(sessiya_begin[0]))
     days_to_end = (sessiya_begin-today).days
 
     if days_to_end<=-30:
-        return 'Сессия уже прошла, надеюсь ты хорошо её сдал!'
+        return 'Г‘ГҐГ±Г±ГЁГї ГіГ¦ГҐ ГЇГ°Г®ГёГ«Г , Г­Г Г¤ГҐГѕГ±Гј ГІГ» ГµГ®Г°Г®ГёГ® ГҐВё Г±Г¤Г Г«!'
     elif days_to_end<=0:
-        return 'Сессия уже идёт! Ты молодец, я в тебя верю и желаю успеха на экзаменах! &#10084;'
+        return 'Г‘ГҐГ±Г±ГЁГї ГіГ¦ГҐ ГЁГ¤ВёГІ! Г’Г» Г¬Г®Г«Г®Г¤ГҐГ¶, Гї Гў ГІГҐГЎГї ГўГҐГ°Гѕ ГЁ Г¦ГҐГ«Г Гѕ ГіГ±ГЇГҐГµГ  Г­Г  ГЅГЄГ§Г Г¬ГҐГ­Г Гµ! &#10084;'
     else:
-        return 'До ближайшего экзамена: '+ str(days_to_end) +' '+ numerals_days(days_to_end)# +'\nУже прошло: '+str(days_from_begin*100//(days_from_begin+days_to_end))+'% семестра'
+        return 'Г„Г® ГЎГ«ГЁГ¦Г Г©ГёГҐГЈГ® ГЅГЄГ§Г Г¬ГҐГ­Г : '+ str(days_to_end) +' '+ numerals_days(days_to_end)# +'\nГ“Г¦ГҐ ГЇГ°Г®ГёГ«Г®: '+str(days_from_begin*100//(days_from_begin+days_to_end))+'% Г±ГҐГ¬ГҐГ±ГІГ°Г '
 
 
 def find_in_wiki(wiki_request):
     try:
-        n=2#По умлочанию возвращаем два предложения
+        n=2#ГЏГ® ГіГ¬Г«Г®Г·Г Г­ГЁГѕ ГўГ®Г§ГўГ°Г Г№Г ГҐГ¬ Г¤ГўГ  ГЇГ°ГҐГ¤Г«Г®Г¦ГҐГ­ГЁГї
         exit = 0
 
         while ((n<5) and (exit==0)):
             exit = 1
             ans = str(wikipedia.summary(wiki_request, sentences=n, auto_suggest=True))
-            if ((ans.rfind('('))>(ans.rfind(')'))):#Ищем конец предложения не между скобками
+            if ((ans.rfind('('))>(ans.rfind(')'))):#Г€Г№ГҐГ¬ ГЄГ®Г­ГҐГ¶ ГЇГ°ГҐГ¤Г«Г®Г¦ГҐГ­ГЁГї Г­ГҐ Г¬ГҐГ¦Г¤Гі Г±ГЄГ®ГЎГЄГ Г¬ГЁ
                 n=n+1
                 exit = 0
             if len(ans)<100:
