@@ -16,5 +16,7 @@ RUN pip3 install pytz
 EXPOSE 5000
 
 #Run the files
-CMD ["python", "./Sessiya-bot.py"]
-CMD ["python", "./Timer_bot.py"]
+RUN ./Sessiya-bot.py
+RUN ./Timer_bot.py
+#CMD ["python", "./Sessiya-bot.py"]
+#CMD ["python", "./Timer_bot.py"]
