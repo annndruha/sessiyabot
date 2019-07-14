@@ -1,5 +1,12 @@
 # our base image
-FROM python:3-onbuild
+FROM python:3
+
+ADD Sessiya-bot.py /
+
+# Addictional libraries
+RUN pip3 install vk_api
+RUN pip3 install wikipedia
+RUN pip3 install pytz
 
 # specify the port number the container should expose
 EXPOSE 5000
