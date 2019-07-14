@@ -1,7 +1,7 @@
 # our base image
 FROM python:3
 
-ADD ./Sessiya-bot/
+ADD ./ Sessiya-bot/
 #Sessiya-bot.py/
 
 WORKDIR Sessiya-bot
