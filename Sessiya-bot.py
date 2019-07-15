@@ -96,9 +96,10 @@ def Chat_module():
             print("Найдена ошибка в Chat_module ["+engine.date_and_time_now()+"]\n")
 
 def Notification_module():
+    write_msg(478143147, "Notification module start at ["+engine.date_and_time_now()+"]")
     last_send_minute=-1
     os.chdir('.\Sessiya-bot-master')
-    write_msg(478143147, "Notification module start at ["+engine.date_and_time_now()+"]")
+    write_msg(478143147, "Kekekeke ["+engine.date_and_time_now()+"]")
     while True:
         try:
             while True:
