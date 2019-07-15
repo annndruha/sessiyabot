@@ -15,8 +15,5 @@ RUN pip3 install pytz
 #Specify the port number the container should expose 
 EXPOSE 5000
 
-#Run the files
-RUN ./Sessiya-bot.py
-RUN ./Timer_bot.py
-#CMD ["python", "./Sessiya-bot.py"]
-#CMD ["python", "./Timer_bot.py"]
+#Run the file
+CMD ["python", "./Sessiya-bot.py"]
