@@ -26,17 +26,19 @@ def validate_file():
         f.close()
 
 def validate_user(user_id):
-    lines = open('user_list.txt').read().splitlines()
-    found=0
+    f=open('user_list.txt')
+    lines = f.readlines()
     for line in lines:
         if (line.find(str(user_id))>=0):
-            found=1
-            if line.find('y')>=0:
-                return 'y'
-            if line.find('n')>=0:
+            user_line=line.split(' ')
+            if user_line[3].find('y')>=0:
+               f.close()
+               return 'y'
+            if user_line[3].find('n')>=0:
+                f.close()
                 return 'n'
-    if found!=1:
-        return 'e'
+    f.close()
+    return 'e'
 
 def add_line(user_id, new_line):
     lines = open('user_list.txt').read().splitlines()
