@@ -27,7 +27,7 @@ def write_msg(user_id, message):
 
 #Модуль чата
 def Chat_module():
-    write_msg(478143147, "Chat module start at ["+engine.date_and_time_now()+"]")
+    write_msg(478143147, "Chat module start at ["+datebase_functions.date_and_time_now()+"]")
     while True:
         try:
             for event in longpoll.listen():#Слушаем лонгпул
@@ -58,7 +58,7 @@ def Chat_module():
                             if (request.find(keyword)>=0):
                                 k=sheet.functions[keyword]
                                 if k==0:
-                                    ans = engine.sessiya_mesage(event.user_id)
+                                    ans = datebase_functions.sessiya_mesage(event.user_id)
                                 if k==1:
                                     ans = datebase_functions.start(event.user_id, request)
                                 if k==2:
@@ -66,9 +66,9 @@ def Chat_module():
                                 if k==3:
                                     ans = datebase_functions.stop(event.user_id, request)
                                 if k==4:
-                                    ans = "Сейчас "+engine.time_now()+" по Москве"
+                                    ans = "Сейчас "+datebase_functions.time_now()+" по Москве"
                                 if k==5:
-                                    ans = "Сегодня " + engine.date_now()
+                                    ans = "Сегодня " + datebase_functions.date_now()
                                 ans_exist = 1
                         if ((ans_exist == 0) and (request.find('?')>=0)):
                             ans = sheet.random_answer[random.randint(1,8)]
@@ -82,27 +82,23 @@ def Chat_module():
                     elif ans_exist==-1:
                         ans = 'Я распознаю только текст.\n¯\_(ツ)_/¯'
                     elif ans_exist==0:
-                        ans = engine.find_in_wiki(request)
-                        if (event.user_id==231000957):
-                            ans = 'Макс, иди нахуй'
+                        ans = datebase_functions.find_in_wiki(request)
                     elif ans_exist==1:
                         ans = ans
                     write_msg(event.user_id, ans)
         except:
-            print("Найдена ошибка в Chat_module. Тип: "+str(e.__class__)+" ["+engine.date_and_time_now()+"]\n")
+            print("Найдена ошибка в Chat_module. ["+datebase_functions.date_and_time_now()+"]\n")
 
 def Notification_module():
-    write_msg(478143147, "Notification module start at ["+engine.date_and_time_now()+"]")
+    write_msg(478143147, "Notification module start at ["+datebase_functions.date_and_time_now()+"]")
     last_send_minute=-1
-    #os.chdir('.\Sessiya-bot-master')
-    #write_msg(478143147, "Kekekeke ["+engine.date_and_time_now()+"]")
     while True:
         try:
             while True:
                 try:
-                    user_list=open("user_list.txt","r")
-                    lines = user_list.read().splitlines() #Открытие списка рассылки
-                    user_list.close()
+                    users=open("users.txt","r")
+                    lines = users.read().splitlines() #Открытие списка рассылки
+                    users.close()
                 except:
                     print("No file")
                 today = datetime.date.today()#Получение текущего времени и даты
@@ -128,7 +124,7 @@ def Notification_module():
                         if (user_subscribe=='y'):
                             if ((h==time_is_now[0]) and (m==time_is_now[1])):
                                 if days_to_end>1:
-                                    ans = 'Доброго времени суток!\n'+engine.sessiya_mesage(user_id)+'\nПродуктивной вам подготовки! &#128214;'
+                                    ans = 'Доброго времени суток!\n'+datebase_functions.sessiya_mesage(user_id)+'\nПродуктивной вам подготовки! &#128214;'
                                 elif days_to_end==1:
                                     ans = 'Уже завтра экзамен, я в вас верю и желаю самой продуктивной работы сегодня! &#10024;'
                                 elif days_to_end==0:
@@ -137,17 +133,18 @@ def Notification_module():
                                     ans = 'Здравствуйте!\nЭкзамен прошёл, надеюсь вы хорошо его сдали. Чтобы поставить новую дату ближайшего экзамена воспользуйтесть командой:\n/change дд.мм.гггг\n\nЧтобы отписаться от уведомлений наберите мне:\n/stop'
 
                                 write_msg(user_id, ans)
-                                print('Я отправил сообщение '+user_id+' в '+ engine.date_and_time_now())
+                                print('Я отправил сообщение '+user_id+' в '+ datebase_functions.date_and_time_now())
                                 last_send_minute=m
                 bed.sleep(10)
         except:
-            print("Найдена ошибка в Notification_module. Тип: "+str(e.__class__)+" ["+engine.date_and_time_now()+"]")
+            print("Найдена ошибка в Notification_module. ["+datebase_functions.date_and_time_now()+"]")
             bed.sleep(3)
 
-thread1 = Thread(target=Chat_module)
-thread2 = Thread(target=Notification_module)
+Chat_thread = Thread(target=Chat_module)
+Notification_thread = Thread(target=Notification_module)
 
-thread1.start()
-thread2.start()
-thread1.join()
-thread2.join()
+Chat_thread.start()
+Notification_thread.start()
+
+Chat_thread.join()
+Notification_thread.join()

@@ -1,5 +1,18 @@
-﻿import datetime
+﻿#Файл функций работы с текстовой базой пользователей
+#И всех других вспомогательных функций
+#Маракулин Андрей
+#2019
+import datetime
+from pytz import timezone
+import random
+import wikipedia
+import dictionary
+wikipedia.set_lang("RU")
 
+default_exam_date = '04.01.2020'
+users_file = 'users.txt'
+
+#Функции для работы с базой
 def validate_date(date_text):
     try:
         if date_text != datetime.datetime.strptime(date_text, "%d.%m.%Y").strftime('%d.%m.%Y'):
@@ -16,132 +29,204 @@ def validate_time(time_text):
     except ValueError:
         return False
 
-def validate_file():
-    try:
-        f = open('user_list.txt', 'r+')
-    except IOError as e:
-        return False
-    else:
-        return True
-        f.close()
-
 def validate_user(user_id):
-    f=open('user_list.txt')
-    lines = f.readlines()
+    f = open(users_file)
+    lines = f.read().splitlines()
     for line in lines:
-        if (line.find(str(user_id))>=0):
-            user_line=line.split(' ')
-            if user_line[3].find('y')>=0:
+        if (line.find(str(user_id)) >= 0):
+            user_line = line.split(' ')
+            if user_line[3].find('y') >= 0:
                f.close()
                return 'y'
-            if user_line[3].find('n')>=0:
+            if user_line[3].find('n') >= 0:
                 f.close()
                 return 'n'
     f.close()
     return 'e'
 
 def add_line(user_id, new_line):
-    lines = open('user_list.txt').read().splitlines()
-    lines.append(new_line)
-    open('user_list.txt','w').write('\n'.join(lines))
+    f = open(users_file, 'a')
+    f.write('\n' + new_line)
+    f.close()
+
+
+#def change_date(user_id, date):
+#    f = open(users_file)
+#    lines = f.read().splitlines()
+#    f.close()
+#    for line in lines:
+#        if (line.find(str(user_id)) >= 0):
+#            user_line = line.split(' ')
+#            user_line[1] = date
+#            lines.remove(line)
+#    lines.append(' '.join(user_line))
+#    f = open(users_file, 'w')
+#    f.write('\n'.join(lines))
+#    f.close()
 
 def change_date(user_id, date):
-    lines = open('user_list.txt').read().splitlines()
-    line_temp=''
+    f = open(users_file, 'r+')
+    lines = f.readlines()
     for line in lines:
-        if (line.find(str(user_id))>=0):
-            line_temp=line.split(' ')
-            line_temp[1]=date
+        if (line.find(str(user_id)) >= 0):
+            user_line = line.split(' ')
+            user_line[1] = date
             lines.remove(line)
-    lines.append(' '.join(line_temp))
-    open('user_list.txt','w').write('\n'.join(lines))
+    lines.append(' '.join(user_line)+'\n')
+    f.truncate()
+    f.writelines(lines)
+    f.close()
+
 
 def change_time(user_id, my_time):
-    lines = open('user_list.txt').read().splitlines()
-    line_temp=''
+    f = open(users_file)
+    lines = f.read().splitlines()
+    f.close()
     for line in lines:
-        if (line.find(str(user_id))>=0):
-            line_temp=line.split(' ')
-            line_temp[2]=my_time
+        if (line.find(str(user_id)) >= 0):
+            user_line = line.split(' ')
+            user_line[2] = my_time
             lines.remove(line)
     lines.append(' '.join(line_temp))
-    open('user_list.txt','w').write('\n'.join(lines))
+    f = open(users_file, 'w')
+    f.write('\n'.join(lines))
+    f.close()
 
 def change_flag(user_id):
-    lines = open('user_list.txt').read().splitlines()
-    line_temp=''
+    f = open(users_file)
+    lines = f.read().splitlines()
+    f.close()
     for line in lines:
-        if (line.find(str(user_id))>=0):
-            line_temp=line.split(' ')
-            st=str(user_id)+" change flag from " +line_temp[3]
-            if (line_temp[3]=="n"):
-                line_temp[3]="y"
+        if (line.find(str(user_id)) >= 0):
+            user_line = line.split(' ')
+            if (user_line[3] == "n"):
+                user_line[3] = "y"
             else:
-                line_temp[3]="n"
-            st+=" to " + line_temp[3]
-            print(st)
+                user_line[3] = "n"
             lines.remove(line)
-
-    lines.append(' '.join(line_temp))#после того как цикл завершился добавить новую линию чтобы на неё снова не попасть
-    open('user_list.txt','w').write('\n'.join(lines))
+    lines.append(' '.join(line_temp))
+    f = open(users_file,'w')
+    f.write('\n'.join(lines))
+    f.close()
 
 def start(user_id, message):
-    if (validate_file()==True):
-        if (len(message.split(' '))==2):
-            user_time=(message.split(' '))[1]
-            if (validate_time(user_time)==True):
-                if validate_user(user_id)=='e':
-                    s=str(user_id)+' '+ '08.06.2019'+' '+user_time+' y'
-                    add_line(user_id, s)
-                    ans="Вы будете получать напоминания о сессии ежедневно в "+ user_time+" мск"
-                elif validate_user(user_id)=='n':
-                    change_time(user_id,user_time)
-                    change_flag(user_id)
-                    ans="Вы будете получать напоминания о сессии ежедневно в "+ user_time+" мск"
-                elif validate_user(user_id)=='y':
-                    change_time(user_id, user_time)
-                    ans="Время напоминаний изменено на: "+ user_time+" мск"
-            else:
-                ans = "Некорректный формат времени для ежедневных напоминаний, правильный пример:\n/start 07:30"
+    try:
+        new_user_time = (message.split(' '))[1]
+        if (validate_time(new_user_time) == False):
+            ans = "Некорректный формат времени для ежедневных напоминаний, правильный пример:\n/start 07:30"
         else:
-            ans = "Некорректный формат ввода для ежедневных напоминаний, правильный пример:\n/start 07:30"
-    else:
-        ans='К сожалению, действие временно недоступно'
+            if validate_user(user_id) == 'e':
+                s = str(user_id) + ' ' + default_exam_date + ' ' + new_user_time + ' y'
+                add_line(user_id, s)
+                ans = "Вы будете получать напоминания о сессии ежедневно в " + new_user_time + " мск"
+            elif validate_user(user_id) == 'n':
+                change_time(user_id,new_user_time)
+                change_flag(user_id)
+                ans = "Вы будете получать напоминания о сессии ежедневно в " + new_user_time + " мск"
+            elif validate_user(user_id) == 'y':
+                change_time(user_id, new_user_time)
+                ans = "Время напоминаний изменено на: " + new_user_time + " мск"
+    except:
+        ans = 'К сожалению, действие временно недоступно'
     return ans
 
-
 def change(user_id, message):
-    if (validate_file()==True):
-        if (len(message.split(' '))==2):
-            user_date=(message.split(' '))[1]
-            if (validate_date(user_date)==True):
-                if validate_user(user_id)=='e':
-                    s=str(user_id)+' '+user_date+' '+'00:00'+' n'
-                    add_line(user_id, s)
-                    ans="Дата ближайшего экзамена изменена на: "+ user_date
-                elif validate_user(user_id)=='n':
-                    change_date(user_id,user_date)
-                    ans="Дата ближайшего экзамена изменена на: "+ user_date
-                elif validate_user(user_id)=='y':
-                    change_date(user_id,user_date)
-                    ans="Дата ближайшего экзамена изменена на: "+ user_date
-            else:
-                ans="Некорректный формат даты, правильный пример:\n/change 03.06.2019"
+    try:
+        new_user_date = (message.split(' '))[1]
+        if (validate_date(new_user_date) == False):
+            ans = "Некорректный формат даты, правильный пример:\n/change " + default_exam_date
         else:
-            ans = "Некорректный формат ввода, правильный пример:\n/change 03.06.2019"
-    else:
-        ans='К сожалению, действие временно недоступно'
+            if validate_user(user_id) == 'e':
+                s = str(user_id) + ' ' + new_user_date + ' ' + '00:00' + ' n'
+                add_line(user_id, s)
+                ans = "Дата ближайшего экзамена изменена на: " + new_user_date
+            else:
+                change_date(user_id,new_user_date)
+                ans = "Дата ближайшего экзамена изменена на: " + new_user_date
+    except:
+        ans = 'К сожалению, действие временно недоступно'
     return ans
 
 def stop(user_id, message):
-    if (validate_file()==True):
-        if validate_user(user_id)=='e':
+    try:
+        if validate_user(user_id) == 'e':
             ans = "Вы ещё не подписались на напоминания, чтобы от них отписываться :)"
-        elif validate_user(user_id)=='n':
+        elif validate_user(user_id) == 'n':
             ans = "Вы уже отписались от напоминаний, чтобы снова подписаться воспользуйтесь командой: /start чч:мм"
-        elif validate_user(user_id)=='y':
+        elif validate_user(user_id) == 'y':
             change_flag(user_id)
             ans = "Я больше не буду присылать вам напоминания о сессии. Надеюсь у вас всё получится и без меня!"
+    except:
+        ans = 'К сожалению, действие временно недоступно'
+    return ans
+
+#Остальные вспомонательные функции
+def date_and_time_now():
+    return datetime.datetime.strftime(datetime.datetime.now(timezone('Europe/Moscow')), "%d.%m.%Y %H:%M:%S")
+
+def date_now():
+    return datetime.datetime.strftime(datetime.datetime.now(timezone('Europe/Moscow')), "%d.%m.%Y")
+
+def time_now():
+    return datetime.datetime.strftime(datetime.datetime.now(timezone('Europe/Moscow')), "%H:%M")
+
+def numerals_days(n):
+    if ((10<n) and (n<20)):
+        return 'дней'
     else:
-        ans='К сожалению, действие временно недоступно'
+        n = n%10
+        if ((n==0) or (n>=5)):
+            return 'дней'
+        elif n==1:
+            return 'день'
+        elif ((n>1) and (n<5)):
+            return 'дня'
+
+def sessiya_mesage(user_id):
+    first_exam = default_exam_date.split('.')
+    today = date_now().split('.')
+
+    try:
+        f = open('users.txt')
+    except:
+        print('Не удалось открыть файл '+date_and_time_now())
+    else:
+        for line in f:
+            if (line.find(str(user_id))>=0):
+                first_exam = line.split(' ')[1]
+                first_exam = first_exam.split('.')
+        f.close()
+
+    first_exam = datetime.date(int(first_exam[2]),int(first_exam[1]),int(first_exam[0]))
+    today =  datetime.date(int(today[2]),int(today[1]),int(today[0]))
+    days_to_end = (first_exam-today).days
+
+    if days_to_end<=-30:
+        return 'Сессия уже прошла, надеюсь ты хорошо её сдал!'
+    elif days_to_end<=0:
+        return 'Сессия уже идёт! Ты молодец, я в тебя верю и желаю успеха на экзаменах! &#10084;'
+    else:
+        return 'До ближайшего экзамена: '+ str(days_to_end) +' '+ numerals_days(days_to_end)# +'\nУже прошло: '+str(days_from_begin*100//(days_from_begin+days_to_end))+'% семестра'
+
+
+def find_in_wiki(wiki_request):
+    try:
+        n=2#По умлочанию возвращаем два предложения
+        exit = 0
+
+        while ((n<5) and (exit==0)):
+            exit = 1
+            ans = str(wikipedia.summary(wiki_request, sentences=n, auto_suggest=True))
+            if ((ans.rfind('('))>(ans.rfind(')'))):#Ищем конец предложения не между скобками
+                n=n+1
+                exit = 0
+            if len(ans)<100:
+                n=n+1
+                exit = 0
+        if ans.find('=='):
+            ans = ans[:(ans.find('==')-1)]
+    except wikipedia.exceptions.DisambiguationError:
+        ans = dictionary.random_not_found[9]
+    except:
+        ans = dictionary.random_not_found[random.randint(1,8)]
     return ans
