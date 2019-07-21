@@ -1,4 +1,6 @@
-﻿import datebase_functions as dbf
+﻿import vk_api
+from vk_api.longpoll import VkLongPoll, VkEventType
+import datebase_functions as dbf
 import dictionary as dict
 
 def chat_module(request):

@@ -1,7 +1,8 @@
 ﻿# Functions for work with usres datebase
 #Маракулин Андрей @annndruha
 #2019
-from datetime import datetime
+
+#from engine import va
 from dictionary import db_ans
 
 default_exam_date = '04.01.2020'

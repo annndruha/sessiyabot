@@ -16,7 +16,7 @@ vk = vk_api.VkApi(token="ce15c65b20b72f10b0e456c7a8a20bc618f5c23f98076e10416a482
 longpoll = VkLongPoll(vk)
 
 def write_msg(user_id, message):
-    vk.method('messages.send', {'user_id': user_id, 'message': message, "random_id": random.randint(1,4294967295)})
+    vk.method('messages.send', {'user_id': user_id, 'message': message, "random_id": randint(1,4294967295)})
 
 def longpool_chat():
     while True:
@@ -28,11 +28,11 @@ def longpool_chat():
         except:
             print("Longpull error")
 
-Thread_chat = Thread(target=longpool_chat)
+#Thread_chat = Thread(target=longpool_chat)
 Thread_notification = Thread(target=notification_module())
 
-Thread_chat.start()
+#Thread_chat.start()
 Thread_notification.start()
 
-Thread_chat.join()
+#Thread_chat.join()
 Thread_notification.join()

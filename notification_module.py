@@ -1,14 +1,20 @@
 import time as bed
 import engine
 import config
-from Sessiya_bot import write_msg
-from dictionary import notify_message
+
+from dictionary import exam_message
 from dictionary import random_greeting
 from dictionary import random_wish
 from datebase_functions import change_flag
 
+import vk_api
+vk = vk_api.VkApi(token="ce15c65b20b72f10b0e456c7a8a20bc618f5c23f98076e10416a4820dac8c30bb256c9fa0169fc91f685f")
+
+def write_notify_msg(user_id, message):
+    vk.method('messages.send', {'user_id': user_id, 'message': message, "random_id": engine.datetime_to_random_id()})
+
 def notification_module():
-    print("[" + engine.datetime_now() + "] Notification module: Start")
+    print("[{}] Notification module: Start".format(engine.timestamp()))
     while True:
         try:
             last_send_time = -1
@@ -18,9 +24,9 @@ def notification_module():
                     lines = users.read().splitlines()
                     users.close()
                 except:
-                    print("[{}] Notification module: File open error".format(engine.datetime_now()))
+                    print("[{}] Notification module: File open error".format(engine.timestamp()))
 
-                if (last_send_time != engine.time_now()):
+                if (last_send_time != engine.time_now_obj()):
                     last_send_time = -1
 
                     for line in lines:
@@ -31,26 +37,26 @@ def notification_module():
                         user_notify_time = engine.str_to_time(user_line[2])
                         user_subscribe = user_line[3]
 
-                        days_to_exam = (user_exam_date - engine.date_now()).days
+                        days_to_exam = (user_exam_date - engine.date_now_obj()).days
 
-                        if ((user_subscribe == 'y') and (user_notify_time == engine.time_now())):
+                        if ((user_subscribe == 'y') and (user_notify_time == engine.time_now_obj())):
                             if days_to_exam > 1:
-                                ans = '{}\n{}\n{} &#128214;'.format(random_greeting(), engine.sessiya_mesage(user_id), random_wish())
+                                ans = '{}\n{}\n{}'.format(random_greeting(), engine.sessiya_mesage(user_id), random_wish())
                             elif days_to_exam == 1:
-                                ans = notify_message['exam_tomorrow']
+                                ans = exam_message['exam_tomorrow']
                             elif days_to_exam == 0:
-                                ans = notify_message['exam_today']
+                                ans = exam_message['exam_today']
                             elif days_to_exam == -1:
-                                ans = notify_message['exam_in_past']
+                                ans = exam_message['exam_in_past']
                             elif days_to_exam <-1:
                                 change_flag(user_id)
-                                ans = notify_message['auto_unsubscribe']
-                                print("[{}] Notification module: {} - Auto unsubscribe".format(engine.datetime_now(), str(user_id)))
+                                ans = exam_message['auto_unsubscribe']
+                                print("[{}] Notification module: {} - Auto unsubscribe".format(engine.timestamp(), str(user_id)))
 
-                            write_msg(user_id, ans)
-                            print("[{}] Notification module: Sent a message to {}".format(engine.datetime_now(), str(user_id)))
-                            last_send_time = engine.time_now()
+                            write_notify_msg(user_id, ans)
+                            print("[{}] Notification module: Sent a message to {}".format(engine.timestamp(), str(user_id)))
+                            last_send_time = engine.time_now_obj()
                 bed.sleep(10)
         except:
-            print("[{}] Notification module: Unknown exception".format(engine.datetime_now()))
-            bed.sleep(5)
+            print("[{}] Notification module: Unknown exception".format(engine.timestamp()))
+            bed.sleep(10)
