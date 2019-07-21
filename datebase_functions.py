@@ -1,8 +1,11 @@
-﻿#Файл функций работы с текстовой базой пользователей
-#И всех других вспомогательных функций
-#Маракулин Андрей
+﻿# Functions for work with usres datebase
+# and addictioanal functions
+#Маракулин Андрей @annndruha
 #2019
-import datetime
+
+from datetime import datetime
+from datetime import date
+from datetime import time
 from pytz import timezone
 import random
 import wikipedia
@@ -15,7 +18,7 @@ users_file = 'users.txt'
 #Функции для работы с базой
 def validate_date(date_text):
     try:
-        if date_text != datetime.datetime.strptime(date_text, "%d.%m.%Y").strftime('%d.%m.%Y'):
+        if date_text != datetime.strptime(date_text, "%d.%m.%Y").strftime('%d.%m.%Y'):
             raise ValueError
         return True
     except ValueError:
@@ -23,7 +26,7 @@ def validate_date(date_text):
 
 def validate_time(time_text):
     try:
-        if time_text != datetime.datetime.strptime(time_text, "%H:%M").strftime('%H:%M'):
+        if time_text != datetime.strptime(time_text, "%H:%M").strftime('%H:%M'):
             raise ValueError
         return True
     except ValueError:
@@ -31,7 +34,7 @@ def validate_time(time_text):
 
 def validate_user(user_id):
     f = open(users_file)
-    lines = f.read().splitlines()
+    lines = f.readlines()
     for line in lines:
         if (line.find(str(user_id)) >= 0):
             user_line = line.split(' ')
@@ -46,50 +49,32 @@ def validate_user(user_id):
 
 def add_line(user_id, new_line):
     f = open(users_file, 'a')
-    f.write('\n' + new_line)
+    f.write(new_line+'\n')
     f.close()
 
-
-#def change_date(user_id, date):
-#    f = open(users_file)
-#    lines = f.read().splitlines()
-#    f.close()
-#    for line in lines:
-#        if (line.find(str(user_id)) >= 0):
-#            user_line = line.split(' ')
-#            user_line[1] = date
-#            lines.remove(line)
-#    lines.append(' '.join(user_line))
-#    f = open(users_file, 'w')
-#    f.write('\n'.join(lines))
-#    f.close()
-
 def change_date(user_id, date):
+    with open(users_file) as f:
+        lines = f.read().splitlines()
+        for line in lines:
+            if (line.find(str(user_id)) >= 0):
+                user_line = line.split(' ')
+                user_line[1] = date
+                lines.remove(line)
+        lines.append(' '.join(user_line))
+    with open(users_file, 'w') as f:
+        f.writelines(lines)
+
+def change_time(user_id, my_time):
     f = open(users_file, 'r+')
     lines = f.readlines()
     for line in lines:
         if (line.find(str(user_id)) >= 0):
             user_line = line.split(' ')
-            user_line[1] = date
-            lines.remove(line)
-    lines.append(' '.join(user_line)+'\n')
-    f.truncate()
-    f.writelines(lines)
-    f.close()
-
-
-def change_time(user_id, my_time):
-    f = open(users_file)
-    lines = f.read().splitlines()
-    f.close()
-    for line in lines:
-        if (line.find(str(user_id)) >= 0):
-            user_line = line.split(' ')
             user_line[2] = my_time
             lines.remove(line)
-    lines.append(' '.join(line_temp))
-    f = open(users_file, 'w')
-    f.write('\n'.join(lines))
+    lines.append(' '.join(user_line))
+    f.truncate()
+    f.writelines(lines)
     f.close()
 
 def change_flag(user_id):
@@ -162,13 +147,13 @@ def stop(user_id, message):
 
 #Остальные вспомонательные функции
 def date_and_time_now():
-    return datetime.datetime.strftime(datetime.datetime.now(timezone('Europe/Moscow')), "%d.%m.%Y %H:%M:%S")
+    return datetime.strftime(datetime.now(timezone('Europe/Moscow')), "%d.%m.%Y %H:%M:%S")
 
 def date_now():
-    return datetime.datetime.strftime(datetime.datetime.now(timezone('Europe/Moscow')), "%d.%m.%Y")
+    return datetime.strftime(datetime.now(timezone('Europe/Moscow')), "%d.%m.%Y")
 
 def time_now():
-    return datetime.datetime.strftime(datetime.datetime.now(timezone('Europe/Moscow')), "%H:%M")
+    return datetime.strftime(datetime.now(timezone('Europe/Moscow')), "%H:%M")
 
 def numerals_days(n):
     if ((10<n) and (n<20)):
@@ -197,8 +182,8 @@ def sessiya_mesage(user_id):
                 first_exam = first_exam.split('.')
         f.close()
 
-    first_exam = datetime.date(int(first_exam[2]),int(first_exam[1]),int(first_exam[0]))
-    today =  datetime.date(int(today[2]),int(today[1]),int(today[0]))
+    first_exam = date(int(first_exam[2]),int(first_exam[1]),int(first_exam[0]))
+    today =  date(int(today[2]),int(today[1]),int(today[0]))
     days_to_end = (first_exam-today).days
 
     if days_to_end<=-30:
@@ -230,3 +215,5 @@ def find_in_wiki(wiki_request):
     except:
         ans = dictionary.random_not_found[random.randint(1,8)]
     return ans
+
+change_date(478143147, '02.08.2019')

@@ -1,150 +1,37 @@
-#Sessiya-bot - Чат бот для студентов
-#Маракулин Андрей
+#Sessiya-bot - Chat bot for students
+#Маракулин Андрей @annndruha
 #2019
-
 import vk_api
-from vk_api.longpoll import VkLongPoll, VkEventType
 
+from chat_module import chat_module
+from notification_module import notification_module
+from random import randint
 from threading import Thread
-import random
-import datetime
-import time as bed
-from pytz import timezone
-import os #для смены директории
 
-import dictionary as sheet
-import engine
-import datebase_functions
+# Setings VK_API
+# Auth with community token
+# Create a longpull varible
+vk = vk_api.VkApi(token="ce15c65b20b72f10b0e456c7a8a20bc618f5c23f98076e10416a4820dac8c30bb256c9fa0169fc91f685f")
+longpoll = vk_api.longpoll.VkLongPoll(vk)
 
-#Настройка VK_API
-token = "ce15c65b20b72f10b0e456c7a8a20bc618f5c23f98076e10416a4820dac8c30bb256c9fa0169fc91f685f" #API-ключ созданный в сообществе
-vk = vk_api.VkApi(token=token) # Авторизуемся как сообщество
-longpoll = VkLongPoll(vk)# Работа с сообщениями
-
-#Функция отправки сообщения
 def write_msg(user_id, message):
     vk.method('messages.send', {'user_id': user_id, 'message': message, "random_id": random.randint(1,4294967295)})
 
-#Модуль чата
-def Chat_module():
-    write_msg(478143147, "Chat module start at ["+datebase_functions.date_and_time_now()+"]")
+def longpool_chat():
     while True:
         try:
-            for event in longpoll.listen():#Слушаем лонгпул
-                if ((event.type == VkEventType.MESSAGE_NEW) and (event.to_me)):
-                    request = (event.text).lower()
-                    ans_exist=0
-                    l=len(request)
-                    if   (l<=0):
-                        ans_exist = -1
-                    elif (l==1):
-                        for keyword in sheet.one_letter_word:
-                            if (request==keyword):
-                                ans = sheet.one_letter_word[keyword]
-                                ans_exist = 1
-                    elif (l==2):
-                        for keyword in sheet.two_letter_word:
-                            if (request==keyword):
-                                ans = sheet.two_letter_word[keyword]
-                                ans_exist = 1
-                    elif (l>299):
-                        ans_exist = -2
-                    elif ((l>2) and (l<=299)):
-                        for keyword in sheet.answer:
-                            if (request.find(keyword)>=0):
-                                ans = sheet.answer[keyword]
-                                ans_exist = 1
-                        for keyword in sheet.functions:
-                            if (request.find(keyword)>=0):
-                                k=sheet.functions[keyword]
-                                if k==0:
-                                    ans = datebase_functions.sessiya_mesage(event.user_id)
-                                if k==1:
-                                    ans = datebase_functions.start(event.user_id, request)
-                                if k==2:
-                                    ans = datebase_functions.change(event.user_id, request)
-                                if k==3:
-                                    ans = datebase_functions.stop(event.user_id, request)
-                                if k==4:
-                                    ans = "Сейчас "+datebase_functions.time_now()+" по Москве"
-                                if k==5:
-                                    ans = "Сегодня " + datebase_functions.date_now()
-                                ans_exist = 1
-                        if ((ans_exist == 0) and (request.find('?')>=0)):
-                            ans = sheet.random_answer[random.randint(1,8)]
-                            ans_exist = 1
-
-                    #Проверка кодов существования сообщения
-                    if ((l==1 or l==2 or l==3) and ans_exist==0):
-                        ans='&#128580;'
-                    elif ans_exist==-2:
-                        ans = 'Длина вашего сообщения слишком большая'
-                    elif ans_exist==-1:
-                        ans = 'Я распознаю только текст.\n¯\_(ツ)_/¯'
-                    elif ans_exist==0:
-                        ans = datebase_functions.find_in_wiki(request)
-                    elif ans_exist==1:
-                        ans = ans
-                    write_msg(event.user_id, ans)
+            for event in longpoll.listen():#Longpull loop
+                if ((event.type == vk_api.longpoll.VkEventType.MESSAGE_NEW) and (event.to_me)):
+                    answer = chat_module(event.text)#start text analysis function
+                    write_msg(answer)
         except:
-            print("Найдена ошибка в Chat_module. ["+datebase_functions.date_and_time_now()+"]\n")
+            print("Longpull error")
 
-def Notification_module():
-    write_msg(478143147, "Notification module start at ["+datebase_functions.date_and_time_now()+"]")
-    last_send_minute=-1
-    while True:
-        try:
-            while True:
-                try:
-                    users=open("users.txt","r")
-                    lines = users.read().splitlines() #Открытие списка рассылки
-                    users.close()
-                except:
-                    print("No file")
-                today = datetime.date.today()#Получение текущего времени и даты
-                time_is_now = (datetime.datetime.strftime(datetime.datetime.now(timezone('Europe/Moscow')), "%H:%M")).split(':')
+Thread_chat = Thread(target=longpool_chat)
+Thread_notification = Thread(target=notification_module())
 
-                if (last_send_minute!=time_is_now[1]):
-                    last_send_minute=-1
-                    for line in lines:
+Thread_chat.start()
+Thread_notification.start()
 
-                        user_line=line.split(' ')#Парсим информацию о пользователе
-
-                        user_id=user_line[0]
-                        user_sessiya_date=(user_line[1]).split('.')
-                        user_notify_time=(user_line[2]).split(':')
-                        user_subscribe=user_line[3]
-
-                        h=user_notify_time[0]
-                        m=user_notify_time[1]
-
-                        sessiya_begin = datetime.date(int(user_sessiya_date[2]),int(user_sessiya_date[1]),int(user_sessiya_date[0]))
-                        days_to_end = (sessiya_begin-today).days#Считаем сколько до сессии, чтобы проверить не прошла ли она
-
-                        if (user_subscribe=='y'):
-                            if ((h==time_is_now[0]) and (m==time_is_now[1])):
-                                if days_to_end>1:
-                                    ans = 'Доброго времени суток!\n'+datebase_functions.sessiya_mesage(user_id)+'\nПродуктивной вам подготовки! &#128214;'
-                                elif days_to_end==1:
-                                    ans = 'Уже завтра экзамен, я в вас верю и желаю самой продуктивной работы сегодня! &#10024;'
-                                elif days_to_end==0:
-                                    ans = 'Удачи сегодня на экзамене! Я верю в тебя и желаю всего самого наилучшего! &#127808;'
-                                elif days_to_end<0:
-                                    ans = 'Здравствуйте!\nЭкзамен прошёл, надеюсь вы хорошо его сдали. Чтобы поставить новую дату ближайшего экзамена воспользуйтесть командой:\n/change дд.мм.гггг\n\nЧтобы отписаться от уведомлений наберите мне:\n/stop'
-
-                                write_msg(user_id, ans)
-                                print('Я отправил сообщение '+user_id+' в '+ datebase_functions.date_and_time_now())
-                                last_send_minute=m
-                bed.sleep(10)
-        except:
-            print("Найдена ошибка в Notification_module. ["+datebase_functions.date_and_time_now()+"]")
-            bed.sleep(3)
-
-Chat_thread = Thread(target=Chat_module)
-Notification_thread = Thread(target=Notification_module)
-
-Chat_thread.start()
-Notification_thread.start()
-
-Chat_thread.join()
-Notification_thread.join()
+Thread_chat.join()
+Thread_notification.join()
