@@ -1,53 +1,56 @@
 import time as bed
-from pytz import timezone
+import engine
+import config
+from Sessiya_bot import write_msg
+from dictionary import notify_message
+from dictionary import random_greeting
+from dictionary import random_wish
+from datebase_functions import change_flag
 
 def notification_module():
-    write_msg(478143147, "Notification module start at ["+datebase_functions.date_and_time_now()+"]")
-    last_send_minute=-1
+    print("[" + engine.datetime_now() + "] Notification module: Start")
     while True:
         try:
+            last_send_time = -1
             while True:
                 try:
-                    users=open("users.txt","r")
-                    lines = users.read().splitlines() #Открытие списка рассылки
+                    users = open(config.users_filename)
+                    lines = users.read().splitlines()
                     users.close()
                 except:
-                    print("No file")
-                today = datetime.date.today()#Получение текущего времени и даты
-                time_is_now = (datetime.datetime.strftime(datetime.datetime.now(timezone('Europe/Moscow')), "%H:%M")).split(':')
+                    print("[{}] Notification module: File open error".format(engine.datetime_now()))
 
-                if (last_send_minute!=time_is_now[1]):
-                    last_send_minute=-1
+                if (last_send_time != engine.time_now()):
+                    last_send_time = -1
+
                     for line in lines:
+                        user_line = line.split(' ')
 
-                        user_line=line.split(' ')#Парсим информацию о пользователе
+                        user_id = user_line[0]
+                        user_exam_date = engine.str_to_date(user_line[1])
+                        user_notify_time = engine.str_to_time(user_line[2])
+                        user_subscribe = user_line[3]
 
-                        user_id=user_line[0]
-                        user_sessiya_date=(user_line[1]).split('.')
-                        user_notify_time=(user_line[2]).split(':')
-                        user_subscribe=user_line[3]
+                        days_to_exam = (user_exam_date - engine.date_now()).days
 
-                        h=user_notify_time[0]
-                        m=user_notify_time[1]
+                        if ((user_subscribe == 'y') and (user_notify_time == engine.time_now())):
+                            if days_to_exam > 1:
+                                ans = '{}\n{}\n{} &#128214;'.format(random_greeting(), engine.sessiya_mesage(user_id), random_wish())
+                            elif days_to_exam == 1:
+                                ans = notify_message['exam_tomorrow']
+                            elif days_to_exam == 0:
+                                ans = notify_message['exam_today']
+                            elif days_to_exam == -1:
+                                ans = notify_message['exam_in_past']
+                            elif days_to_exam <-1:
+                                change_flag(user_id)
+                                ans = notify_message['auto_unsubscribe']
+                                print("[{}] Notification module: {} - Auto unsubscribe".format(engine.datetime_now(), str(user_id)))
 
-                        sessiya_begin = datetime.date(int(user_sessiya_date[2]),int(user_sessiya_date[1]),int(user_sessiya_date[0]))
-                        days_to_end = (sessiya_begin-today).days#Считаем сколько до сессии, чтобы проверить не прошла ли она
-
-                        if (user_subscribe=='y'):
-                            if ((h==time_is_now[0]) and (m==time_is_now[1])):
-                                if days_to_end>1:
-                                    ans = 'Доброго времени суток!\n'+datebase_functions.sessiya_mesage(user_id)+'\nПродуктивной вам подготовки! &#128214;'
-                                elif days_to_end==1:
-                                    ans = 'Уже завтра экзамен, я в вас верю и желаю самой продуктивной работы сегодня! &#10024;'
-                                elif days_to_end==0:
-                                    ans = 'Удачи сегодня на экзамене! Я верю в тебя и желаю всего самого наилучшего! &#127808;'
-                                elif days_to_end<0:
-                                    ans = 'Здравствуйте!\nЭкзамен прошёл, надеюсь вы хорошо его сдали. Чтобы поставить новую дату ближайшего экзамена воспользуйтесть командой:\n/change дд.мм.гггг\n\nЧтобы отписаться от уведомлений наберите мне:\n/stop'
-
-                                write_msg(user_id, ans)
-                                print('Я отправил сообщение '+user_id+' в '+ datebase_functions.date_and_time_now())
-                                last_send_minute=m
+                            write_msg(user_id, ans)
+                            print("[{}] Notification module: Sent a message to {}".format(engine.datetime_now(), str(user_id)))
+                            last_send_time = engine.time_now()
                 bed.sleep(10)
         except:
-            print("Найдена ошибка в Notification_module. ["+datebase_functions.date_and_time_now()+"]")
-            bed.sleep(3)
+            print("[{}] Notification module: Unknown exception".format(engine.datetime_now()))
+            bed.sleep(5)
