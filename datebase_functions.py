@@ -65,21 +65,24 @@ def change_flag(user_id):
 
 def start(user_id, message):# Start notify message from user
     try:
-        new_user_time = (message.split(' '))[1]
-        if (engine.validate_time(new_user_time) == False):
-            ans = db_ans[incorrect_time]
+        if (len(message.split(' '))>1):
+            new_user_time=message.split(' ')[1]
+            if (engine.validate_time(new_user_time) == False):
+                ans = db_ans['incorrect_time']
+            else:
+                if validate_user(user_id) == 'e':
+                    s = '{} {} {} y'.format(str(user_id), config.default_exam_date, new_user_time)
+                    add_line(s)
+                    ans = db_ans['start_notify'] + ' ' + new_user_time + ' ' + db_ans['msk']
+                elif validate_user(user_id) == 'n':
+                    change_time(user_id,new_user_time)
+                    change_flag(user_id)
+                    ans = db_ans['start_notify'] + ' ' + new_user_time + ' ' + db_ans['msk']
+                elif validate_user(user_id) == 'y':
+                    change_time(user_id, new_user_time)
+                    ans = db_ans['change_time'] + ' ' + new_user_time + ' ' + db_ans['msk']
         else:
-            if validate_user(user_id) == 'e':
-                s = '{} {} {} y'.format(str(user_id), config.default_exam_date, new_user_time)
-                add_line(s)
-                ans = db_ans['start_notify'] + ' ' + new_user_time + ' ' + db_ans['msk']
-            elif validate_user(user_id) == 'n':
-                change_time(user_id,new_user_time)
-                change_flag(user_id)
-                ans = db_ans['start_notify'] + ' ' + new_user_time + ' ' + db_ans['msk']
-            elif validate_user(user_id) == 'y':
-                change_time(user_id, new_user_time)
-                ans = db_ans['change_time'] + ' ' + new_user_time + ' ' + db_ans['msk']
+            ans = db_ans['incorrect_time']
     except:
         print('[' + engine.timestamp() + '] DBFunctions: Start: Exception')
         ans = db_ans['not_available']
@@ -87,17 +90,20 @@ def start(user_id, message):# Start notify message from user
 
 def change(user_id, message):# Change notify message from user
     try:
-        new_user_date = (message.split(' '))[1]
-        if (engine.validate_date(new_user_date) == False):
-            ans = db_ans['incorrect_date'] + ' ' + config.default_exam_date
-        else:
-            if validate_user(user_id) == 'e':
-                s = str(user_id) + ' ' + new_user_date + ' 00:00 n'
-                add_line(s)
-                ans = db_ans['change_date'] + ' ' + new_user_date
+        if (len(message.split(' '))>1):
+            new_user_date=message.split(' ')[1]
+            if (engine.validate_date(new_user_date) == False):
+                ans = db_ans['incorrect_date'] + ' ' + config.default_exam_date
             else:
-                change_date(user_id,new_user_date)
-                ans = db_ans['change_date'] + ' ' + new_user_date
+                if validate_user(user_id) == 'e':
+                    s = str(user_id) + ' ' + new_user_date + ' 00:00 n'
+                    add_line(s)
+                    ans = db_ans['change_date'] + ' ' + new_user_date
+                else:
+                    change_date(user_id,new_user_date)
+                    ans = db_ans['change_date'] + ' ' + new_user_date
+        else:
+            ans = db_ans['incorrect_date']+ ' ' + config.default_exam_date
     except:
         print('[' + engine.timestamp() + '] DBFunctions: Change: Exception')
         ans = db_ans['not_available']

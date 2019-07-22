@@ -4,7 +4,6 @@
 import datebase_functions as dbf
 import dictionary as dict
 import engine
-from engine import timestamp
 
 def chat_module(user_id,request):
     try:
@@ -47,17 +46,16 @@ def chat_module(user_id,request):
                 ans_exist = 1
 
         if ((l == 1 or l == 2 or l == 3) and ans_exist == 0):
-            ans = '&#128580;'
-        elif ans_exist == -2:
-            ans = 'Длина вашего сообщения слишком большая'
-        elif ans_exist == -1:
-            ans = 'Я распознаю только текст.\n¯\_(ツ)_/¯'
+            ans = engine.chat_ans[0]
         elif ans_exist == 0:
             ans = engine.find_in_wiki(request)
         elif ans_exist == 1:
             ans = ans
+        else:
+            ans = engine.chat_ans[ans_exist]
         return ans
+
     except:
-        print("[" + timestamp() + "] Chat module: Unknown exception")
-        ans = 'Во мне что-то сломалось...'
+        print("[" + engine.timestamp() + "] Chat module: Unknown exception")
+        ans = engine.chat_ans[-3]
         return ans
