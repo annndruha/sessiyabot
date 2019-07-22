@@ -1,22 +1,21 @@
-import datetime as dt
-from pytz import timezone
-
+# Sessiya_bot: engine - Main use functions
+# Маракулин Андрей @annndruha
+# 2019
 import wikipedia
-from  dictionary import days_cases
-from  dictionary import exam_message
-from  dictionary import random_not_found
+import pytz
+import datetime as dt
 
 import config
-wikipedia.set_lang(config.wiki_language)
+import dictionary as dict
 
 # DateTime class functions
 def datetime_now_obj():
-    return dt.datetime.now(timezone('Europe/Moscow'))
+    return dt.datetime.now(pytz.timezone(config.tz))
 
 def datetime_to_str(datetime_object):
     return dt.datetime.strftime(datetime_object, '%d.%m.%Y %H:%M')
 
-def str_to_datetime(string):#Set timezone automaticly
+def str_to_datetime(string):# Set timezone automaticly
     return dt.datetime.strptime(string, '%d.%m.%Y %H:%M')
 
 # Date class functions
@@ -42,7 +41,7 @@ def str_to_time(string):
 # Validate format functions
 def validate_date(date_text):
     try:
-        if date_text != datetime.strptime(date_text, "%d.%m.%Y").strftime('%d.%m.%Y'):
+        if date_text != dt.datetime.strptime(date_text, "%d.%m.%Y").strftime('%d.%m.%Y'):
             raise ValueError
         return True
     except ValueError:
@@ -50,7 +49,7 @@ def validate_date(date_text):
 
 def validate_time(time_text):
     try:
-        if time_text != datetime.strptime(time_text, "%H:%M").strftime('%H:%M'):
+        if time_text != dt.datetime.strptime(time_text, "%H:%M").strftime('%H:%M'):
             raise ValueError
         return True
     except ValueError:
@@ -60,29 +59,28 @@ def validate_time(time_text):
 def timestamp():
     return dt.datetime.strftime(datetime_now_obj(), '%d.%m.%Y %H:%M:%S')
 
-def datetime_to_random_id():
+def datetime_to_random_id():# Use in message_write and protect user from two similar message
     i = dt.datetime.strftime(datetime_now_obj(), '%y%m%d%H%M')
     return int(i)
 
 # Chat functions
 def numerals_days(n):
     if ((10 < n) and (n < 20)):
-        return days_cases['genitive_many']
+        return dict.days_cases['genitive_many']
     else:
         n = n % 10
         if ((n == 0) or (n >= 5)):
-            return days_cases['genitive_many']
+            return dict.days_cases['genitive_many']
         elif n == 1:
-            return days_cases['nominative']
+            return dict.days_cases['nominative']
         elif ((n > 1) and (n < 5)):
-            return days_cases['genitive']
+            return dict.days_cases['genitive']
 
 def sessiya_mesage(user_id):
     first_exam = config.default_exam_date
     today = date_now_obj()
-
     try:
-        users = open(config.users_filename)
+        users = open(config.users_file)
         lines = users.read().splitlines()
         users.close()
     except:
@@ -95,14 +93,15 @@ def sessiya_mesage(user_id):
             days_to_exam = (user_exam_date - date_now_obj()).days
 
     if days_to_exam < -2:
-        return exam_message['ask_exam_past']
+        return dict.exam_message['ask_exam_past']
     elif days_to_exam <= 0:
-        return exam_message['sessiya_going']
+        return dict.exam_message['sessiya_going']
     else:
-        return exam_message['time_until_exam'] + str(days_to_exam) + ' ' + numerals_days(days_to_exam)
+        return dict.exam_message['time_until_exam'] + str(days_to_exam) + ' ' + numerals_days(days_to_exam)
 
 def find_in_wiki(wiki_request):
     try:
+        wikipedia.set_lang(config.wiki_language)
         n = 2
         exit = 0
 
@@ -118,5 +117,5 @@ def find_in_wiki(wiki_request):
         if ans.find('=='):
             ans = ans[:(ans.find('==') - 1)]
     except:
-        ans = random_not_found()
+        ans = dict.random_not_found()
     return ans
