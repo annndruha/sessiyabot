@@ -1,38 +1,42 @@
 #Sessiya-bot - Chat bot for students
 #Маракулин Андрей @annndruha
 #2019
-import vk_api
-from vk_api.longpoll import VkLongPoll, VkEventType
 
+from vk_api import VkApi
+from vk_api.longpoll import VkLongPoll, VkEventType
+from threading import Thread
+from random import randint
+
+from config import chat_token
+from engine import timestamp
 from chat_module import chat_module
 from notification_module import notification_module
-from random import randint
-from threading import Thread
 
-# Setings VK_API
-# Auth with community token
-# Create a longpull variable
-vk = vk_api.VkApi(token="ce15c65b20b72f10b0e456c7a8a20bc618f5c23f98076e10416a4820dac8c30bb256c9fa0169fc91f685f")
-longpoll = VkLongPoll(vk)
+print("["+timestamp()+"] Sessiya-bot: Build successful")
+
+vk = VkApi(token=chat_token)# Auth with community token
+longpoll = VkLongPoll(vk)# Create a longpull variable
+print("["+timestamp()+"] Sessiya-bot: Vk connected")
 
 def write_msg(user_id, message):
     vk.method('messages.send', {'user_id': user_id, 'message': message, "random_id": randint(1,4294967295)})
 
-def longpool_chat():
+def longpull_loop():
     while True:
+        print("["+timestamp()+"] Longpull loop: Start")
         try:
             for event in longpoll.listen():# Longpull loop
                 if ((event.type == VkEventType.MESSAGE_NEW) and (event.to_me)):
-                    answer = chat_module(event.text)# Start text analysis function
-                    write_msg(answer)
+                    ans = chat_module(event.user_id, event.text)# Start text analysis function
+                    write_msg(event.user_id, ans)
         except:
-            print("Longpull error")
+            print("["+timestamp()+"] Longpull loop: Unknown exception")
 
-#Thread_chat = Thread(target=longpool_chat)
-Thread_notification = Thread(target=notification_module())
+Thread_notification = Thread(target=notification_module)
+Thread_chat = Thread(target=longpull_loop)
 
-#Thread_chat.start()
 Thread_notification.start()
+Thread_chat.start()
 
-#Thread_chat.join()
+Thread_chat.join()
 Thread_notification.join()

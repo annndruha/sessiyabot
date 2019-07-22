@@ -1,10 +1,9 @@
-﻿import vk_api
-from vk_api.longpoll import VkLongPoll, VkEventType
-import datebase_functions as dbf
+﻿import datebase_functions as dbf
 import dictionary as dict
+import engine
+from engine import timestamp
 
-def chat_module(request):
-    print("Chat module start at ["+dbf.date_and_time_now()+"]")
+def chat_module(user_id,request):
     try:
         request = (request).lower()
         ans_exist=0
@@ -32,20 +31,16 @@ def chat_module(request):
                 if (request.find(keyword)>=0):
                     k=dict.functions[keyword]
                     if k==0:
-                        ans = dbf.sessiya_mesage(event.user_id)
+                        ans = engine.sessiya_mesage(user_id)
                     if k==1:
-                        ans = dbf.start(event.user_id, request)
+                        ans = dbf.start(user_id, request)
                     if k==2:
-                        ans = dbf.change(event.user_id, request)
+                        ans = dbf.change(user_id, request)
                     if k==3:
-                        ans = dbf.stop(event.user_id, request)
-                    if k==4:
-                        ans = "Сейчас "+dbf.time_now()+" по Москве"
-                    if k==5:
-                        ans = "Сегодня " + dbf.date_now()
+                        ans = dbf.stop(user_id, request)
                     ans_exist = 1
             if ((ans_exist == 0) and (request.find('?')>=0)):
-                ans = dict.random_answer[random.randint(1,8)]
+                ans = dict.random_answer()
                 ans_exist = 1
 
         #Проверка кодов существования сообщения
@@ -56,11 +51,11 @@ def chat_module(request):
         elif ans_exist==-1:
             ans = 'Я распознаю только текст.\n¯\_(ツ)_/¯'
         elif ans_exist==0:
-            ans = dbf.find_in_wiki(request)
+            ans = engine.find_in_wiki(request)
         elif ans_exist==1:
             ans = ans
         return ans
     except:
-        print("Найдена ошибка в Chat_module. ["+dbf.date_and_time_now()+"]\n")
+        print("["+timestamp()+"] Chat module: Unknown exception")
         ans = 'Во мне что-то сломалось...'
         return ans
