@@ -1,6 +1,7 @@
 # Sessiya-bot - Chat bot for students
 # Маракулин Андрей @annndruha
 # 2019
+
 from vk_api import VkApi
 from vk_api.longpoll import VkLongPoll, VkEventType
 from threading import Thread
