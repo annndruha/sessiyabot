@@ -77,7 +77,7 @@ def numerals_days(n):
             return dict.days_cases['genitive']
 
 def sessiya_mesage(user_id):
-    first_exam = config.default_exam_date
+    user_exam_date = config.default_exam_date
     today = date_now_obj()
     try:
         users = open(config.users_file)
