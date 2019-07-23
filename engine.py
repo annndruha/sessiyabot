@@ -41,7 +41,7 @@ def str_to_time(string):
 # Validate format functions
 def validate_date(date_text):
     try:
-        if date_text != dt.datetime.strptime(date_text, "%d.%m.%Y").strftime('%d.%m.%Y'):
+        if date_text != dt.datetime.strptime(date_text, '%d.%m.%Y').strftime('%d.%m.%Y'):
             raise ValueError
         return True
     except ValueError:
@@ -49,7 +49,7 @@ def validate_date(date_text):
 
 def validate_time(time_text):
     try:
-        if time_text != dt.datetime.strptime(time_text, "%H:%M").strftime('%H:%M'):
+        if time_text != dt.datetime.strptime(time_text, '%H:%M').strftime('%H:%M'):
             raise ValueError
         return True
     except ValueError:
@@ -84,7 +84,7 @@ def sessiya_mesage(user_id):
         lines = users.read().splitlines()
         users.close()
     except:
-        print("[{}] Engine: Sessiya message: File open error".format(timestamp()))
+        print(f'[{timestamp()}] Engine: Sessiya message: File open error')
 
     for line in lines:
         if (line.find(str(user_id)) >= 0):

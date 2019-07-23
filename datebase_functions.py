@@ -55,10 +55,10 @@ def change_flag(user_id):
     for line in lines:
         if (line.split(' ')[0] == str(user_id)):
             user_line = line.split(' ')
-            if (user_line[3] == "n"):
-                user_line[3] = "y"
+            if (user_line[3] == 'n'):
+                user_line[3] = 'y'
             else:
-                user_line[3] = "n"
+                user_line[3] = 'n'
             lines.remove(line)
     lines.append(' '.join(user_line))
     write_lines(lines)
@@ -84,7 +84,7 @@ def start(user_id, message):# Start notify message from user
         else:
             ans = db_ans['incorrect_time']
     except:
-        print('[' + engine.timestamp() + '] DBFunctions: Start: Exception')
+        print(f'[{engine.timestamp()}] DBFunctions: Start: Exception')
         ans = db_ans['not_available']
     return ans
 
@@ -105,7 +105,7 @@ def change(user_id, message):# Change notify message from user
         else:
             ans = db_ans['incorrect_date']+ ' ' + config.default_exam_date
     except:
-        print('[' + engine.timestamp() + '] DBFunctions: Change: Exception')
+        print(f'[{engine.timestamp()}] DBFunctions: Change: Exception')
         ans = db_ans['not_available']
     return ans
 
@@ -119,6 +119,6 @@ def stop(user_id, message):# Stop notify message from user
             change_flag(user_id)
             ans = db_ans['unfollow']
     except:
-        print('[' + engine.timestamp() + '] DBFunctions: Stop: Exception')
+        print(f'[{engine.timestamp()}] DBFunctions: Stop: Exception')
         ans = db_ans['not_available']
     return ans

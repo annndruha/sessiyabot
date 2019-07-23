@@ -56,6 +56,6 @@ def chat_module(user_id,request):
         return ans
 
     except:
-        print("[" + engine.timestamp() + "] Chat module: Unknown exception")
+        print(f'[{engine.timestamp()}] Chat module: Unknown exception')
         ans = engine.chat_ans[-3]
         return ans

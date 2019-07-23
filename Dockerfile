@@ -16,4 +16,4 @@ RUN pip3 install pytz
 EXPOSE 5000
 
 #Run the file
-CMD ["python", "./Sessiya-bot.py"]
+CMD ['python', './Sessiya-bot.py']
