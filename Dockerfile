@@ -8,7 +8,7 @@ ADD ./ Sessiya-bot/
 WORKDIR Sessiya-bot
 
 # Addictional libraries for bot
-RUN apk add --no-cache gcc musl-dev && --no-cache-dir && pip install vk_api wikipedia pytz
+RUN apk add --no-cache gcc musl-dev && --no-cache-dir && pip install && pip install vk_api && pip install wikipedia pytz
 
 #Specify the port number the container should expose 
 EXPOSE 5000
