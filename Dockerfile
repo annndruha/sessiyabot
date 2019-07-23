@@ -16,4 +16,4 @@ EXPOSE 5000
 #Run the file
 CMD ["python", "./Sessiya_bot.py"]
 
-#docker run -d --name bot -v C:\Users\Andrey\source\repos\Annndruha\Sessiya-bot\users.txt:/Sessiya-bot/users.txt XXXXNAMEXXXX
+#docker run -d --name bot -v C:\Users\Andrey\source\repos\Annndruha\Sessiya_bot\users.txt:/Sessiya-bot/users.txt XXXXNAMEXXXX
