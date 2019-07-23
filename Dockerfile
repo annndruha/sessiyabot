@@ -1,4 +1,3 @@
-#docker run -d —name bot -v C:\Users\Andrey\source\repos\Annndruha\Sessiya-bot\users.txt:Sessiya-bot/users.txt
 #Base image
 FROM python:3-alpine
 
@@ -16,3 +15,5 @@ EXPOSE 5000
 
 #Run the file
 CMD ["python", "./Sessiya_bot.py"]
+
+#docker run -d --name bot -v C:\Users\Andrey\source\repos\Annndruha\Sessiya-bot\users.txt:/Sessiya-bot/users.txt 2a9d81d1a5d6
