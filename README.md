@@ -6,7 +6,7 @@ RUN pip3 install vk_api
 RUN pip3 install wikipedia
 RUN pip3 install pytz
 
-ФайлыЖ
+Файлы:
 Sessiya_bot - основной файл с двумя потоками, один отвечает за чат, другой за напоминания
 Chat_module - движок анализа текста пользовательского запроса
 Notification_module - напоминания
