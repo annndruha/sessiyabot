@@ -1,5 +1,6 @@
+#docker run -d —name bot -v C:\Users\Andrey\source\repos\Annndruha\Sessiya-bot\users.txt:Sessiya-bot/users.txt
 #Base image
-FROM python:3
+FROM python:3-alpine
 
 #Add the main dirictory
 ADD ./ Sessiya-bot/
@@ -8,9 +9,7 @@ ADD ./ Sessiya-bot/
 WORKDIR Sessiya-bot
 
 # Addictional libraries for bot
-RUN pip3 install vk_api
-RUN pip3 install wikipedia
-RUN pip3 install pytz
+RUN apk add --no-cache gcc musl-dev && pip install vk_api && pip install wikipedia && pip install pytz
 
 #Specify the port number the container should expose 
 EXPOSE 5000

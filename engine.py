@@ -98,24 +98,3 @@ def sessiya_mesage(user_id):
         return dict.exam_message['sessiya_going']
     else:
         return dict.exam_message['time_until_exam'] + str(days_to_exam) + ' ' + numerals_days(days_to_exam)
-
-def find_in_wiki(wiki_request):
-    try:
-        wikipedia.set_lang(config.wiki_language)
-        n = 2
-        exit = 0
-
-        while ((n < 5) and (exit == 0)):
-            exit = 1
-            ans = str(wikipedia.summary(wiki_request, sentences=n, auto_suggest=True))
-            if ((ans.rfind('(')) > (ans.rfind(')'))):
-                n = n + 1
-                exit = 0
-            if len(ans) < 100:
-                n = n + 1
-                exit = 0
-        if ans.find('=='):
-            ans = ans[:(ans.find('==') - 1)]
-    except:
-        ans = dict.random_not_found()
-    return ans

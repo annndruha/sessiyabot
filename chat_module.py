@@ -5,6 +5,27 @@ import datebase_functions as dbf
 import dictionary as dict
 import engine
 
+def find_in_wiki(wiki_request):
+    try:
+        wikipedia.set_lang(config.wiki_language)
+        n = 2
+        exit = 0
+
+        while ((n < 5) and (exit == 0)):
+            exit = 1
+            ans = str(wikipedia.summary(wiki_request, sentences=n, auto_suggest=True))
+            if ((ans.rfind('(')) > (ans.rfind(')'))):
+                n = n + 1
+                exit = 0
+            if len(ans) < 100:
+                n = n + 1
+                exit = 0
+        if ans.find('=='):
+            ans = ans[:(ans.find('==') - 1)]
+    except:
+        ans = dict.random_not_found()
+    return ans
+
 def chat_module(user_id,request):
     try:
         request = (request).lower()
@@ -46,16 +67,16 @@ def chat_module(user_id,request):
                 ans_exist = 1
 
         if ((l == 1 or l == 2 or l == 3) and ans_exist == 0):
-            ans = engine.chat_ans[0]
+            ans = dict.chat_ans[0]
         elif ans_exist == 0:
-            ans = engine.find_in_wiki(request)
+            ans = find_in_wiki(request)
         elif ans_exist == 1:
             ans = ans
         else:
-            ans = engine.chat_ans[ans_exist]
+            ans = dict.chat_ans[ans_exist]
         return ans
 
     except:
         print(f'[{engine.timestamp()}] Chat module: Unknown exception')
-        ans = engine.chat_ans[-3]
+        ans = dict.chat_ans[-3]
         return ans
