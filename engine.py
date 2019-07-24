@@ -1,21 +1,17 @@
 # Sessiya_bot: engine - Main use functions
 # Маракулин Андрей @annndruha
 # 2019
-import wikipedia
-import pytz
 import datetime as dt
-
-import config
-import dictionary as dict
+import pytz
 
 # DateTime class functions
 def datetime_now_obj():
-    return dt.datetime.now(pytz.timezone(config.tz))
+    return dt.datetime.now(pytz.timezone('Europe/Moscow'))
 
 def datetime_to_str(datetime_object):
     return dt.datetime.strftime(datetime_object, '%d.%m.%Y %H:%M')
 
-def str_to_datetime(string):# Set timezone automaticly
+def str_to_datetime(string):
     return dt.datetime.strptime(string, '%d.%m.%Y %H:%M')
 
 # Date class functions
@@ -62,39 +58,3 @@ def timestamp():
 def datetime_to_random_id():# Use in message_write and protect user from two similar message
     i = dt.datetime.strftime(datetime_now_obj(), '%y%m%d%H%M')
     return int(i)
-
-# Chat functions
-def numerals_days(n):
-    if ((10 < n) and (n < 20)):
-        return dict.days_cases['genitive_many']
-    else:
-        n = n % 10
-        if ((n == 0) or (n >= 5)):
-            return dict.days_cases['genitive_many']
-        elif n == 1:
-            return dict.days_cases['nominative']
-        elif ((n > 1) and (n < 5)):
-            return dict.days_cases['genitive']
-
-def sessiya_mesage(user_id):
-    user_exam_date = config.default_exam_date
-    today = date_now_obj()
-    try:
-        users = open(config.users_file)
-        lines = users.read().splitlines()
-        users.close()
-    except:
-        print(f'[{timestamp()}] Engine: Sessiya message: File open error')
-
-    for line in lines:
-        if (line.find(str(user_id)) >= 0):
-            user_line = line.split(' ')
-            user_exam_date = str_to_date(user_line[1])
-            days_to_exam = (user_exam_date - date_now_obj()).days
-
-    if days_to_exam < -2:
-        return dict.exam_message['ask_exam_past']
-    elif days_to_exam <= 0:
-        return dict.exam_message['sessiya_going']
-    else:
-        return dict.exam_message['time_until_exam'] + str(days_to_exam) + ' ' + numerals_days(days_to_exam)

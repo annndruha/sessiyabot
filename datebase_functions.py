@@ -2,8 +2,6 @@
 # Маракулин Андрей @annndruha
 # 2019
 import config
-import engine
-from dictionary import db_ans
 
 # Lines + file = love
 def get_lines():
@@ -19,7 +17,7 @@ def write_lines(lines):
     with open(config.users_file, 'w') as f:
         f.write('\n'.join(lines))
 
-def validate_user(user_id):
+def check_user(user_id):
     for line in get_lines():
         if (line.split(' ')[0] == str(user_id)):
             user_line = line.split(' ')
@@ -62,63 +60,3 @@ def change_flag(user_id):
             lines.remove(line)
     lines.append(' '.join(user_line))
     write_lines(lines)
-
-def start(user_id, message):# Start notify message from user
-    try:
-        if (len(message.split(' '))>1):
-            new_user_time=message.split(' ')[1]
-            if (engine.validate_time(new_user_time) == False):
-                ans = db_ans['incorrect_time']
-            else:
-                if validate_user(user_id) == 'e':
-                    s = '{} {} {} y'.format(str(user_id), config.default_exam_date, new_user_time)
-                    add_line(s)
-                    ans = db_ans['start_notify'] + ' ' + new_user_time + ' ' + db_ans['msk']
-                elif validate_user(user_id) == 'n':
-                    change_time(user_id,new_user_time)
-                    change_flag(user_id)
-                    ans = db_ans['start_notify'] + ' ' + new_user_time + ' ' + db_ans['msk']
-                elif validate_user(user_id) == 'y':
-                    change_time(user_id, new_user_time)
-                    ans = db_ans['change_time'] + ' ' + new_user_time + ' ' + db_ans['msk']
-        else:
-            ans = db_ans['incorrect_time']
-    except:
-        print(f'[{engine.timestamp()}] DBFunctions: Start: Exception')
-        ans = db_ans['not_available']
-    return ans
-
-def change(user_id, message):# Change notify message from user
-    try:
-        if (len(message.split(' '))>1):
-            new_user_date=message.split(' ')[1]
-            if (engine.validate_date(new_user_date) == False):
-                ans = db_ans['incorrect_date'] + ' ' + config.default_exam_date
-            else:
-                if validate_user(user_id) == 'e':
-                    s = str(user_id) + ' ' + new_user_date + ' 00:00 n'
-                    add_line(s)
-                    ans = db_ans['change_date'] + ' ' + new_user_date
-                else:
-                    change_date(user_id,new_user_date)
-                    ans = db_ans['change_date'] + ' ' + new_user_date
-        else:
-            ans = db_ans['incorrect_date']+ ' ' + config.default_exam_date
-    except:
-        print(f'[{engine.timestamp()}] DBFunctions: Change: Exception')
-        ans = db_ans['not_available']
-    return ans
-
-def stop(user_id, message):# Stop notify message from user
-    try:
-        if validate_user(user_id) == 'e':
-            ans = db_ans['no_sub']
-        elif validate_user(user_id) == 'n':
-            ans = db_ans['unfollow_yet']
-        elif validate_user(user_id) == 'y':
-            change_flag(user_id)
-            ans = db_ans['unfollow']
-    except:
-        print(f'[{engine.timestamp()}] DBFunctions: Stop: Exception')
-        ans = db_ans['not_available']
-    return ans

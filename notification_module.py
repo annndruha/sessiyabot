@@ -2,29 +2,28 @@
 # Маракулин Андрей @annndruha
 # 2019
 import time as bed
+
 from vk_api import VkApi
 
 import config
-import engine
 import dictionary as dict
-from datebase_functions import change_flag
+import engine
+import datebase_functions as dbf
 
 def write_notify_msg(user_id, message):
     vk = VkApi(token=config.notify_token)
     vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': engine.datetime_to_random_id()})
 
-def notification_module():
-    print(f'[{engine.timestamp()}] Notification module: Start')
+def notification_loop():
+    print('Notification module: Start')
     while True:
         try:
             last_send_time = -1
             while True:
                 try:
-                    users = open(config.users_file)
-                    lines = users.read().splitlines()
-                    users.close()
+                    lines = dbf.get_lines()
                 except:
-                    print(f'[{engine.timestamp()}] Notification module: File open error')
+                    print('Notification module: File open error')
 
                 if (last_send_time != engine.time_now_obj()):
                     last_send_time = -1
@@ -41,7 +40,7 @@ def notification_module():
 
                         if ((user_subscribe == 'y') and (user_notify_time == engine.time_now_obj())):
                             if days_to_exam > 1:
-                                ans = f'{dict.random_greeting()}\n{engine.sessiya_mesage(user_id)}\n{dict.random_wish()}'
+                                ans = dict.random_greeting() + '\n'+ dict.exam_message['time_until_exam'] +' '+ str(days_to_exam) + ' ' + dict.numerals_days(days_to_exam) + '\n'+ dict.random_wish()
                             elif days_to_exam == 1:
                                 ans = dict.exam_message['exam_tomorrow']
                             elif days_to_exam == 0:
@@ -49,14 +48,14 @@ def notification_module():
                             elif days_to_exam == -1:
                                 ans = dict.exam_message['exam_in_past']
                             elif days_to_exam < -1:
-                                change_flag(user_id)
+                                dbf.change_flag(user_id)
                                 ans = dict.exam_message['auto_unsubscribe']
-                                print(f'[{engine.timestamp()}] Notification module: {str(user_id)} - Auto unsubscribe')
+                                print(f'Notification module: {str(user_id)} - Auto unsubscribe')
 
                             write_notify_msg(user_id, ans)
-                            print(f'[{engine.timestamp()}] Notification module: Sent a message to {str(user_id)}')
+                            print(f'Notification module: Sent a message to {str(user_id)}')
                             last_send_time = engine.time_now_obj()
                 bed.sleep(10)
         except:
-            print(f'[{engine.timestamp()}] Notification module: Unknown exception')
+            print('Notification module: Unknown exception')
             bed.sleep(10)

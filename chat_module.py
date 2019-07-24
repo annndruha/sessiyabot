@@ -1,51 +1,33 @@
 ﻿# Sessiya_bot: chat_module - Text analysis engine
 # Маракулин Андрей @annndruha
 # 2019
-import datebase_functions as dbf
+
 import dictionary as dict
-import engine
+import chat_functions as chf
 
-def find_in_wiki(wiki_request):
-    try:
-        wikipedia.set_lang(config.wiki_language)
-        n = 2
-        exit = 0
-
-        while ((n < 5) and (exit == 0)):
-            exit = 1
-            ans = str(wikipedia.summary(wiki_request, sentences=n, auto_suggest=True))
-            if ((ans.rfind('(')) > (ans.rfind(')'))):
-                n = n + 1
-                exit = 0
-            if len(ans) < 100:
-                n = n + 1
-                exit = 0
-        if ans.find('=='):
-            ans = ans[:(ans.find('==') - 1)]
-    except:
-        ans = dict.random_not_found()
-    return ans
-
-def chat_module(user_id,request):
+def message_analyzer(user_id,request):
     try:
         request = (request).lower()
-        ans_exist = 0
         l = len(request)
         if   (l <= 0):
-            ans_exist = -1
+            ans = dict.chat_ans[-1]
+        elif (l > 299):
+            ans = dict.chat_ans[-2]
         elif (l == 1):
             for keyword in dict.one_letter_word:
                 if (request == keyword):
                     ans = dict.one_letter_word[keyword]
-                    ans_exist = 1
+                else:
+                    ans = dict.chat_ans[0]
         elif (l == 2):
             for keyword in dict.two_letter_word:
                 if (request == keyword):
                     ans = dict.two_letter_word[keyword]
-                    ans_exist = 1
-        elif (l > 299):
-            ans_exist = -2
+                else:
+                    ans = dict.chat_ans[0]
+
         elif ((l > 2) and (l <= 299)):
+            ans_exist = 0
             for keyword in dict.answer:
                 if (request.find(keyword) >= 0):
                     ans = dict.answer[keyword]
@@ -54,29 +36,21 @@ def chat_module(user_id,request):
                 if (request.find(keyword) >= 0):
                     k = dict.functions[keyword]
                     if k == 0:
-                        ans = engine.sessiya_mesage(user_id)
+                        ans = chf.sessiya_mesage(user_id)
                     if k == 1:
-                        ans = dbf.start(user_id, request)
+                        ans = chf.start(user_id, request)
                     if k == 2:
-                        ans = dbf.change(user_id, request)
+                        ans = chf.change(user_id, request)
                     if k == 3:
-                        ans = dbf.stop(user_id, request)
+                        ans = chf.stop(user_id, request)
                     ans_exist = 1
             if ((ans_exist == 0) and (request.find('?') >= 0)):
                 ans = dict.random_answer()
-                ans_exist = 1
-
-        if ((l == 1 or l == 2 or l == 3) and ans_exist == 0):
-            ans = dict.chat_ans[0]
-        elif ans_exist == 0:
-            ans = find_in_wiki(request)
-        elif ans_exist == 1:
-            ans = ans
-        else:
-            ans = dict.chat_ans[ans_exist]
+            elif ans_exist == 0:
+                ans = chf.find_in_wiki(user_id, request)
         return ans
 
     except:
-        print(f'[{engine.timestamp()}] Chat module: Unknown exception')
+        print('Chat module: Unknown exception')
         ans = dict.chat_ans[-3]
         return ans
