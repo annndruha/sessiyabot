@@ -8,7 +8,7 @@ ADD ./ Sessiya-bot/
 WORKDIR Sessiya-bot
 
 # Addictional libraries for bot
-RUN pip install vk_api pytz wikipedia
+RUN pip install vk_api wikipedia
 
 #Specify the port number the container should expose 
 EXPOSE 5000

@@ -2,11 +2,12 @@
 # Маракулин Андрей @annndruha
 # 2019
 import datetime as dt
-import pytz
 
 # DateTime class functions
 def datetime_now_obj():
-    return dt.datetime.now(pytz.timezone('Europe/Moscow'))
+    delta=dt.timedelta(hour = 5)
+    tzone = dt.timezone(delta)
+    return dt.datetime.now(tzone)
 
 def datetime_to_str(datetime_object):
     return dt.datetime.strftime(datetime_object, '%d.%m.%Y %H:%M')

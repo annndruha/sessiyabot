@@ -1,4 +1,4 @@
-.vs/
-__pycache__/
+.vs*
 .git/
+__pycache__/
 users.txt
