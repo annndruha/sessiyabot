@@ -5,7 +5,7 @@ import datetime as dt
 
 # DateTime class functions
 def datetime_now_obj():
-    delta=dt.timedelta(hour = 5)
+    delta=dt.timedelta(seconds = 18000)
     tzone = dt.timezone(delta)
     return dt.datetime.now(tzone)
 
