@@ -7,12 +7,12 @@ from vk_api import VkApi
 from vk_api.longpoll import VkLongPoll, VkEventType
 from threading import Thread
 
-from config import chat_token
-from chat_module import message_analyzer
-from notification_module import notification_loop
+from core import chat_module
+from core import notification_module
+from data import config
 
 print('BOT STARTING')
-vk = VkApi(token=chat_token)# Auth with community token
+vk = VkApi(token=config.chat_token)# Auth with community token
 longpoll = VkLongPoll(vk)# Create a longpull variable
 
 def write_msg(user_id, message):
@@ -24,16 +24,16 @@ def longpull_loop():
         try:
             for event in longpoll.listen():# Longpull loop
                 if ((event.type == VkEventType.MESSAGE_NEW) and (event.to_me)):
-                    ans = message_analyzer(event.user_id, event.text)# Start text analysis function
+                    ans = chat_module.message_analyzer(event.user_id, event.text)# Start text analysis function
                     write_msg(event.user_id, ans)
         except:
             print('Longpull loop: Unknown exception')
 
-Thread_notification = Thread(target=notification_loop)
 Thread_chat = Thread(target=longpull_loop)
+Thread_notification = Thread(target=notification_module.notification_loop)
 
-Thread_notification.start()
 Thread_chat.start()
+Thread_notification.start()
 
 Thread_chat.join()
 Thread_notification.join()

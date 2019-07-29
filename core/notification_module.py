@@ -5,10 +5,11 @@ import time as bed
 
 from vk_api import VkApi
 
-import config
-import dictionary as dict
-import engine
-import datebase_functions as dbf
+from data import config
+from data import datebase_functions as dbf
+from data import dictionary as dict
+from core import engine
+
 
 def write_notify_msg(user_id, message):
     vk = VkApi(token=config.notify_token)
@@ -16,6 +17,7 @@ def write_notify_msg(user_id, message):
 
 def notification_loop():
     print('Notification module: Start')
+    print('Time now: ' + engine.time_to_str(engine.time_now_obj()))
     while True:
         try:
             last_send_time = -1

@@ -2,10 +2,11 @@
 # Маракулин Андрей @annndruha
 # 2019
 import datetime as dt
+from data import config
 
 # DateTime class functions
 def datetime_now_obj():
-    delta=dt.timedelta(seconds = 18000)
+    delta=dt.timedelta(seconds = config.moscow_time)
     tzone = dt.timezone(delta)
     return dt.datetime.now(tzone)
 

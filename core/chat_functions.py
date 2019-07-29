@@ -4,10 +4,10 @@
 
 import wikipedia
 
-import config
-import dictionary as dict
-import engine
-import datebase_functions as dbf
+from data import config
+from data import dictionary as dict
+from data import datebase_functions as dbf
+from core import engine
 
 def start(user_id, message):# Start notify message from user
     try:
