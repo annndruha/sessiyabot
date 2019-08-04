@@ -37,11 +37,18 @@ def str_to_time(string):
 
 #Timezone shifter
 def shift_date(date, time, tz):
+    if isinstance(date, str):
+        date = str_to_date(date)
+    if isinstance(time, str):
+        time = str_to_time(time)
     delta=dt.timedelta(seconds = 3600*tz)
     new_date = (dt.datetime.combine(date, time)+delta).date()
     return new_date
 
-def shift_time(date, time, tz):
+def shift_time(time, tz):
+    if isinstance(time, str):
+        time = str_to_time(time)
+    date = str_to_date('15.06.2000')
     delta=dt.timedelta(seconds = 3600*tz)
     new_time = (dt.datetime.combine(date, time)+delta).time()
     return new_time

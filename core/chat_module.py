@@ -37,11 +37,13 @@ def message_analyzer(user_id,request):
                     if k == 0:
                         ans = chf.sessiya_mesage(user_id)
                     if k == 1:
-                        ans = chf.start(user_id, request)
+                        ans = chf.set_notify_time(user_id, request)
                     if k == 2:
-                        ans = chf.change(user_id, request)
+                        ans = chf.set_exam_date(user_id, request)
                     if k == 3:
                         ans = chf.stop(user_id, request)
+                    if k == 4:
+                        ans = chf.set_tz(user_id, request)
                     ans_exist = 1
             if ((ans_exist == 0) and (request.find('?') >= 0)):
                 ans = dict.random_answer()

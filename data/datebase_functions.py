@@ -50,6 +50,27 @@ def check_user_subscribe(user_id):
         else:
             return False
 
+def get_user_tz(user_id):
+    with connection.cursor() as cur:
+        cur.execute(f"""SELECT * FROM "sessiya-bot".users WHERE id='{user_id}';""")
+        user = cur.fetchone()
+        tz = user[4]
+        return tz
+
+def get_user_date(user_id):
+    with connection.cursor() as cur:
+        cur.execute(f"""SELECT * FROM "sessiya-bot".users WHERE id='{user_id}';""")
+        user = cur.fetchone()
+        date = user[1]
+        return date
+
+def get_user_time(user_id):
+    with connection.cursor() as cur:
+        cur.execute(f"""SELECT * FROM "sessiya-bot".users WHERE id='{user_id}';""")
+        user = cur.fetchone()
+        time = user[2]
+        return time
+
 #Setters
 def set_date(user_id, date):
     with connection.cursor() as cur:
