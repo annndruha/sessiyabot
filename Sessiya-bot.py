@@ -14,6 +14,7 @@ from data import config
 print('BOT STARTING')
 vk = VkApi(token=config.chat_token)# Auth with community token
 longpoll = VkLongPoll(vk)# Create a longpull variable
+print('Vk_connected')
 
 def write_msg(user_id, message):
     vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': randint(1,4294967295)})

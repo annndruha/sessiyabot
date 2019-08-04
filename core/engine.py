@@ -65,27 +65,32 @@ def datetime_to_random_id():
 # Validate format functions
 def validate_date(date_text):
     try:
-        if date_text != dt.datetime.strptime(date_text, '%d.%m.%Y').strftime('%d.%m.%Y'):
-            raise ValueError
-        return True
-    except ValueError:
+        if isinstance(date_text, dt.date):
+            return True
+        else:
+            if date_text != dt.datetime.strptime(date_text, '%d.%m.%Y').strftime('%d.%m.%Y'):
+                raise ValueError
+            return True
+    except:
         return False
 
 def validate_time(time_text):
     try:
-        if time_text != dt.datetime.strptime(time_text, '%H:%M').strftime('%H:%M'):
-            raise ValueError
-        return True
-    except ValueError:
+        if isinstance(time_text, dt.time):
+            return True
+        else:
+            if time_text != dt.datetime.strptime(time_text, '%H:%M').strftime('%H:%M'):
+                raise ValueError
+            return True
+    except:
         return False
 
 def validate_tz(tz_text):
-    f = float(tz_text)
-    if(f.is_integer()):
-        i = int(f)
+    try:
+        i = int(tz_text)
         if (i > -13 and i < 13):
             return True
         else:
             return False
-    else:
+    except:
         return False

@@ -17,12 +17,14 @@ def set_notify_time(user_id, message):
         elif (engine.validate_time(message.split(' ')[1]) == False):
             ans = dict.db_ans['incorrect_time']
         else:
-            new_user_time = message.split(' ')[1]
+            str_user_time = message.split(' ')[1]
+            new_user_time = engine.str_to_time(str_user_time)
 
             if (dbf.check_user_exist(user_id) == False):
-                dbf.add_user(user_id, config.default_exam_date, new_user_time)
+                dbf.add_user(user_id)
+                dbf.set_time(user_id, new_user_time)
                 dbf.set_subscribe(user_id, True)
-                ans = dict.db_ans['start_notify'] + ' ' + new_user_time
+                ans = dict.db_ans['start_notify'] + ' ' + str_user_time
 
             else:
                 tz = dbf.get_user_tz(user_id)
@@ -30,9 +32,9 @@ def set_notify_time(user_id, message):
                 dbf.set_time(user_id,time_for_db)
 
                 if (dbf.check_user_subscribe(user_id) == False):
-                    ans = dict.db_ans['start_notify'] + ' ' + new_user_time
+                    ans = dict.db_ans['sub_back'] + ' ' + str_user_time
                 else:
-                    ans = dict.db_ans['set_time'] + ' ' + new_user_time
+                    ans = dict.db_ans['set_time'] + ' ' + str_user_time
                 dbf.set_subscribe(user_id, True)
     except:
         print('Chat functions: Set_notify_time: Exception')
@@ -44,17 +46,19 @@ def set_exam_date(user_id, message):
     try:
         if (len(message.split(' '))<2):
             ans = dict.db_ans['incorrect_date'] + ' ' + config.default_exam_date
-        elif (engine.validate_time(message.split(' ')[1]) == False):
+        elif (engine.validate_date(message.split(' ')[1]) == False):
             ans = dict.db_ans['incorrect_date'] + ' ' + config.default_exam_date
         else:
-            new_user_date=message.split(' ')[1]
+            str_user_date = message.split(' ')[1]
+            new_user_date = engine.str_to_date(str_user_date)
 
             if (dbf.check_user_exist(user_id) == False):
-                dbf.add_user(user_id, new_user_date, '00:00')
-                ans = dict.db_ans['set_date'] + ' ' + new_user_date
+                dbf.add_user(user_id)
+                dbf.set_date(user_id, new_user_date)
+                ans = dict.db_ans['set_date'] + ' ' + str_user_date
             else:
                 dbf.set_date(user_id,new_user_date)
-                ans = dict.db_ans['set_date'] + ' ' + new_user_date
+                ans = dict.db_ans['set_date'] + ' ' + str_user_date
     except:
         print('Chat functions: Set_exam_date: Exception')
         ans = dict.db_ans['not_available']
@@ -71,18 +75,19 @@ def set_tz(user_id, message):
             new_user_tz=int(message.split(' ')[1])
 
             if (dbf.check_user_exist(user_id) == False):
-                dbf.add_user(user_id, config.default_exam_date, '00:00')
-                dbf.set_tz(user_id,new_user_tz)
+                dbf.add_user(user_id)
+                dbf.set_tz(user_id, new_user_tz)
                 ans = dict.db_ans['set_tz']
             else:
                 old_tz = dbf.get_user_tz(user_id)
+                dbf.set_tz(user_id,new_user_tz)
                 tz_shift = new_user_tz-old_tz
 
-                old_time = dbf.get_user_time(user_id)
-                new_time = engine.shift_time(old_time, -tz_shift)
+                if (engine.validate_time(dbf.get_user_time(user_id))==True):
+                    old_time = dbf.get_user_time(user_id)
+                    new_time = engine.shift_time(old_time, -tz_shift)
+                    dbf.set_time(user_id,new_time)
 
-                dbf.set_tz(user_id,new_user_tz)
-                dbf.set_time(user_id,new_time)
                 ans = dict.db_ans['set_tz']
     except:
         print('Chat functions: Set_tz: Exception')
@@ -97,7 +102,7 @@ def stop(user_id, message):
         elif (dbf.check_user_subscribe(user_id) == False):
             ans = dict.db_ans['unfollow_yet']
         else:
-            dbf.change_subscribe(user_id, False)
+            dbf.set_subscribe(user_id, False)
             ans = dict.db_ans['unfollow']
     except:
         print('Chat functions:: Stop: Exception')
@@ -106,27 +111,28 @@ def stop(user_id, message):
 
 def sessiya_mesage(user_id):
     try:
-        user_exam_date = config.default_exam_date
-        today = engine.date_now_obj()
-        try:
-            lines = dbf.get_users()
-        except:
-            print('Sessiya message: File open error')
-
-        for line in lines:
-            if (line.find(str(user_id)) >= 0):
-                user_line = line.split(' ')
-                user_exam_date = engine.str_to_date(user_line[1])
-                days_to_exam = (user_exam_date - engine.date_now_obj()).days
-
-        if days_to_exam > 1:
-            ans = dict.exam_message['time_until_exam'] +' '+ str(days_to_exam) + ' ' + dict.numerals_days(days_to_exam)
-        elif days_to_exam == 1:
-            ans = dict.exam_message['exam_tomorrow']
-        elif days_to_exam == 0:
-            ans = dict.exam_message['exam_today']
-        elif days_to_exam <0:
-            ans = dict.exam_message['ask_exam_past']
+        if (engine.validate_date(dbf.get_user_date(user_id))==True):
+            examdate = dbf.get_user_date(user_id)
+            days_to_exam = (examdate - engine.date_now_obj()).days
+            if days_to_exam > 1:
+                ans = dict.exam_message['time_until_exam'] +' '+ str(days_to_exam) + ' ' + dict.numerals_days(days_to_exam)
+            elif days_to_exam == 1:
+                ans = dict.exam_message['exam_tomorrow']
+            elif days_to_exam == 0:
+                ans = dict.exam_message['exam_today']
+            elif days_to_exam <0:
+                ans = dict.exam_message['ask_exam_past']
+        else:
+            examdate = engine.str_to_date(config.default_exam_date)
+            days_to_exam = (examdate - engine.date_now_obj()).days
+            if days_to_exam > 1:
+                ans = dict.exam_message['ns_time_until_exam'] +' '+ str(days_to_exam) + ' ' + dict.numerals_days(days_to_exam)
+            elif days_to_exam == 1:
+                ans = dict.exam_message['ns_exam_tomorrow']
+            elif days_to_exam == 0:
+                ans = dict.exam_message['ns_exam_today']
+            elif days_to_exam <0:
+                ans = dict.exam_message['ns_ask_exam_past']
     except:
         print('Chat functions:: Sessiya_mesage: Exception')
         ans = dict.db_ans['forget']
@@ -136,7 +142,7 @@ def find_in_wiki(user_id, message):
     try:
         wikipedia.set_lang(config.wiki_language)
         n = 2
-        max_n = 7
+        max_n = 5
         exit = 0
 
         while ((n < max_n) and (exit == 0)):
