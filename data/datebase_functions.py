@@ -1,62 +1,91 @@
-﻿# Sessiya_bot: datebase_functions - Functions for work with usres datebase
+﻿# Sessiya_bot: datebase_functions - SQL fuction fro work with datebase
 # Маракулин Андрей @annndruha
 # 2019
-from data import config
+import psycopg2
 
-# Lines + file = love
-def get_lines():
-    with open(config.users_file) as f:
-        lines = f.read().splitlines()
-    return lines
+from data import config as cfg
 
-def add_line(new_line):
-    with open(config.users_file, 'a') as f:
-        f.write('\n' + new_line)
+connection = psycopg2.connect(
+    dbname=cfg.datebase_name,
+    user=cfg.datebase_user,
+    password=cfg.datebase_password,
+    host= cfg.datebase_host,
+    port = cfg.datebase_port)
 
-def write_lines(lines):
-    with open(config.users_file, 'w') as f:
-        f.write('\n'.join(lines))
+#Getters
+def get_users():
+    with connection.cursor() as cur:
+        cur.execute("""SELECT * FROM "sessiya-bot".users""")
+        users = cur.fetchall()
+        return users
 
-def check_user(user_id):
-    for line in get_lines():
-        if (line.split(' ')[0] == str(user_id)):
-            user_line = line.split(' ')
-            if user_line[3] == 'y':
-                return 'y'
-            if user_line[3] == 'n':
-                return 'n'
-    return 'e'
+def get_users_who_sub_at(time):
+    with connection.cursor() as cur:
+        cur.execute(f"""SELECT * FROM "sessiya-bot".users WHERE notifytime='{time}'AND subscribe=True;""")
+        users = cur.fetchall()
+        return users
 
-# Change user data functions
-def change_date(user_id, new_date):
-    lines = get_lines()
-    for line in lines:
-        if (line.split(' ')[0] == str(user_id)):
-            user_line = line.split(' ')
-            user_line[1] = new_date
-            lines.remove(line)
-    lines.append(' '.join(user_line))
-    write_lines(lines)
+def get_user(user_id):
+    with connection.cursor() as cur:
+        cur.execute(f"""SELECT * FROM "sessiya-bot".users WHERE id='{user_id}';""")
+        user = cur.fetchone()
+        return user
 
-def change_time(user_id, new_time):
-    lines = get_lines()
-    for line in lines:
-        if (line.split(' ')[0] == str(user_id)):
-            user_line = line.split(' ')
-            user_line[2] = new_time
-            lines.remove(line)
-    lines.append(' '.join(user_line))
-    write_lines(lines)
+def check_user_exist(user_id):
+    with connection.cursor() as cur:
+        cur.execute(f"""SELECT * FROM "sessiya-bot".users WHERE id='{user_id}';""")
+        if (cur.fetchone()!=None):
+            return True
+        else:
+            return False
 
-def change_flag(user_id):
-    lines = get_lines()
-    for line in lines:
-        if (line.split(' ')[0] == str(user_id)):
-            user_line = line.split(' ')
-            if (user_line[3] == 'n'):
-                user_line[3] = 'y'
-            else:
-                user_line[3] = 'n'
-            lines.remove(line)
-    lines.append(' '.join(user_line))
-    write_lines(lines)
+def check_user_subscribe(user_id):
+    with connection.cursor() as cur:
+        cur.execute(f"""SELECT * FROM "sessiya-bot".users WHERE id='{user_id}';""")
+        user = cur.fetchone()
+        if (user==None):
+            return False
+        elif (user[3]==True):#subscribe status locate
+            return True
+        else:
+            return False
+
+#Setters
+def set_date(user_id, date):
+    with connection.cursor() as cur:
+        cur.execute("""UPDATE "sessiya-bot".users SET examdate=%s WHERE id=%s;""", (date, user_id))
+        connection.commit()
+
+def set_time(user_id, time):
+    with connection.cursor() as cur:
+        cur.execute("""UPDATE "sessiya-bot".users SET notifytime=%s WHERE id=%s;""", (time, user_id))
+        connection.commit()
+
+def add_user(user_id, date, time):
+    with connection.cursor() as cur:
+        if check_user_exist(user_id)==False:
+            cur.execute("""INSERT INTO "sessiya-bot".users (id,examdate,notifytime) VALUES (%s,%s,%s);""", (user_id, date, time))
+        else:
+            set_date(user_id, date)
+            set_time(user_id, time)
+        connection.commit()
+
+def set_subscribe(user_id, sub):
+    with connection.cursor() as cur:
+        cur.execute("""UPDATE "sessiya-bot".users SET subscribe=%s WHERE id=%s;""", (sub, user_id))
+        connection.commit()
+
+def set_tz(user_id, new_tz):
+    with connection.cursor() as cur:
+        cur.execute("""UPDATE "sessiya-bot".users SET tz=%s WHERE id=%s;""", (new_tz, user_id))
+        connection.commit()
+
+def set_firstname(user_id, name):
+    with connection.cursor() as cur:
+        cur.execute("""UPDATE "sessiya-bot".users SET firstname=%s WHERE id=%s;""", (name, user_id))
+        connection.commit()
+
+def set_lastname(user_id, surname):
+    with connection.cursor() as cur:
+        cur.execute("""UPDATE "sessiya-bot".users SET lastname=%s WHERE id=%s;""", (surname, user_id))
+        connection.commit()

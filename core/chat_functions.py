@@ -9,6 +9,8 @@ from data import dictionary as dict
 from data import datebase_functions as dbf
 from core import engine
 
+
+#ADD TIME ZONE TO THIS FN, AND IN ANS MESSAGE
 def start(user_id, message):# Start notify message from user
     try:
         if (len(message.split(' '))<2):
@@ -17,22 +19,25 @@ def start(user_id, message):# Start notify message from user
             ans = dict.db_ans['incorrect_time']
         else:
             new_user_time = message.split(' ')[1]
-            if dbf.check_user(user_id) == 'e':
-                dbf.add_line(f'{str(user_id)} {config.default_exam_date} {new_user_time} y')
-                ans = dict.db_ans['start_notify'] + ' ' + new_user_time + ' ' + dict.db_ans['msk']
-            elif dbf.check_user(user_id) == 'n':
-                dbf.change_time(user_id,new_user_time)
-                dbf.change_flag(user_id)
-                ans = dict.db_ans['start_notify'] + ' ' + new_user_time + ' ' + dict.db_ans['msk']
+            
+            if (dbf.check_user_exist(user_id) == False):
+                dbf.add_user(user_id, config.default_exam_date, new_user_time)
+                dbf.set_subscribe(user_id, True)
+                ans = dict.db_ans['start_notify'] + ' ' + new_user_time
+            elif (dbf.check_user_subscribe(user_id) == False):
+                dbf.set_time(user_id,new_user_time)
+                dbf.set_subscribe(user_id, True)
+                ans = dict.db_ans['start_notify'] + ' ' + new_user_time
             elif dbf.check_user(user_id) == 'y':
-                dbf.change_time(user_id, new_user_time)
-                ans = dict.db_ans['change_time'] + ' ' + new_user_time + ' ' + dict.db_ans['msk']
+                dbf.set_time(user_id, new_user_time)
+                dbf.set_subscribe(user_id, True)
+                ans = dict.db_ans['set_time'] + ' ' + new_user_time
     except:
         print('Chat functions: Start: Exception')
         ans = dict.db_ans['not_available']
     return ans
 
-def change(user_id, message):# Change notify message from user
+def set(user_id, message):# set notify message from user
     try:
         if (len(message.split(' '))<2):
             ans = dict.db_ans['incorrect_date'] + ' ' + config.default_exam_date
@@ -42,12 +47,31 @@ def change(user_id, message):# Change notify message from user
             new_user_date=message.split(' ')[1]
             if dbf.check_user(user_id) == 'e':
                 dbf.add_line(str(user_id) + ' ' + new_user_date + ' 00:00 n')
-                ans = dict.db_ans['change_date'] + ' ' + new_user_date
+                ans = dict.db_ans['set_date'] + ' ' + new_user_date
             else:
-                dbf.change_date(user_id,new_user_date)
-                ans = dict.db_ans['change_date'] + ' ' + new_user_date
+                dbf.set_date(user_id,new_user_date)
+                ans = dict.db_ans['set_date'] + ' ' + new_user_date
     except:
-        print('Chat functions: Change: Exception')
+        print('Chat functions: set: Exception')
+        ans = dict.db_ans['not_available']
+    return ans
+
+def set_tz(user_id, new_tz):
+    try:
+        if (len(message.split(' '))<2):
+            ans = 'Фиговая таймзона' #dict.db_ans['incorrect_date'] + ' ' + config.default_exam_date
+        elif (engine.validate_date(message.split(' ')[1]) == False):
+            ans = 'Фиговая таймзона'#dict.db_ans['incorrect_date'] + ' ' + config.default_exam_date
+        else:
+            new_user_date=message.split(' ')[1]
+            if dbf.check_user(user_id) == 'e':
+                dbf.add_line(str(user_id) + ' ' + new_user_date + ' 00:00 n')
+                ans = dict.db_ans['set_date'] + ' ' + new_user_date
+            else:
+                dbf.set_date(user_id,new_user_date)
+                ans = dict.db_ans['set_date'] + ' ' + new_user_date
+    except:
+        print('Chat functions: set: Exception')
         ans = dict.db_ans['not_available']
     return ans
 
@@ -58,7 +82,7 @@ def stop(user_id, message):# Stop notify message from user
         elif dbf.check_user(user_id) == 'n':
             ans = dict.db_ans['unfollow_yet']
         elif dbf.check_user(user_id) == 'y':
-            change_flag(user_id)
+            set_flag(user_id)
             ans = dict.db_ans['unfollow']
     except:
         print('Chat functions:: Stop: Exception')
@@ -70,7 +94,7 @@ def sessiya_mesage(user_id):
         user_exam_date = config.default_exam_date
         today = engine.date_now_obj()
         try:
-            lines = dbf.get_lines()
+            lines = dbf.get_users()
         except:
             print('Sessiya message: File open error')
 
