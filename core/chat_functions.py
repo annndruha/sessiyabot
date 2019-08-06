@@ -7,18 +7,18 @@ import wikipedia
 from data import config
 from data import dictionary as dict
 from data import datebase_functions as dbf
-from core import engine
+from core import dt_func as dt
 
 # Start notify or change notify time
 def set_notify_time(user_id, message):
     try:
         if (len(message.split(' '))<2):
             ans = dict.db_ans['incorrect_time']
-        elif (engine.validate_time(message.split(' ')[1]) == False):
+        elif (dt.validate_time(message.split(' ')[1]) == False):
             ans = dict.db_ans['incorrect_time']
         else:
             str_user_time = message.split(' ')[1]
-            new_user_time = engine.str_to_time(str_user_time)
+            new_user_time = dt.str_to_time(str_user_time)
 
             if (dbf.check_user_exist(user_id) == False):
                 dbf.add_user(user_id)
@@ -28,7 +28,7 @@ def set_notify_time(user_id, message):
 
             else:
                 tz = dbf.get_user_tz(user_id)
-                time_for_db = engine.shift_time(new_user_time, -tz)
+                time_for_db = dt.shift_time(new_user_time, -tz)
                 dbf.set_time(user_id,time_for_db)
 
                 if (dbf.check_user_subscribe(user_id) == False):
@@ -46,11 +46,11 @@ def set_exam_date(user_id, message):
     try:
         if (len(message.split(' '))<2):
             ans = dict.db_ans['incorrect_date'] + ' ' + config.default_exam_date
-        elif (engine.validate_date(message.split(' ')[1]) == False):
+        elif (dt.validate_date(message.split(' ')[1]) == False):
             ans = dict.db_ans['incorrect_date'] + ' ' + config.default_exam_date
         else:
             str_user_date = message.split(' ')[1]
-            new_user_date = engine.str_to_date(str_user_date)
+            new_user_date = dt.str_to_date(str_user_date)
 
             if (dbf.check_user_exist(user_id) == False):
                 dbf.add_user(user_id)
@@ -69,7 +69,7 @@ def set_tz(user_id, message):
     try:
         if (len(message.split(' '))<2):
             ans = dict.db_ans['incorrect_tz']
-        elif (engine.validate_tz(message.split(' ')[1]) == False):
+        elif (dt.validate_tz(message.split(' ')[1]) == False):
             ans = dict.db_ans['incorrect_tz']
         else:
             new_user_tz=int(message.split(' ')[1])
@@ -83,9 +83,9 @@ def set_tz(user_id, message):
                 dbf.set_tz(user_id,new_user_tz)
                 tz_shift = new_user_tz-old_tz
 
-                if (engine.validate_time(dbf.get_user_time(user_id))==True):
+                if (dt.validate_time(dbf.get_user_time(user_id))==True):
                     old_time = dbf.get_user_time(user_id)
-                    new_time = engine.shift_time(old_time, -tz_shift)
+                    new_time = dt.shift_time(old_time, -tz_shift)
                     dbf.set_time(user_id,new_time)
 
                 ans = dict.db_ans['set_tz']
@@ -111,9 +111,9 @@ def stop(user_id, message):
 
 def sessiya_mesage(user_id):
     try:
-        if (engine.validate_date(dbf.get_user_date(user_id))==True):
+        if (dt.validate_date(dbf.get_user_date(user_id))==True):
             examdate = dbf.get_user_date(user_id)
-            days_to_exam = (examdate - engine.date_now_obj()).days
+            days_to_exam = (examdate - dt.date_now_obj()).days
             if days_to_exam > 1:
                 ans = dict.exam_message['time_until_exam'] +' '+ str(days_to_exam) + ' ' + dict.numerals_days(days_to_exam)
             elif days_to_exam == 1:
@@ -123,8 +123,8 @@ def sessiya_mesage(user_id):
             elif days_to_exam <0:
                 ans = dict.exam_message['ask_exam_past']
         else:
-            examdate = engine.str_to_date(config.default_exam_date)
-            days_to_exam = (examdate - engine.date_now_obj()).days
+            examdate = dt.str_to_date(config.default_exam_date)
+            days_to_exam = (examdate - dt.date_now_obj()).days
             if days_to_exam > 1:
                 ans = dict.exam_message['ns_time_until_exam'] +' '+ str(days_to_exam) + ' ' + dict.numerals_days(days_to_exam)
             elif days_to_exam == 1:

@@ -1,57 +1,58 @@
-# Sessiya_bot: engine - Main use functions
+# Sessiya_bot: dt_func - conversions and validators date and time types
 # Маракулин Андрей @annndruha
 # 2019
-import datetime as dt
+
+import datetime as dtm
 
 # Now objects
 def datetime_now_obj():
-    delta=dt.timedelta(hours = 3) # MoscowUTC
-    tzone = dt.timezone(delta)
-    return dt.datetime.now(tzone)
+    delta=dtm.timedelta(hours = 3) # MoscowUTC
+    tzone = dtm.timezone(delta)
+    return dtm.datetime.now(tzone)
 
 def date_now_obj():
     return datetime_now_obj().date()
 
 def time_now_obj():
-    return dt.time(datetime_now_obj().hour, datetime_now_obj().minute)# Drop seconds
+    return dtm.time(datetime_now_obj().hour, datetime_now_obj().minute)# Drop seconds
 
 # Obj to string format
 def datetime_to_str(datetime_object):
-    return dt.datetime.strftime(datetime_object, '%d.%m.%Y %H:%M')
+    return dtm.datetime.strftime(datetime_object, '%d.%m.%Y %H:%M')
 
 def date_to_str(date_obj):
-    return dt.date.strftime(date_obj, '%d.%m.%Y')
+    return dtm.date.strftime(date_obj, '%d.%m.%Y')
 
 def time_to_str(time_obj):
-    return dt.time.strftime(time_obj, '%H:%M')
+    return dtm.time.strftime(time_obj, '%H:%M')
 
 # From string to obj
 def str_to_date(string):
     template = ['%d.%m.%Y', '%Y.%m.%d', '%Y-%m-%d', '%d.%m.%y', '%y.%m.%d', '%d,%m,%Y', '%Y,%m,%d', '%d,%m,%y', '%y,%m,%d']
     for t in template:
         try:
-            d = dt.datetime.strptime(string, t).date()
+            d = dtm.datetime.strptime(string, t).date()
         except:
             return_None = 0
         else:
-            return dt.datetime.strptime(string, t).date()
+            return dtm.datetime.strptime(string, t).date()
 
 def str_to_time(string):
     template = ['%H:%M', '%H.%M', '%H,%M']
     for t in template:
         try:
-            d = dt.datetime.strptime(string, t).time()
+            d = dtm.datetime.strptime(string, t).time()
         except:
             return_None = 0
         else:
-            return dt.datetime.strptime(string, t).time()
+            return dtm.datetime.strptime(string, t).time()
 
 def str_to_datetime(string):
     try:
         s = string.split(' ')
         date = str_to_date(s[0])
         time = str_to_time(s[1])
-        datetime = dt.datetime.combine(date, time)
+        datetime = dtm.datetime.combine(date, time)
         return datetime
     except:
         return_None = 0
@@ -59,7 +60,7 @@ def str_to_datetime(string):
 # Validate format functions
 def validate_date(date_text):
     try:
-        if isinstance(date_text, dt.date):
+        if isinstance(date_text, dtm.date):
             return True
         else:
             if str_to_date(date_text)!=None:
@@ -71,7 +72,7 @@ def validate_date(date_text):
 
 def validate_time(time_text):
     try:
-        if isinstance(time_text, dt.time):
+        if isinstance(time_text, dtm.time):
             return True
         else:
             if str_to_time(time_text)!=None:
@@ -83,7 +84,7 @@ def validate_time(time_text):
 
 def validate_datetime(datetime_text):
     try:
-        if isinstance(datetime_text, dt.datetime):
+        if isinstance(datetime_text, dtm.datetime):
             return True
         else:
             if str_to_datetime(datetime_text)!=None:
@@ -112,8 +113,8 @@ def shift_date(date, time, tz):
             time = str_to_time(time)
         if isinstance(tz, str):
             tz = int(tz)
-        delta=dt.timedelta(hours = tz)
-        new_date = (dt.datetime.combine(date, time)+delta).date()
+        delta=dtm.timedelta(hours = tz)
+        new_date = (dtm.datetime.combine(date, time)+delta).date()
         return new_date
     except:
         return_None = 0
@@ -125,17 +126,17 @@ def shift_time(time, tz):
         if isinstance(tz, str):
             tz = int(tz)
         date = str_to_date('02.02.2000')
-        delta=dt.timedelta(hours = tz)
-        new_time = (dt.datetime.combine(date, time)+delta).time()
+        delta=dtm.timedelta(hours = tz)
+        new_time = (dtm.datetime.combine(date, time)+delta).time()
         return new_time
     except:
             return_None = 0
 
 # Logs timestamp
 def timestamp():
-    return dt.datetime.strftime(datetime_now_obj(), '%d.%m.%Y %H:%M:%S')
+    return dtm.datetime.strftime(datetime_now_obj(), '%d.%m.%Y %H:%M:%S')
 
 # Use in message_write to protect user from two notigy messages in the same time
 def datetime_to_random_id():
-    i = dt.datetime.strftime(datetime_now_obj(), '%y%m%d%H%M')
+    i = dtm.datetime.strftime(datetime_now_obj(), '%y%m%d%H%M')
     return int(i)

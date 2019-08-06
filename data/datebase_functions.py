@@ -106,10 +106,10 @@ def set_lastname(user_id, lastname):
         connection.commit()
 
 
-from core import engine
+from core import dt
 user_id = '123456789'
-examdate = engine.str_to_date('19.02.05')
-notifytime = engine.str_to_time('01:01')
+examdate = dt.str_to_date('19.02.05')
+notifytime = dt.str_to_time('01:01')
 tz = '-2'
 firstname = 'Andrey'
 lastname = 'Marakulin'

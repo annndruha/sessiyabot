@@ -8,24 +8,24 @@ from vk_api import VkApi
 from data import config
 from data import datebase_functions as dbf
 from data import dictionary as dict
-from core import engine
+from core import dt_func as dt
 
 def write_notify_msg(user_id, message):
     vk = VkApi(token=config.notify_token)
-    vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': engine.datetime_to_random_id()})
+    vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': dt.datetime_to_random_id()})
 
 def notification_loop():
     while True:
         try:
             while True:
                 try:
-                    users = dbf.get_users_who_sub_at(engine.time_now_obj())
+                    users = dbf.get_users_who_sub_at(dt.time_now_obj())
                 except:
                     print('Notification module: Datebase unavailable')
 
                 for user in users:
                     user_id, examdate, notifytime, subscribe, tz, firstname, lastname = user
-                    days_to_exam = (examdate - engine.date_now_obj()).days
+                    days_to_exam = (examdate - dt.date_now_obj()).days
 
                     if days_to_exam > 1:
                         ans = dict.random_greeting() + '\n' + dict.exam_message['time_until_exam'] + ' ' + str(days_to_exam) + ' ' + dict.numerals_days(days_to_exam) + '\n' + dict.random_wish()
