@@ -6,9 +6,10 @@ import time as bed
 from vk_api import VkApi
 
 from data import config
-from data import datebase_functions as dbf
 from data import dictionary as dict
-from core import dt_func as dt
+
+from func import datebase_functions as db
+from func import datetime_functions as dt
 
 def write_notify_msg(user_id, message):
     vk = VkApi(token=config.notify_token)
@@ -19,7 +20,7 @@ def notification_loop():
         try:
             while True:
                 try:
-                    users = dbf.get_users_who_sub_at(dt.time_now_obj())
+                    users = db.get_users_who_sub_at(dt.time_now_obj())
                 except:
                     print('Notification module: Datebase unavailable')
 
@@ -36,7 +37,7 @@ def notification_loop():
                     elif days_to_exam == -1:
                         ans = dict.exam_message['exam_in_past']
                     elif days_to_exam < -1:
-                        dbf.change_subscribe(user_id, False)
+                        db.change_subscribe(user_id, False)
                         ans = dict.exam_message['auto_unsubscribe']
                     write_notify_msg(user_id, ans)
                 bed.sleep(10)

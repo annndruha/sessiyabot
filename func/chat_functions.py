@@ -5,9 +5,9 @@
 import wikipedia
 
 from data import config
-from data import dictionary as dict
-from data import datebase_functions as dbf
-from core import dt_func as dt
+from data import dictionary
+from func import datebase_functions as dbf
+from func import datetime_functions as dt
 
 # Start notify or change notify time
 def set_notify_time(user_id, message):

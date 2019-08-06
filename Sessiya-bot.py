@@ -7,9 +7,9 @@ from vk_api import VkApi
 from vk_api.longpoll import VkLongPoll, VkEventType
 from threading import Thread
 
-from core import chat_module
-from core import notification_module
 from data import config
+from core import chat_module
+from core import notify_module
 
 print('BOT STARTING')
 vk = VkApi(token=config.chat_token)# Auth with community token

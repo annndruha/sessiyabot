@@ -1,8 +1,8 @@
 ﻿# Sessiya_bot: chat_module - Text analysis engine
 # Маракулин Андрей @annndruha
 # 2019
-from core import chat_functions as chf
 from data import dictionary as dict
+from func import chat_functions as chf
 
 def message_analyzer(user_id,request):
     try:

@@ -3,16 +3,14 @@
 # 2019
 import psycopg2
 
-from data import config as cfg
+from data import config as config
 
 connection = psycopg2.connect(
-    dbname=cfg.db_name,
-    user=cfg.db_account,
-    password=cfg.db_password,
-    host= cfg.db_host,
-    port = cfg.db_port)
-
-
+    dbname=config.db_name,
+    user=config.db_account,
+    password=config.db_password,
+    host= config.db_host,
+    port = config.db_port)
 
 #Getters
 def get_user_exist(user_id):
@@ -104,20 +102,3 @@ def set_lastname(user_id, lastname):
     with connection.cursor() as cur:
         cur.execute("UPDATE sessiyabot.users SET lastname=%s WHERE id=%s;", (lastname, user_id))
         connection.commit()
-
-
-from core import dt
-user_id = '123456789'
-examdate = dt.str_to_date('19.02.05')
-notifytime = dt.str_to_time('01:01')
-tz = '-2'
-firstname = 'Andrey'
-lastname = 'Marakulin'
-
-add_user(user_id)
-set_examdate(user_id, examdate)
-set_notifytime(user_id, notifytime)
-set_subscribe(user_id, True)
-set_tz(user_id, tz)
-set_firstname(user_id, firstname)
-set_lastname(user_id, lastname)
