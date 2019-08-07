@@ -1,11 +1,8 @@
 ﻿# Sessiya_bot: chat_module - Text analysis engine
 # Маракулин Андрей @annndruha
 # 2019
-from random import randint
-
 
 import vk_api
-from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 from vk_api.longpoll import VkLongPoll, VkEventType
 from vk_api.utils import get_random_id
 
@@ -14,32 +11,11 @@ from data import dictionary as dict
 from func import chat_functions as chf
 
 
-#vk = VkApi(token=config.access_token)# Auth with community token
-#longpoll = VkLongPoll(vk)# Create a longpull variable
-vk_session = vk_api.VkApi(token=config.access_token)
-vk = vk_session.get_api()
+vk = vk_api.VkApi(token=config.access_token)# Auth with community token
+longpoll = VkLongPoll(vk)# Create a longpull variable
 
 def write_msg(user_id, message):
-    vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': randint(1,4294967295)})
-
-def send_keybord(user_id):
-    keyboard = VkKeyboard(one_time=True)
-
-    keyboard.add_button('Белая кнопка', color=VkKeyboardColor.DEFAULT)
-    keyboard.add_button('Зелёная кнопка', color=VkKeyboardColor.POSITIVE)
-
-    keyboard.add_line()
-    keyboard.add_vkpay_button(hash="action=transfer-to-group&group_id=74030368&aid=6222115")
-    
-    keyboard.add_line()
-    keyboard.add_vkapps_button(app_id=6979558, 
-                               owner_id=-181108510, 
-                               label="Отправить клавиатуру",
-                               hash="sendKeyboard")
-
-     vk.method('messages.send', {'user_id': user_id, 'keyboard':keyboard.get_keyboard(),'message': 'Пример клавиатуры', 'random_id': randint(1,4294967295)})
-
-send_keybord(478143147)
+    vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': vk_api.utils.get_random_id()})
 
 def vk_user_get(user_id):
     return vk.method('users.get', {'user_ids': user_id})
