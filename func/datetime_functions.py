@@ -105,20 +105,6 @@ def validate_tz(tz_text):
         return False
 
 #Timezone shifters
-def shift_date(date, time, tz):
-    try:
-        if isinstance(date, str):
-            date = str_to_date(date)
-        if isinstance(time, str):
-            time = str_to_time(time)
-        if isinstance(tz, str):
-            tz = int(tz)
-        delta=datetime.timedelta(hours = tz)
-        new_date = (datetime.datetime.combine(date, time)+delta).date()
-        return new_date
-    except:
-        return_None = 0
-
 def shift_time(time, tz):
     try:
         if isinstance(time, str):
@@ -130,7 +116,21 @@ def shift_time(time, tz):
         new_time = (datetime.datetime.combine(date, time)+delta).time()
         return new_time
     except:
-            return_None = 0
+        return_None = 0
+
+def shift_date(local_date, tz):
+    try:
+        if isinstance(local_date, str):
+            local_date = str_to_date(local_date)
+        if isinstance(tz, str):
+            tz = int(tz)
+        delta=datetime.timedelta(hours = tz)
+        local_time = shift_time(time_now_obj(), tz)
+        local_datetime = datetime.datetime.combine(local_date, local_time)
+        new_date = (local_datetime-delta).date()
+        return new_date
+    except:
+        return_None = 0
 
 # Logs timestamp
 def timestamp():

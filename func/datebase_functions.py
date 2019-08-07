@@ -29,32 +29,38 @@ def get_user_full_info(user_id):
 def get_user_examdate(user_id):
     with connection.cursor() as cur:
         cur.execute("SELECT examdate FROM sessiyabot.users WHERE id=%s;", (user_id,))
-        return cur.fetchone()
+        examdate = cur.fetchone()[0]
+        return examdate
 
 def get_user_notifytime(user_id):
     with connection.cursor() as cur:
         cur.execute("SELECT notifytime FROM sessiyabot.users WHERE id=%s;", (user_id,))
-        return cur.fetchone()
+        notifytime = cur.fetchone()[0]
+        return notifytime
 
 def get_user_subscribe(user_id):
     with connection.cursor() as cur:
         cur.execute("SELECT subscribe FROM sessiyabot.users WHERE id=%s;", (user_id,))
-        return cur.fetchone() 
+        subscribe = cur.fetchone()[0]
+        return subscribe
 
 def get_user_tz(user_id):
     with connection.cursor() as cur:
         cur.execute("SELECT tz FROM sessiyabot.users WHERE id=%s;", (user_id,))
-        return cur.fetchone()
+        tz = cur.fetchone()[0]
+        return tz
 
 def get_user_firstname(user_id):
     with connection.cursor() as cur:
         cur.execute("SELECT firstname FROM sessiyabot.users WHERE id=%s;", (user_id,))
-        return cur.fetchone()
+        firstname = cur.fetchone()[0]
+        return firstname
 
 def get_user_lastname(user_id):
     with connection.cursor() as cur:
         cur.execute("SELECT lastname FROM sessiyabot.users WHERE id=%s;", (user_id,))
-        return cur.fetchone()
+        lastname = cur.fetchone()[0]
+        return lastname
 
 def get_users_who_sub_at(time):
     with connection.cursor() as cur:
