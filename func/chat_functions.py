@@ -13,7 +13,6 @@ def chat_time(user_id, message, user_first_name, user_last_name):
     try:
         if (len(message.split(' '))<2):
             if (dbf.get_user_notifytime(user_id)!=None):
-
                 db_user_time = dbf.get_user_notifytime(user_id)
                 tz = dbf.get_user_tz(user_id)
                 local_time = dt.shift_time(db_user_time, tz)
