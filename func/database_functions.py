@@ -1,10 +1,16 @@
-﻿# sessiyabot/database_functions - SQL functions for work with database
+﻿# sessiyabot/func/database_functions
+# - PostgreSQL functions for work with database
 # Маракулин Андрей @annndruha
 # 2019
 import psycopg2
 
-from data import config as config
-
+from data import config
+# PostgreSQL database settings:
+# database must be have a schema "sessiyabot" and table "users"
+# "users" columns include id, examdate, notifytime, subcribe, tz, firstname, lastname
+# "NotNone" flag for id, subcribe, tz
+# default "false" for subcribe
+# default "0" for tz
 connection = psycopg2.connect(
     dbname=config.db_name,
     user=config.db_account,
@@ -16,7 +22,7 @@ connection = psycopg2.connect(
 def get_user_exist(user_id):
     with connection.cursor() as cur:
         cur.execute("SELECT id FROM sessiyabot.users WHERE id=%s;", (user_id,))
-        if (cur.fetchone()==None):
+        if (cur.fetchone() == None):
             return False
         else:
             return True
@@ -74,7 +80,7 @@ def get_users_all():
 
 #Setters
 def add_user(user_id):
-    if get_user_exist(user_id)==False:
+    if get_user_exist(user_id) == False:
         with connection.cursor() as cur:
             cur.execute("INSERT INTO sessiyabot.users (id) VALUES (%s);", (user_id,))
             connection.commit()

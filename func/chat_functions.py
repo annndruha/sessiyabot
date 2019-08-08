@@ -1,7 +1,7 @@
-# Sessiya_bot: chat_fuction - analyze unusulal chat requestes_user
+# sessiyabot/func/chat_fuctions
+# - analyze chat user commands
 # Маракулин Андрей @annndruha
 # 2019
-
 import wikipedia
 
 from data import dictionary as dict
@@ -11,8 +11,8 @@ from func import datetime_functions as dt
 # Start notify or change notify time
 def chat_time(user_id, message, user_first_name, user_last_name):
     try:
-        if (len(message.split(' '))<2):
-            if (db.get_user_notifytime(user_id)!=None):
+        if (len(message.split(' ')) < 2):
+            if (db.get_user_notifytime(user_id) != None):
                 db_user_time = db.get_user_notifytime(user_id)
                 tz = db.get_user_tz(user_id)
                 local_time = dt.shift_time(db_user_time, tz)
@@ -36,9 +36,9 @@ def chat_time(user_id, message, user_first_name, user_last_name):
                 db.set_subscribe(user_id, True)
                 ans = dict.db_ans['start_notify'] + str_user_time
             else:
-                if (db.get_user_notifytime(user_id)==None):
+                if (db.get_user_notifytime(user_id) == None):
                     ans = dict.db_ans['sub_first'] + str_user_time
-                elif (db.get_user_subscribe(user_id)==False):
+                elif (db.get_user_subscribe(user_id) == False):
                     ans = dict.db_ans['sub_back'] + str_user_time
                 else:
                     ans = dict.db_ans['set_time'] + str_user_time
@@ -54,7 +54,7 @@ def chat_time(user_id, message, user_first_name, user_last_name):
 #Change or set exam date
 def chat_date(user_id, message, user_first_name, user_last_name):
     try:
-        if (len(message.split(' '))<2):
+        if (len(message.split(' ')) < 2):
             ans = dict.db_ans['incorrect_date']
         elif (dt.validate_date(message.split(' ')[1]) == False):
             ans = dict.db_ans['incorrect_date']
@@ -79,12 +79,12 @@ def chat_date(user_id, message, user_first_name, user_last_name):
 #Change time zone
 def chat_tz(user_id, message, user_first_name, user_last_name):
     try:
-        if (len(message.split(' '))<2):
+        if (len(message.split(' ')) < 2):
             ans = dict.db_ans['incorrect_tz']
         elif (dt.validate_tz(message.split(' ')[1]) == False):
             ans = dict.db_ans['incorrect_tz']
         else:
-            new_user_tz=int(message.split(' ')[1])
+            new_user_tz = int(message.split(' ')[1])
 
             if (db.get_user_exist(user_id) == False):
                 db.add_user(user_id)
@@ -95,9 +95,9 @@ def chat_tz(user_id, message, user_first_name, user_last_name):
             else:
                 old_tz = db.get_user_tz(user_id)
                 db.set_tz(user_id,new_user_tz)
-                tz_shift = new_user_tz-old_tz
+                tz_shift = new_user_tz - old_tz
 
-                if (db.get_user_notifytime(user_id)!=None):
+                if (db.get_user_notifytime(user_id) != None):
                     old_time = db.get_user_notifytime(user_id)
                     new_time = dt.shift_time(old_time, -tz_shift)
                     db.set_notifytime(user_id,new_time)
@@ -111,7 +111,7 @@ def chat_tz(user_id, message, user_first_name, user_last_name):
 # Stop notify message from user
 def chat_stop(user_id, message):
     try:
-        if (db.get_user_notifytime(user_id)==None):
+        if (db.get_user_notifytime(user_id) == None):
             ans = dict.db_ans['no_sub']
         elif (db.get_user_subscribe(user_id) == False):
             ans = dict.db_ans['unfollow_yet']
@@ -124,7 +124,7 @@ def chat_stop(user_id, message):
     return ans
 
 def get_days_to_exam(user_id):
-    if (db.get_user_examdate(user_id)!=None):
+    if (db.get_user_examdate(user_id) != None):
         local_date = db.get_user_examdate(user_id)
     else:
         local_date = dt.str_to_date(dict.default_exam_date)
@@ -134,20 +134,20 @@ def get_days_to_exam(user_id):
 
 def chat_sessiya_mesage(user_id):
     try:
-        if (db.get_user_examdate(user_id)!=None):
-            s=''
+        if (db.get_user_examdate(user_id) != None):
+            s = ''
         else:
-            s='ns_'
+            s = 'ns_'
         days_to_exam = get_days_to_exam(user_id)
 
         if days_to_exam > 1:
-            ans = dict.exam_message[s+'time_until_exam'] + str(days_to_exam) + dict.numerals_days(days_to_exam) +'.'
+            ans = dict.exam_message[s + 'time_until_exam'] + str(days_to_exam) + dict.numerals_days(days_to_exam) + '.'
         elif days_to_exam == 1:
-            ans = dict.exam_message[s+'exam_tomorrow']
+            ans = dict.exam_message[s + 'exam_tomorrow']
         elif days_to_exam == 0:
-            ans = dict.exam_message[s+'exam_today']
+            ans = dict.exam_message[s + 'exam_today']
         elif days_to_exam < 0:
-            ans = dict.exam_message[s+'ask_exam_past']
+            ans = dict.exam_message[s + 'ask_exam_past']
     except:
         print('Chat functions:: Sessiya_message: Exception')
         ans = dict.db_ans['forget']

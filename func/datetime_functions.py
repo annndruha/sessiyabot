@@ -1,4 +1,4 @@
-# sessiyabot/datetime_functions
+# sessiyabot/func/datetime_functions
 # -conversions and validators date and time types
 # Маракулин Андрей @annndruha
 # 2019

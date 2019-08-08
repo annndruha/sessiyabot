@@ -1,7 +1,7 @@
-# Sessiya-bot - Chat bot for students
+# sessiyabot
+# - Chat bot vk.com for students
 # Маракулин Андрей @annndruha
 # 2019
-
 from threading import Thread
 
 from core import chat_module
@@ -12,7 +12,7 @@ Thread_notification = Thread(target=notify_module.notify_loop)
 
 Thread_chat.start()
 Thread_notification.start()
-print('Bot start\n--------------')
+print('BOT START SUCCSESSFULLY')
 
 Thread_chat.join()
 Thread_notification.join()

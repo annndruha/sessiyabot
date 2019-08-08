@@ -1,5 +1,5 @@
-﻿# Sessiya_bot: chat_module
-# LongPoll chat, Text anaizer engine and keybord browser
+﻿# sessiyabot/core/chat_module
+# - longpoll chat, text anaizer engine and keybord browser
 # Маракулин Андрей @annndruha
 # 2019
 import time

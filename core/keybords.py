@@ -1,4 +1,5 @@
-# Sessiya_bot: keybords - list of keybords pages
+# sessiyabot/core/keybords
+# - list of keybords pages
 # Маракулин Андрей @annndruha
 # 2019
 import vk_api

@@ -1,4 +1,5 @@
-﻿# Sessiya_bot: dictionary - Bot natural language knowlage (Russian)
+﻿# sessiyabot/data/dictionary
+# - Bot natural language knowlage (Russian)
 # Маракулин Андрей @annndruha
 # 2019
 from random import randint
@@ -322,7 +323,7 @@ functions = {
 }
 db_ans = {
     'incorrect_time':'Некорректный формат времени для ежедневных набпоминаний, правильный пример:\nstart 07:30',
-    'incorrect_date':'Некорректный формат даты, правильный пример:\n/change '+default_exam_date,
+    'incorrect_date':'Некорректный формат даты, правильный пример:\n/change ' + default_exam_date,
     'incorrect_tz':'Некорректный формат временной зоны',
 
     'set_time':'Время напоминаний изменено на: ',
@@ -426,9 +427,9 @@ def numerals_days(n):
 def tz_format(tz):
     if isinstance(tz, str):
         tz = int(tz)
-    if tz<0:
-        return 'МСК' +str(tz)
-    elif tz==0:
+    if tz < 0:
+        return 'МСК' + str(tz)
+    elif tz == 0:
         return 'МСК'
-    elif tz>0:
+    elif tz > 0:
         return 'МСК+' + str(tz)
