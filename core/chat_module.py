@@ -1,6 +1,8 @@
-﻿# Sessiya_bot: chat_module - Text analysis engine
+﻿# Sessiya_bot: chat_module
+# LongPoll chat, Text anaizer engine and keybord browser
 # Маракулин Андрей @annndruha
 # 2019
+import time
 
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
@@ -9,14 +11,14 @@ from vk_api.utils import get_random_id
 from data import config
 from data import dictionary as dict
 from func import chat_functions as chf
+from func import datetime_functions as dt
 from core import keybords as kb
 
 
 vk = vk_api.VkApi(token=config.access_token)# Auth with community token
 longpoll = VkLongPoll(vk)# Create a longpull variable
-
 def write_msg(user_id, message):
-    vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': vk_api.utils.get_random_id()})
+    vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': get_random_id()})
 
 def vk_user_get(user_id):
     return vk.method('users.get', {'user_ids': user_id})
@@ -48,7 +50,7 @@ def message_analyzer(user_id,request, user_first_name, user_last_name):
                 if (request.find(keyword) >= 0):
                     ans = dict.answer[keyword]
                     ans_exist = 1
-            for keyword in dict.functions:
+            for keyword in dict.functions:#Hello fn, open kb.main page
                 if (request.find(keyword) >= 0):
                     k = dict.functions[keyword]
                     if k == 0:
@@ -75,6 +77,60 @@ def message_analyzer(user_id,request, user_first_name, user_last_name):
         ans = dict.chat_ans[-3]
         return ans
 
+def keyboard_browser(user_id, payload, user_first_name, user_last_name):
+    page = payload.split('"')[1]
+    argument = payload.split('"')[3]
+
+    if page == 'command':
+        kb.main_page(user_id, 'Привет!')
+
+    elif page == 'next_page':# Link page
+        if argument == 'notify_page':
+            kb.notify_page(user_id)
+        elif argument == 'month_page':
+            kb.month_page(user_id)
+        elif argument.find('day_page1') >= 0:
+            argument = (argument.split('&'))[1]
+            kb.day_page1(user_id, argument)
+        elif argument.find('day_page2') >= 0:
+            argument = (argument.split('&'))[1]
+            kb.day_page2(user_id, argument)
+        elif argument.find('day_page3') >= 0:
+            argument = (argument.split('&'))[1]
+            kb.day_page3(user_id, argument)
+        elif argument == 'hour_page1':
+            kb.hour_page1(user_id)
+        elif argument == 'hour_page2':
+            kb.hour_page2(user_id)
+        elif argument == 'tz_page':
+            kb.tz_page(user_id)
+
+
+    elif page == 'set_time':# End pages
+        ans = chf.chat_time(user_id, argument, user_first_name, user_last_name)
+        kb.main_page(user_id, ans)
+    elif page == 'set_tz':
+        ans = chf.chat_tz(user_id, argument, user_first_name, user_last_name)
+        kb.main_page(user_id, ans)
+    elif page == 'set_subcribe':
+        if argument == 'start':
+            ans = chf.chat_time(user_id, argument, user_first_name, user_last_name)
+        elif argument == 'stop':
+            ans = chf.chat_stop(user_id, argument)
+        kb.notify_page(user_id, ans)
+    elif page == 'cancel':
+        kb.main_page(user_id, 'Главное меню:')
+    elif page == 'set_date':
+        message = dt.forming_kb_str_date(argument)
+        ans = chf.chat_date(user_id, message, user_first_name, user_last_name)
+        kb.main_page(user_id, ans)
+
+    elif page == 'to_minute_page':# Link with special argument
+        kb.minute_page(user_id, argument)
+    elif page == 'to_day_page':
+        kb.day_page1(user_id, argument)
+
+
 def longpull_loop():
     while True:
         print('Chat module: Start')
@@ -82,69 +138,24 @@ def longpull_loop():
         kb.main_page(478143147, 'Главное меню:')
         for event in longpoll.listen():# Longpull loop
             if ((event.type == VkEventType.MESSAGE_NEW) and (event.to_me)):
-
                 user_id = event.user_id
                 message = event.text
                 vk_user = vk_user_get(user_id)
                 user_first_name = (vk_user[0])['first_name']
                 user_last_name = (vk_user[0])['last_name']
-                try:
-                    payload = event.payload
-                except:
-                    payload = None
 
-                if payload == None:
+                try:
+                    start_time = time.time()
+                    payload = event.payload
+                    keyboard_browser(user_id, payload, user_first_name, user_last_name)
+                    print("--- %s seconds KB ---" % (time.time() - start_time))
+                except:
+                    start_time = time.time()
                     ans = message_analyzer(user_id, message, user_first_name, user_last_name)
                     write_msg(event.user_id, ans)
-                else:
-                    page = payload.split('"')[1]
-                    argument = payload.split('"')[3]
-
-                    if page == 'next_page':
-                        if argument == 'notify_page':
-                            kb.notify_page(user_id)
-                        elif argument == 'month_page':
-                            kb.month_page(user_id)
-                        elif argument == 'day_page1':
-                            kb.day_page1(user_id, argument)
-                        elif argument == 'day_page2':
-                            kb.day_page2(user_id, argument)
-                        elif argument == 'day_page3':
-                            kb.day_page3(user_id, argument)
-                        elif argument == 'hour_page1':
-                            kb.hour_page1(user_id)
-                        elif argument == 'hour_page2':
-                            kb.hour_page2(user_id)
-                        elif argument == 'tz_page':
-                            kb.tz_page(user_id)
-
-                    elif page == 'hour_page':
-                        kb.minute_page(user_id, argument)
-                    elif page == 'minute_page':
-                        ans = chf.chat_time(user_id, argument, user_first_name, user_last_name)
-                        kb.main_page(user_id, ans)
-
-                    elif (page == 'month_page'):
-                        kb.day_page1(user_id, argument)
-                    elif page == 'date_page':
-                        print('eeeee')
-                        kb.main_page(user_id, ans)
-                    elif page == 'notify_page':
-                        if argument == 'start':
-                            ans = chf.chat_time(user_id, argument, user_first_name, user_last_name)
-                        elif argument == 'stop':
-                            ans = chf.chat_stop(user_id, argument)
-                        kb.main_page(user_id, ans)
-                    elif page =='tz_page':
-                        ans = chf.chat_tz(user_id, argument, user_first_name, user_last_name)
-                        kb.main_page(user_id, ans)
-                    elif page =='cancel':
-                        kb.main_page(user_id, 'Главное меню:')
-
-
-
-
+                    print("--- %s seconds CHAT ---" % (time.time() - start_time))
+                    #Add first open kb
+                    
         #except:
             #print('Longpull loop: Unknown exception')
-
 longpull_loop()

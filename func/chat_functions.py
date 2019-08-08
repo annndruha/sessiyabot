@@ -5,20 +5,20 @@
 import wikipedia
 
 from data import dictionary as dict
-from func import datebase_functions as dbf
+from func import database_functions as db
 from func import datetime_functions as dt
 
 # Start notify or change notify time
 def chat_time(user_id, message, user_first_name, user_last_name):
     try:
         if (len(message.split(' '))<2):
-            if (dbf.get_user_notifytime(user_id)!=None):
-                db_user_time = dbf.get_user_notifytime(user_id)
-                tz = dbf.get_user_tz(user_id)
+            if (db.get_user_notifytime(user_id)!=None):
+                db_user_time = db.get_user_notifytime(user_id)
+                tz = db.get_user_tz(user_id)
                 local_time = dt.shift_time(db_user_time, tz)
                 str_user_time = dt.time_to_str(local_time)
 
-                dbf.set_subscribe(user_id, True)
+                db.set_subscribe(user_id, True)
                 ans = dict.db_ans['sub_first'] + str_user_time
             else:
                 ans = dict.db_ans['notify_doesnt_exist']
@@ -28,24 +28,24 @@ def chat_time(user_id, message, user_first_name, user_last_name):
             str_user_time = message.split(' ')[1]
             new_user_time = dt.str_to_time(str_user_time)
 
-            if (dbf.get_user_exist(user_id) == False):
-                dbf.add_user(user_id)
-                dbf.set_firstname(user_id, user_first_name)
-                dbf.set_lastname(user_id, user_last_name)
-                dbf.set_notifytime(user_id, new_user_time)
-                dbf.set_subscribe(user_id, True)
+            if (db.get_user_exist(user_id) == False):
+                db.add_user(user_id)
+                db.set_firstname(user_id, user_first_name)
+                db.set_lastname(user_id, user_last_name)
+                db.set_notifytime(user_id, new_user_time)
+                db.set_subscribe(user_id, True)
                 ans = dict.db_ans['start_notify'] + str_user_time
             else:
-                if (dbf.get_user_notifytime(user_id)==None):
+                if (db.get_user_notifytime(user_id)==None):
                     ans = dict.db_ans['sub_first'] + str_user_time
-                elif (dbf.get_user_subscribe(user_id)==False):
+                elif (db.get_user_subscribe(user_id)==False):
                     ans = dict.db_ans['sub_back'] + str_user_time
                 else:
                     ans = dict.db_ans['set_time'] + str_user_time
-                tz = dbf.get_user_tz(user_id)
+                tz = db.get_user_tz(user_id)
                 time_for_db = dt.shift_time(new_user_time, -tz)
-                dbf.set_notifytime(user_id,time_for_db)
-                dbf.set_subscribe(user_id, True)
+                db.set_notifytime(user_id,time_for_db)
+                db.set_subscribe(user_id, True)
     except:
         print('Chat functions: Chat_time: Exception')
         ans = dict.db_ans['not_available']
@@ -62,14 +62,14 @@ def chat_date(user_id, message, user_first_name, user_last_name):
             str_user_date = message.split(' ')[1]
             new_user_date = dt.str_to_date(str_user_date)
 
-            if (dbf.get_user_exist(user_id) == False):
-                dbf.add_user(user_id)
-                dbf.set_firstname(user_id, user_first_name)
-                dbf.set_lastname(user_id, user_last_name)
-                dbf.set_examdate(user_id, new_user_date)
+            if (db.get_user_exist(user_id) == False):
+                db.add_user(user_id)
+                db.set_firstname(user_id, user_first_name)
+                db.set_lastname(user_id, user_last_name)
+                db.set_examdate(user_id, new_user_date)
                 ans = dict.db_ans['set_date'] + str_user_date
             else:
-                dbf.set_examdate(user_id,new_user_date)
+                db.set_examdate(user_id,new_user_date)
                 ans = dict.db_ans['set_date'] + str_user_date
     except:
         print('Chat functions: Chat_date: Exception')
@@ -86,21 +86,21 @@ def chat_tz(user_id, message, user_first_name, user_last_name):
         else:
             new_user_tz=int(message.split(' ')[1])
 
-            if (dbf.get_user_exist(user_id) == False):
-                dbf.add_user(user_id)
-                dbf.set_firstname(user_id, user_first_name)
-                dbf.set_lastname(user_id, user_last_name)
-                dbf.set_tz(user_id, new_user_tz)
+            if (db.get_user_exist(user_id) == False):
+                db.add_user(user_id)
+                db.set_firstname(user_id, user_first_name)
+                db.set_lastname(user_id, user_last_name)
+                db.set_tz(user_id, new_user_tz)
                 ans = dict.db_ans['set_tz'] + dict.tz_format(new_user_tz)
             else:
-                old_tz = dbf.get_user_tz(user_id)
-                dbf.set_tz(user_id,new_user_tz)
+                old_tz = db.get_user_tz(user_id)
+                db.set_tz(user_id,new_user_tz)
                 tz_shift = new_user_tz-old_tz
 
-                if (dbf.get_user_notifytime(user_id)!=None):
-                    old_time = dbf.get_user_notifytime(user_id)
+                if (db.get_user_notifytime(user_id)!=None):
+                    old_time = db.get_user_notifytime(user_id)
                     new_time = dt.shift_time(old_time, -tz_shift)
-                    dbf.set_notifytime(user_id,new_time)
+                    db.set_notifytime(user_id,new_time)
 
                 ans = dict.db_ans['set_tz'] + dict.tz_format(new_user_tz)
     except:
@@ -111,12 +111,12 @@ def chat_tz(user_id, message, user_first_name, user_last_name):
 # Stop notify message from user
 def chat_stop(user_id, message):
     try:
-        if (dbf.get_user_notifytime(user_id)==None):
+        if (db.get_user_notifytime(user_id)==None):
             ans = dict.db_ans['no_sub']
-        elif (dbf.get_user_subscribe(user_id) == False):
+        elif (db.get_user_subscribe(user_id) == False):
             ans = dict.db_ans['unfollow_yet']
         else:
-            dbf.set_subscribe(user_id, False)
+            db.set_subscribe(user_id, False)
             ans = dict.db_ans['unfollow']
     except:
         print('Chat functions:: Chat_stop: Exception')
@@ -124,17 +124,17 @@ def chat_stop(user_id, message):
     return ans
 
 def get_days_to_exam(user_id):
-    if (dbf.get_user_examdate(user_id)!=None):
-        local_date = dbf.get_user_examdate(user_id)
+    if (db.get_user_examdate(user_id)!=None):
+        local_date = db.get_user_examdate(user_id)
     else:
         local_date = dt.str_to_date(dict.default_exam_date)
-    examdate = dt.shift_date(local_date, dbf.get_user_tz(user_id))
+    examdate = dt.shift_date(local_date, db.get_user_tz(user_id))
     days_to_exam = (examdate - dt.date_now_obj()).days
     return days_to_exam
 
 def chat_sessiya_mesage(user_id):
     try:
-        if (dbf.get_user_examdate(user_id)!=None):
+        if (db.get_user_examdate(user_id)!=None):
             s=''
         else:
             s='ns_'

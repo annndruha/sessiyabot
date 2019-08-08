@@ -1,4 +1,4 @@
-﻿# Sessiya_bot: datebase_functions - SQL fuction for work with datebase
+﻿# sessiyabot/database_functions - SQL functions for work with database
 # Маракулин Андрей @annndruha
 # 2019
 import psycopg2

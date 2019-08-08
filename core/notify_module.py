@@ -8,7 +8,7 @@ from vk_api import VkApi
 from data import config
 from data import dictionary as dict
 
-from func import datebase_functions as db
+from func import database_functions as db
 from func import datetime_functions as dt
 from func import chat_functions as chf
 

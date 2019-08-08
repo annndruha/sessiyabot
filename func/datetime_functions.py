@@ -1,12 +1,12 @@
-# Sessiya_bot: dt_func - conversions and validators date and time types
+# sessiyabot/datetime_functions
+# -conversions and validators date and time types
 # Маракулин Андрей @annndruha
 # 2019
-
 import datetime
 
 # Now objects
 def datetime_now_obj():
-    delta=datetime.timedelta(hours = 3) # MoscowUTC
+    delta = datetime.timedelta(hours = 3) # MoscowUTC
     tzone = datetime.timezone(delta)
     return datetime.datetime.now(tzone)
 
@@ -63,7 +63,7 @@ def validate_date(date_text):
         if isinstance(date_text, datetime.date):
             return True
         else:
-            if str_to_date(date_text)!=None:
+            if str_to_date(date_text) != None:
                 return True
             else:
                 return False
@@ -75,7 +75,7 @@ def validate_time(time_text):
         if isinstance(time_text, datetime.time):
             return True
         else:
-            if str_to_time(time_text)!=None:
+            if str_to_time(time_text) != None:
                 return True
             else:
                 return False
@@ -87,7 +87,7 @@ def validate_datetime(datetime_text):
         if isinstance(datetime_text, datetime.datetime):
             return True
         else:
-            if str_to_datetime(datetime_text)!=None:
+            if str_to_datetime(datetime_text) != None:
                 return True
             else:
                 return False
@@ -112,8 +112,8 @@ def shift_time(time, tz):
         if isinstance(tz, str):
             tz = int(tz)
         date = str_to_date('02.02.2000')
-        delta=datetime.timedelta(hours = tz)
-        new_time = (datetime.datetime.combine(date, time)+delta).time()
+        delta = datetime.timedelta(hours = tz)
+        new_time = (datetime.datetime.combine(date, time) + delta).time()
         return new_time
     except:
         return_None = 0
@@ -124,19 +124,40 @@ def shift_date(local_date, tz):
             local_date = str_to_date(local_date)
         if isinstance(tz, str):
             tz = int(tz)
-        delta=datetime.timedelta(hours = tz)
+        delta = datetime.timedelta(hours = tz)
         local_time = shift_time(time_now_obj(), tz)
         local_datetime = datetime.datetime.combine(local_date, local_time)
-        new_date = (local_datetime-delta).date()
+        new_date = (local_datetime - delta).date()
         return new_date
     except:
         return_None = 0
+
+# Find the nearest date in future by day and month
+def forming_kb_str_date(day_and_month):
+    day = day_and_month.split('.')[0]
+    month = day_and_month.split('.')[1]
+    y = 0
+    stopper = 0
+    while stopper < 20:
+        syear = str(date_now_obj().year + y)
+        date = day_and_month + '.' + syear
+        if (validate_date(date) == True):
+            difference = (str_to_date(date) - date_now_obj()).days
+            if difference >= 0:
+                return 'date ' + date
+            else:
+                stopper = stopper + 1
+                y = y + 1
+        else:
+            stopper = stopper + 1
+            y = y + 1
 
 # Logs timestamp
 def timestamp():
     return datetime.datetime.strftime(datetime_now_obj(), '%d.%m.%Y %H:%M:%S')
 
-# Use in message_write to protect user from two notify messages in the same minute
+# Use in message_write to protect user from two notify messages in the same
+# minute
 def datetime_to_random_id():
     i = datetime.datetime.strftime(datetime_now_obj(), '%y%m%d%H%M')
     return int(i)
