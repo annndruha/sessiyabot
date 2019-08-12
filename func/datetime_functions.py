@@ -139,8 +139,8 @@ def forming_kb_str_date(day_and_month):
     y = 0
     stopper = 0
     while stopper < 20:
-        syear = str(date_now_obj().year + y)
-        date = day_and_month + '.' + syear
+        str_year = str(date_now_obj().year + y)
+        date = day_and_month + '.' + str_year
         if (validate_date(date) == True):
             difference = (str_to_date(date) - date_now_obj()).days
             if difference >= 0:
@@ -151,10 +151,6 @@ def forming_kb_str_date(day_and_month):
         else:
             stopper = stopper + 1
             y = y + 1
-
-# Logs timestamp
-def timestamp():
-    return datetime.datetime.strftime(datetime_now_obj(), '%d.%m.%Y %H:%M:%S')
 
 # Use in message_write to protect user from two notify messages in the same
 # minute

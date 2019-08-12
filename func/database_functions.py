@@ -3,15 +3,26 @@
 # Маракулин Андрей @annndruha
 # 2019
 import psycopg2
+import time
 
 from data import config
 # PostgreSQL database settings:
-# database must be have a schema "sessiyabot" and table "users"
+# database must be have a schema "sessiyabot" and a table "users"
 # "users" columns include id, examdate, notifytime, subcribe, tz, firstname, lastname
 # "NotNone" flag for id, subcribe, tz
 # default "false" for subcribe
 # default "0" for tz
-connection = psycopg2.connect(
+
+connection= psycopg2.connect(
+    dbname=config.db_name,
+    user=config.db_account,
+    password=config.db_password,
+    host= config.db_host,
+    port = config.db_port)
+
+def reconnect():
+    global connection
+    connection= psycopg2.connect(
     dbname=config.db_name,
     user=config.db_account,
     password=config.db_password,
@@ -96,9 +107,11 @@ def set_notifytime(user_id, notifytime):
         connection.commit()
 
 def set_subscribe(user_id, subscribe):
+    start_time = time.time()
     with connection.cursor() as cur:
         cur.execute("UPDATE sessiyabot.users SET subscribe=%s WHERE id=%s;", (subscribe, user_id))
         connection.commit()
+    print("--- %s seconds KB ---" % (time.time() -start_time))
 
 def set_tz(user_id, tz):
     with connection.cursor() as cur:

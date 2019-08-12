@@ -2,7 +2,11 @@
 # - analyze chat user commands
 # Маракулин Андрей @annndruha
 # 2019
+import time
+import traceback
+
 import wikipedia
+import requests
 
 from data import dictionary as dict
 from func import database_functions as db
@@ -46,8 +50,10 @@ def chat_time(user_id, message, user_first_name, user_last_name):
                 time_for_db = dt.shift_time(new_user_time, -tz)
                 db.set_notifytime(user_id,time_for_db)
                 db.set_subscribe(user_id, True)
-    except:
-        print('Chat functions: Chat_time: Exception')
+    except BaseException as err:
+        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] BaseException in chat_time:", time.localtime())))
+        traceback.print_tb(err.__traceback__)
+        print(err.args)
         ans = dict.db_ans['not_available']
     return ans
 
@@ -71,8 +77,10 @@ def chat_date(user_id, message, user_first_name, user_last_name):
             else:
                 db.set_examdate(user_id,new_user_date)
                 ans = dict.db_ans['set_date'] + str_user_date
-    except:
-        print('Chat functions: Chat_date: Exception')
+    except BaseException as err:
+        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] BaseException in chat_date:", time.localtime())))
+        traceback.print_tb(err.__traceback__)
+        print(err.args)
         ans = dict.db_ans['not_available']
     return ans
 
@@ -103,8 +111,10 @@ def chat_tz(user_id, message, user_first_name, user_last_name):
                     db.set_notifytime(user_id,new_time)
 
                 ans = dict.db_ans['set_tz'] + dict.tz_format(new_user_tz)
-    except:
-        print('Chat functions: Chat_tz: Exception')
+    except BaseException as err:
+        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] BaseException in chat_tz:", time.localtime())))
+        traceback.print_tb(err.__traceback__)
+        print(err.args)
         ans = dict.db_ans['not_available']
     return ans
 
@@ -118,8 +128,10 @@ def chat_stop(user_id, message):
         else:
             db.set_subscribe(user_id, False)
             ans = dict.db_ans['unfollow']
-    except:
-        print('Chat functions:: Chat_stop: Exception')
+    except BaseException as err:
+        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] BaseException in chat_stop:", time.localtime())))
+        traceback.print_tb(err.__traceback__)
+        print(err.args)
         ans = dict.db_ans['not_available']
     return ans
 
@@ -148,8 +160,10 @@ def chat_sessiya_mesage(user_id):
             ans = dict.exam_message[s + 'exam_today']
         elif days_to_exam < 0:
             ans = dict.exam_message[s + 'ask_exam_past']
-    except:
-        print('Chat functions:: Sessiya_message: Exception')
+    except BaseException as err:
+        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] BaseException in chat_sessiya_mesage:", time.localtime())))
+        traceback.print_tb(err.__traceback__)
+        print(err.args)
         ans = dict.db_ans['forget']
     return ans
 
@@ -174,3 +188,12 @@ def chat_find_in_wiki(user_id, message):
     except:
         ans = dict.random_not_found()
     return ans
+
+def find_in_duck(message):
+    session = requests.Session()
+    response = session.get('http://www.google.com/search?q='+message).json()
+    req = response.get('AbstractText')
+
+    return req
+
+print(find_in_duck('Питон'))
