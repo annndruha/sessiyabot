@@ -1,7 +1,7 @@
 # sessiyabot/Dockerfile
 # -docker container settings
 # Config file needs to add MANUALLY
-# Ìàðàêóëèí Àíäðåé @annndruha
+# Маракулин Андрей @annndruha
 # 2019
 
 # Base image
@@ -13,6 +13,11 @@ ADD ./ sessiyabot/
 # Set that dirictory
 WORKDIR sessiyabot
 
+# Update Base image
+RUN apk update && \
+    apk add --virtual build-deps gcc python-dev musl-dev && \
+    apk add postgresql-dev
+    
 # Addictional libraries for bot
 RUN pip install vk_api psycopg2-binary
 
