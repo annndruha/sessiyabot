@@ -2,19 +2,19 @@
 # - PostgreSQL functions for work with database
 # Маракулин Андрей @annndruha
 # 2019
-import psycopg2
-import time
 
-from data import config
 # PostgreSQL database settings:
 # database must be have a schema "sessiyabot" and a table "users"
-# "users" columns include id, examdate, notifytime, subcribe, tz, firstname, lastname
+# "users" columns include id, examdate, notifytime, subcribe, tz, firstname,
+# lastname
 # "NotNone" flag for id, subcribe, tz
 # default "false" for subcribe
 # default "0" for tz
+import psycopg2
 
-connection= psycopg2.connect(
-    dbname=config.db_name,
+from data import config
+
+connection = psycopg2.connect(dbname=config.db_name,
     user=config.db_account,
     password=config.db_password,
     host= config.db_host,
@@ -22,8 +22,7 @@ connection= psycopg2.connect(
 
 def reconnect():
     global connection
-    connection= psycopg2.connect(
-    dbname=config.db_name,
+    connection = psycopg2.connect(dbname=config.db_name,
     user=config.db_account,
     password=config.db_password,
     host= config.db_host,
@@ -34,6 +33,11 @@ def get_user(user_id):
     with connection.cursor() as cur:
         cur.execute("SELECT * FROM sessiyabot.users WHERE id=%s;", (user_id,))
         return cur.fetchone()
+
+def get_users_who_sub_at(time):
+    with connection.cursor() as cur:
+        cur.execute("SELECT * FROM sessiyabot.users WHERE notifytime=%s AND subscribe=True;", (time,))
+        return cur.fetchall()
 
 def get_user_examdate(user_id):
     with connection.cursor() as cur:
@@ -99,39 +103,3 @@ def set_lastname(user_id, lastname):
     with connection.cursor() as cur:
         cur.execute("UPDATE sessiyabot.users SET lastname=%s WHERE id=%s;", (lastname, user_id))
         connection.commit()
-
-# None use functions:
-#def get_user_notifytime(user_id):
-#    with connection.cursor() as cur:
-#        cur.execute("SELECT notifytime FROM sessiyabot.users WHERE id=%s;", (user_id,))
-#        notifytime = cur.fetchone()[0]
-#        return notifytime
-
-
-#def get_user_tz(user_id):
-#    with connection.cursor() as cur:
-#        cur.execute("SELECT tz FROM sessiyabot.users WHERE id=%s;", (user_id,))
-#        tz = cur.fetchone()[0]
-#        return tz
-
-#def get_user_firstname(user_id):
-#    with connection.cursor() as cur:
-#        cur.execute("SELECT firstname FROM sessiyabot.users WHERE id=%s;", (user_id,))
-#        firstname = cur.fetchone()[0]
-#        return firstname
-
-#def get_user_lastname(user_id):
-#    with connection.cursor() as cur:
-#        cur.execute("SELECT lastname FROM sessiyabot.users WHERE id=%s;", (user_id,))
-#        lastname = cur.fetchone()[0]
-#        return lastname
-
-#def get_users_who_sub_at(time):
-#    with connection.cursor() as cur:
-#        cur.execute("SELECT * FROM sessiyabot.users WHERE notifytime=%s AND subscribe=True;", (time,))
-#        return cur.fetchall()
-
-#def get_users_all():
-#    with connection.cursor() as cur:
-#        cur.execute("SELECT * FROM sessiyabot.users")
-#        return cur.fetchall()

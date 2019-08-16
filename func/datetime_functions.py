@@ -118,7 +118,7 @@ def shift_time(time, tz):
     except:
         return_None = 0
 
-def shift_date(local_date, tz, local_time = None):
+def shift_date(local_date, tz, local_time=None):
     try:
         if isinstance(local_time, str):
             local_time = str_to_time(local_time)
@@ -130,7 +130,7 @@ def shift_date(local_date, tz, local_time = None):
         if local_time is None:
             local_time = shift_time(time_now_obj(), tz)
 
-        delta = datetime.timedelta(seconds = 3600*tz)
+        delta = datetime.timedelta(seconds = 3600 * tz)
         local_datetime = datetime.datetime.combine(local_date, local_time)
         new_date = (local_datetime + delta).date()
         return new_date

@@ -2,11 +2,6 @@
 # - analyze chat user commands
 # Маракулин Андрей @annndruha
 # 2019
-import time
-import traceback
-
-import psycopg2
-
 from data import dictionary as dict
 from func import database_functions as db
 from func import datetime_functions as dt
@@ -76,7 +71,7 @@ def tz(user):
         new_user_tz = int(user.message.split(' ')[1])
         data = db.get_user(user.user_id)
         if data == None:
-            db.add_user_with_tz(user_id, new_user_tz, first_name, last_name)
+            db.add_user_with_tz(user.user_id, new_user_tz, user.first_name, user.last_name)
             ans = dict.db_ans['set_tz'] + dict.tz_format(new_user_tz)
         else:
             user_id, examdate, notifytime, subscribe, tz, firstname, lastname = data
@@ -106,31 +101,47 @@ def stop(user):
             ans = dict.db_ans['unfollow']
     return ans
 
-def get_days_to_exam(user):
+def sessiya_mesage(user, param):
     data = db.get_user(user.user_id)
-    if data ==None:
-        moscow_date = dt.str_to_date(dict.default_exam_date)
-        days_to_exam = (moscow_date - dt.date_now_obj()).days
-    else:
+
+    # Calculate days_to_exam and s = degree of confidence
+    if data is not None:
         user_id, examdate, notifytime, subscribe, tz, firstname, lastname = data
-        local_examdate = dt.shift_date(examdate, tz, notifytime)
-        local_date = dt.shift_date(dt.date_now_obj(), tz, dt.time_now_obj())
-        days_to_exam = (local_examdate - local_date).days
-    return days_to_exam
-
-def sessiya_mesage(user):
-    if (db.get_user_examdate(user.user_id) is not None):
-        s = ''
+        if examdate is not None:
+            days_to_exam = (examdate - dt.date_now_obj()).days
+            s = ''
+        else:
+            examdate = dt.str_to_date(dict.default_exam_date)
+            days_to_exam = (examdate - dt.date_now_obj()).days
+            s = 'ns_'
     else:
+        user_id = user.user_id
+        examdate = dt.str_to_date(dict.default_exam_date)
+        days_to_exam = (examdate - dt.date_now_obj()).days
         s = 'ns_'
-    days_to_exam = get_days_to_exam(user)
 
-    if days_to_exam > 1:
-        ans = dict.exam_message[s + 'time_until_exam'] + str(days_to_exam) + dict.numerals_days(days_to_exam) + '.'
-    elif days_to_exam == 1:
-        ans = dict.exam_message[s + 'exam_tomorrow']
-    elif days_to_exam == 0:
-        ans = dict.exam_message[s + 'exam_today']
-    elif days_to_exam < 0:
-        ans = dict.exam_message[s + 'ask_exam_past']
+    # Forming message by call parametr
+    if param == 'chat':
+        if days_to_exam > 1:
+            ans = dict.exam_message[s + 'time_until_exam'] + str(days_to_exam) + dict.numerals_days(days_to_exam) + '. ' + dict.exam_message['exam_date']+ dt.date_to_str(examdate)
+        elif days_to_exam == 1:
+            ans = dict.exam_message[s + 'exam_tomorrow']
+        elif days_to_exam == 0:
+            ans = dict.exam_message[s + 'exam_today']
+        elif days_to_exam < 0:
+            ans = dict.exam_message[s + 'ask_exam_past']
+
+    elif param == 'notify':
+        if days_to_exam > 1:
+            ans = dict.random_greeting() + ', ' + firstname + '! ' + dict.exam_message[s + 'time_until_exam'] + str(days_to_exam) + dict.numerals_days(days_to_exam) + '. ' + dict.random_wish()
+        elif days_to_exam == 1:
+            ans = dict.exam_message['exam_tomorrow']
+        elif days_to_exam == 0:
+            ans = dict.exam_message['exam_today']
+        elif days_to_exam == -1:
+            ans = dict.exam_message['exam_in_past']
+        elif days_to_exam < -1:
+            db.set_subscribe(user_id, False)
+            ans = dict.exam_message['auto_unsubscribe']
+
     return ans

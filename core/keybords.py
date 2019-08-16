@@ -18,7 +18,7 @@ def send_keyboard(user_id, kb, message):
 # main_page
 def main_page(user_id, ans='Главное меню:'):
     kb = VkKeyboard(one_time=False)
-    kb.add_button('Настройки уведомлений', color='primary', payload = ["next_page","notify_page"])
+    kb.add_button('Настройки напоминаний', color='primary', payload = ["next_page","notify_page"])
     kb.add_line()
     kb.add_button('Сменить дату экзамена', color='primary', payload = ["next_page","month_page"])
     kb.add_line()
@@ -27,18 +27,23 @@ def main_page(user_id, ans='Главное меню:'):
     send_keyboard(user_id, kb.get_keyboard(), ans)
 
 # notify_page
-def notify_page(user_id, ans='Настройки уведомлений:'):
+def notify_page(user_id, ans='Настройки напоминаний:'):
     kb = VkKeyboard(one_time=False)
-    if (db.get_user(user_id) == None):
-        kb.add_button('Настроить уведомления', color='positive', payload = ["next_page","hour_page1"])
-    elif (db.get_user_subscribe(user_id) == False):
-        kb.add_button('Включить уведомления', color='positive', payload = ["command","set_subcribe", "start"])
-        kb.add_line()
-        kb.add_button('Изменить время уведомлений', color='primary', payload = ["next_page","hour_page1"])
+    data =db.get_user(user_id)
+    if data is not None:
+        if data[2] is not None:
+            if (data[3] == False):
+                kb.add_button('Включить напоминания', color='positive', payload = ["command","set_subcribe", "start"])
+                kb.add_line()
+                kb.add_button('Изменить время напоминаний', color='primary', payload = ["next_page","hour_page1"])
+            else:
+                kb.add_button('Выключить напоминания', color='negative', payload = ["command","set_subcribe", "stop"])
+                kb.add_line()
+                kb.add_button('Изменить время напоминаний', color='primary', payload = ["next_page","hour_page1"])
+        else:
+            kb.add_button('Настроить напоминания', color='positive', payload = ["next_page","hour_page1"])
     else:
-        kb.add_button('Выключить уведомления', color='negative', payload = ["command","set_subcribe", "stop"])
-        kb.add_line()
-        kb.add_button('Изменить время уведомлений', color='primary', payload = ["next_page","hour_page1"])
+        kb.add_button('Настроить напоминания', color='positive', payload = ["next_page","hour_page1"])
     kb.add_line()
     kb.add_button('Изменить часовой пояс', color='primary', payload = ["next_page","tz_page"])
     kb.add_line()
@@ -120,21 +125,28 @@ def minute_page(user_id, hour, ans = 'Завершите выбор времен
 # tz_page
 def tz_page(user_id, ans = 'Установите новый часовой пояс:'):
     kb = VkKeyboard(one_time=False)
+    
+    my_col = ['primary']*12
+    data = db.get_user(user_id)
 
-    kb.add_button('МСК', color='primary', payload = ["command","set_tz","tz 0"])
-    kb.add_button('МСК-1', color='primary', payload = ["command","set_tz","tz -1"])
-    kb.add_button('МСК+1', color='primary', payload = ["command","set_tz","tz 1"])
-    kb.add_button('МСК+2', color='primary', payload = ["command","set_tz","tz 2"])
+    if data is not None:
+        if ((data[4] >=0) and (data[4] <=11)):
+            my_col[data[4]] = 'positive'
+
+    kb.add_button('МСК', color=my_col[0], payload = ["command","set_tz","tz 0"])
+    kb.add_button('МСК+1', color=my_col[1], payload = ["command","set_tz","tz 1"])
+    kb.add_button('МСК+2', color=my_col[2], payload = ["command","set_tz","tz 2"])
+    kb.add_button('МСК+3', color=my_col[3], payload = ["command","set_tz","tz 3"])
     kb.add_line()
-    kb.add_button('МСК+3', color='primary', payload = ["command","set_tz","tz 3"])
-    kb.add_button('МСК+4', color='primary', payload = ["command","set_tz","tz 4"])
-    kb.add_button('МСК+5', color='primary', payload = ["command","set_tz","tz 5"])
-    kb.add_button('МСК+6', color='primary', payload = ["command","set_tz","tz 6"])
+    kb.add_button('МСК+4', color=my_col[4], payload = ["command","set_tz","tz 4"])
+    kb.add_button('МСК+5', color=my_col[5], payload = ["command","set_tz","tz 5"])
+    kb.add_button('МСК+6', color=my_col[6], payload = ["command","set_tz","tz 6"])
+    kb.add_button('МСК+7', color=my_col[7], payload = ["command","set_tz","tz 7"])
     kb.add_line()
-    kb.add_button('МСК+7', color='primary', payload = ["command","set_tz","tz 7"])
-    kb.add_button('МСК+8', color='primary', payload = ["command","set_tz","tz 8"])
-    kb.add_button('МСК+9', color='primary', payload = ["command","set_tz","tz 9"])
-    kb.add_button('МСК+10', color='primary', payload = ["command","set_tz","tz 10"])
+    kb.add_button('МСК+8', color=my_col[8], payload = ["command","set_tz","tz 8"])
+    kb.add_button('МСК+9', color=my_col[9], payload = ["command","set_tz","tz 9"])
+    kb.add_button('МСК+10', color=my_col[10], payload = ["command","set_tz","tz 10"])
+    kb.add_button('МСК+11', color=my_col[11], payload = ["command","set_tz","tz 11"])
     kb.add_line()
     kb.add_button('Отменить', color='default', payload = ["command","cancel"])
 
