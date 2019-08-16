@@ -28,4 +28,7 @@ EXPOSE 5000
 CMD ["python", "-u", "./sessiyabot.py"]
 
 # Example docker command:
-#docker run -d --name bot -v /root/config.py:/sessiyabot/data/config.py XXXXNAMEXXXX
+# docker run -d --name bot -v /root/sessiyabot/configvolume.py:/sessiyabot/data/config.py XXXXNAMEXXXX
+
+# See logs:
+# docker logs bot --follow
