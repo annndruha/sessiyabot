@@ -14,7 +14,7 @@ ADD ./ sessiyabot/
 WORKDIR sessiyabot
 
 # Addictional libraries for bot
-RUN pip install vk_api psycopg2
+RUN pip install vk_api psycopg2-binary
 
 # Specify the port number the container should expose 
 EXPOSE 5000
