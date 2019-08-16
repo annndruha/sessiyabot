@@ -27,6 +27,7 @@ def notify_loop():
                 users = db.get_users_who_sub_at(dt.time_now_obj())
                 for user in users:
                     user_id, examdate, notifytime, subscribe, tz, firstname, lastname = user
+                    #greeting(notifytime)
                     days_to_exam = chf.get_days_to_exam(user_id)
                     
                     if days_to_exam > 1:

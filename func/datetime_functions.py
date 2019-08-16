@@ -118,22 +118,27 @@ def shift_time(time, tz):
     except:
         return_None = 0
 
-def shift_date(local_date, tz):
+def shift_date(local_date, tz, local_time = None):
     try:
+        if isinstance(local_time, str):
+            local_time = str_to_time(local_time)
         if isinstance(local_date, str):
             local_date = str_to_date(local_date)
         if isinstance(tz, str):
             tz = int(tz)
-        delta = datetime.timedelta(hours = tz)
-        local_time = shift_time(time_now_obj(), tz)
+
+        if local_time is None:
+            local_time = shift_time(time_now_obj(), tz)
+
+        delta = datetime.timedelta(seconds = 3600*tz)
         local_datetime = datetime.datetime.combine(local_date, local_time)
-        new_date = (local_datetime - delta).date()
+        new_date = (local_datetime + delta).date()
         return new_date
     except:
         return_None = 0
 
 # Find the nearest date in future by day and month
-def forming_kb_str_date(day_and_month):
+def neareat_date(day_and_month):
     day = day_and_month.split('.')[0]
     month = day_and_month.split('.')[1]
     y = 0

@@ -4,29 +4,39 @@
 # 2019
 import time
 import traceback
+import json
 
+import psycopg2
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
 from vk_api.utils import get_random_id
 
 from data import config
 from data import dictionary as dict
-from func import chat_functions as chf
+from func import chat_functions as chat
 from func import datetime_functions as dt
 from core import keybords as kb
 
 vk = vk_api.VkApi(token=config.access_token)# Auth with community token
 longpoll = VkLongPoll(vk)# Create a longpull variable
 
-def write_msg(user_id, message):
-    vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': get_random_id()})
-
 def vk_user_get(user_id):
     return vk.method('users.get', {'user_ids': user_id})
 
-def message_analyzer(user_id,request, user_first_name, user_last_name):
+def write_msg(user_id, message):
+    vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': get_random_id()})
+
+class User:
+    def __init__(self, user_id, message, first_name, last_name):
+        self.user_id=user_id
+        self.message=message
+        self.first_name=first_name
+        self.last_name=last_name
+
+
+def message_analyzer(user):
     try:
-        request = (request).lower()
+        request = (user.message).lower()
         l = len(request)
         if   (l <= 0):
             ans = dict.chat_ans[-1]
@@ -78,86 +88,89 @@ def message_analyzer(user_id,request, user_first_name, user_last_name):
         ans = dict.chat_ans[-3]
         return ans
 
-def keyboard_browser(user_id, payload, user_first_name, user_last_name):
+def keyboard_browser(user, str_payload):
     try:
-        page = payload.split('"')[1]
-        argument = payload.split('"')[3]
+        payload = json.loads(str_payload)
 
-        if page == 'command':
-            kb.main_page(user_id, 'Привет!')
+        if payload[0] == 'command':
+            start_time = time.time()
+            if payload[1] == 'cancel':
+                kb.main_page(user.user_id)
+            elif payload[1] == 'set_time':
+                user.message = payload[2]
+                ans = chat.time(user)
+                kb.main_page(user.user_id, ans)
+            elif payload[1] == 'set_tz':
+                user.message = payload[2]
+                ans = chat.tz(user)
+                kb.main_page(user.user_id, ans)
+            elif payload[1] == 'set_date':
+                user.message = dt.neareat_date(payload[2])
+                ans = chat.date(user)
+                kb.main_page(user.user_id, ans)
+            elif payload[1] == 'set_subcribe':
+                if payload[2] == 'start':
+                    user.message = payload[2]
+                    ans = chat.time(user)
+                elif payload[2] == 'stop':
+                    user.message = payload[2]
+                    ans = chat.stop(user)
+                kb.main_page(user.user_id, ans)
+            print("--- %s seconds chat_time ---" % (time.time() -start_time))
 
-        elif page == 'next_page':# Link page
-            if argument == 'notify_page':
-                kb.notify_page(user_id)
-            elif argument == 'month_page':
-                kb.month_page(user_id)
-            elif argument.find('day_page1') >= 0:
-                argument = (argument.split('&'))[1]
-                kb.day_page1(user_id, argument)
-            elif argument.find('day_page2') >= 0:
-                argument = (argument.split('&'))[1]
-                kb.day_page2(user_id, argument)
-            elif argument.find('day_page3') >= 0:
-                argument = (argument.split('&'))[1]
-                kb.day_page3(user_id, argument)
-            elif argument == 'hour_page1':
-                kb.hour_page1(user_id)
-            elif argument == 'hour_page2':
-                kb.hour_page2(user_id)
-            elif argument == 'tz_page':
-                kb.tz_page(user_id)
-        
-        elif page == 'to_minute_page':# Link with special argument
-            kb.minute_page(user_id, argument)
-        elif page == 'to_day_page':
-            kb.day_page1(user_id, argument)
-            
-        elif page == 'set_time':# End pages
-            ans = chf.chat_time(user_id, argument, user_first_name, user_last_name)
-            kb.main_page(user_id, ans)
-        elif page == 'set_tz':
-            ans = chf.chat_tz(user_id, argument, user_first_name, user_last_name)
-            kb.main_page(user_id, ans)
-        elif page == 'set_subcribe':
-            if argument == 'start':
-                ans = chf.chat_time(user_id, argument, user_first_name, user_last_name)
-            elif argument == 'stop':
-                ans = chf.chat_stop(user_id, argument)
-            kb.main_page(user_id, ans)
-        elif page == 'cancel':
-            kb.main_page(user_id, 'Главное меню:')
-        elif page == 'set_date':
-            message = dt.forming_kb_str_date(argument)
-            ans = chf.chat_date(user_id, message, user_first_name, user_last_name)
-            kb.main_page(user_id, ans)
 
+        elif payload[0] == 'next_page':
+            if payload[1] == 'notify_page':
+                kb.notify_page(user.user_id)
+            elif payload[1] == 'month_page':
+                kb.month_page(user.user_id)
+            elif payload[1] == 'hour_page1':
+                kb.hour_page1(user.user_id)
+            elif payload[1] == 'hour_page2':
+                kb.hour_page2(user.user_id)
+            elif payload[1] == 'tz_page':
+                kb.tz_page(user.user_id)
+
+        elif payload[0] == 'jump':
+            if payload[1] == 'minute_page':
+                kb.minute_page(user.user_id, payload[2])
+            elif payload[1] == 'day_page1':
+                kb.day_page1(user.user_id, payload[2])
+            elif payload[1] == 'day_page2':
+                kb.day_page2(user.user_id, payload[2])
+            elif payload[1] == 'day_page3':
+                kb.day_page3(user.user_id, payload[2])
+
+    except psycopg2.Error as err:
+        print(time.strftime("---[%Y-%m-%d %H:%M:%S] Database Error", time.localtime()))
+        ans = dict.errors['not_available']
+        write_msg(user.user_id, ans)
     except BaseException as err:
+        print(time.strftime("---[%Y-%m-%d %H:%M:%S] Keyboard_browser error, way:", time.localtime()))
         traceback.print_tb(err.__traceback__)
         ans = dict.chat_ans[-4]
-        write_msg(user_id, ans)
+        write_msg(user.user_id, ans)
 
 
 def longpull_loop():
     while True:
         try:
-            for event in longpoll.listen():# Longpull loop
-                if ((event.type == VkEventType.MESSAGE_NEW) and (event.to_me)):
-                    user_id = event.user_id
-                    message = event.text
-                    vk_user = vk_user_get(user_id)
-                    user_first_name = (vk_user[0])['first_name']
-                    user_last_name = (vk_user[0])['last_name']
+            kb.main_page(478143147, 'Привет!')
+            for event in longpoll.listen():
+                if (event.type == VkEventType.MESSAGE_NEW and event.to_me):
+                    vk_user = vk_user_get(event.user_id)
+                    first_name = (vk_user[0])['first_name']
+                    last_name = (vk_user[0])['last_name']
 
+                    user = User(event.user_id, event.text, first_name, last_name)
                     try:
-                        #start_time = time.time()
-                        payload = event.payload
-                        keyboard_browser(user_id, payload, user_first_name, user_last_name)
-                        #print("--- %s seconds KB ---" % (time.time() -
-                        #start_time))
-                    except AttributeError:
-                        ans = message_analyzer(user_id, message, user_first_name, user_last_name)
-                        kb.main_page(user_id, ans)
-                        #Add first open kb
+                        print(event.payload)
+                        keyboard_browser(user, event.payload)
+                    except:
+                        ans = chat.sessiya_mesage(user)
+                        write_msg(user.user_id, ans)
+                        k=0 #message_analyzer(user)
+
         except OSError as err:
             print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] OSError in longpull_loop:", time.localtime())))
             #traceback.print_tb(err.__traceback__)
@@ -170,3 +183,6 @@ def longpull_loop():
             print(err.args)
             time.sleep(2)
             print('-------------------------\tCHAT MODULE REBOOT\t------------------------')
+
+print('start')
+longpull_loop()
