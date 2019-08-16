@@ -1,7 +1,7 @@
 # sessiyabot/Dockerfile
 # -docker container settings
 # Config file needs to add MANUALLY
-# Маракулин Андрей @annndruha
+# ГЊГ Г°Г ГЄГіГ«ГЁГ­ ГЂГ­Г¤Г°ГҐГ© @annndruha
 # 2019
 
 # Base image
@@ -14,7 +14,7 @@ ADD ./ sessiyabot/
 WORKDIR sessiyabot
 
 # Addictional libraries for bot
-RUN pip install vk_api wikipedia
+RUN pip install vk_api psycopg2
 
 # Specify the port number the container should expose 
 EXPOSE 5000
