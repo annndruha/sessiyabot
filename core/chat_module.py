@@ -211,5 +211,3 @@ def longpull_loop():
             print(err.args[0])
             time.sleep(3)
             print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.localtime())))
-
-longpull_loop()
