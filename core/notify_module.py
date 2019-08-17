@@ -1,5 +1,5 @@
 # sessiyabot/core/notification_module
-# - Exam notify always run file
+# - Exam notify always run loop
 # Маракулин Андрей @annndruha
 # 2019
 import time
@@ -9,7 +9,6 @@ from vk_api import VkApi
 import psycopg2
 
 from data import config
-from data import dictionary as dict
 from data.class_user import User
 from func import database_functions as db
 from func import datetime_functions as dt
@@ -37,30 +36,32 @@ def notify_loop():
         except psycopg2.Error as err:
             print(time.strftime("---[%Y-%m-%d %H:%M:%S] psycopg2.Error error (notify_loop), description:", time.localtime()))
             #traceback.print_tb(err.__traceback__)
-            print('\t'+str(err.args))
+            print(err.args[0])
             try:
                 print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect database", time.localtime())))
                 db.reconnect()
                 print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Database connected successful", time.localtime())))
+                time.sleep(2)
             except:
                 print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect database failed", time.localtime())))
                 time.sleep(10)
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] NOTIFY MODULE RESTART", time.localtime())))
+            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] NOTIFY MODULE RESTART", time.localtime())))
         except OSError as err:
             print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] OSError (notify_loop), description:", time.localtime())))
             #traceback.print_tb(err.__traceback__)
-            print('\t'+str(err.args))
+            print(err.args[0])
             try:
                 print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect VK...", time.localtime())))
                 vk_reconnect()
                 print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] VK connected successful", time.localtime())))
+                time.sleep(2)
             except:
                 print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect VK failed", time.localtime())))
                 time.sleep(10)
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] NOTIFY MODULE RESTART", time.localtime())))
+            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] NOTIFY MODULE RESTART", time.localtime())))
         except BaseException as err:
             print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Unknown Exception (notify_loop):", time.localtime())))
             traceback.print_tb(err.__traceback__)
-            print('\t'+str(err.args))
+            print(err.args[0])
             time.sleep(10)
             print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] NOTIFY MODULE RESTART", time.localtime())))

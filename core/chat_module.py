@@ -96,8 +96,11 @@ def message_analyzer(user):
 def keyboard_browser(user, str_payload):
     try:
         payload = json.loads(str_payload)
-
-        if payload[0] == 'command':
+        if not isinstance(payload, list):
+            ans = dict.hello['начать']
+            kb.main_page(user.user_id, ans)
+        elif payload[0] == 'command':
+            start_time = time.time()
             if payload[1] == 'cancel':
                 kb.main_page(user.user_id)
             elif payload[1] == 'set_time':
@@ -120,6 +123,7 @@ def keyboard_browser(user, str_payload):
                     user.message = payload[2]
                     ans = chat.stop(user)
                 kb.main_page(user.user_id, ans)
+            print("--- %s seconds ---" % (time.time() - start_time))
 
         elif payload[0] == 'next_page':
             if payload[1] == 'notify_page':
@@ -146,16 +150,9 @@ def keyboard_browser(user, str_payload):
     except psycopg2.Error as err:
         ans = dict.errors['not_available']
         write_msg(user.user_id, ans)
-        print(time.strftime("---[%Y-%m-%d %H:%M:%S] Database Error (keyboard_browser), description:", time.localtime()))
+        print(time.strftime("---[%Y-%m-%d %H:%M:%S] Database Error (keyboard_browser), raise:", time.localtime()))
         raise err
-        #traceback.print_tb(err.__traceback__)
-        print('\t'+str(err.args))
-        #try:
-        #    print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect database", time.localtime())))
-        #    db.reconnect()
-        #    print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Database connected successful", time.localtime())))
-        #except:
-        #    print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect database failed", time.localtime())))
+
     except OSError as err:
         print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] OSError (keyboard_browser), description:", time.localtime())))
         raise err
@@ -181,34 +178,38 @@ def longpull_loop():
                         keyboard_browser(user, event.payload)
                     except AttributeError:
                         message_analyzer(user)
-                        
 
         except psycopg2.Error as err:
             print(time.strftime("---[%Y-%m-%d %H:%M:%S] Database Error (longpull_loop), description:", time.localtime()))
             #traceback.print_tb(err.__traceback__)
-            print(str(err.args))
+            print(err.args[0])
             try:
                 print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect database...", time.localtime())))
                 db.reconnect()
                 print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Database connected successful", time.localtime())))
+                time.sleep(2)
             except:
                 print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect database failed", time.localtime())))
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.localtime())))
+                time.sleep(3)
+            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.localtime())))
         except OSError as err:
             print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] OSError (longpull_loop), description:", time.localtime())))
             #traceback.print_tb(err.__traceback__)
-            print(str(err.args))
+            print(err.args[0])
             try:
                 print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect VK...", time.localtime())))
                 vk_reconnect()
                 print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] VK connected successful", time.localtime())))
+                time.sleep(2)
             except:
                 print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect VK failed", time.localtime())))
-                time.sleep(10)
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.localtime())))
+                time.sleep(3)
+            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.localtime())))
         except BaseException as err:
             print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] BaseException (longpull_loop), description:", time.localtime())))
             traceback.print_tb(err.__traceback__)
-            print(err.args)
+            print(err.args[0])
             time.sleep(3)
             print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.localtime())))
+
+longpull_loop()
