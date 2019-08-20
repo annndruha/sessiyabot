@@ -14,11 +14,11 @@ import psycopg2
 
 from data import config
 
-connection = psycopg2.connect(dbname=config.db_name,
-    user=config.db_account,
-    password=config.db_password,
-    host= config.db_host,
-    port = config.db_port)
+#connection = psycopg2.connect(dbname=config.db_name,
+#    user=config.db_account,
+#    password=config.db_password,
+#    host= config.db_host,
+#    port = config.db_port)
 
 def reconnect():
     global connection

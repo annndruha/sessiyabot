@@ -15,14 +15,13 @@ WORKDIR sessiyabot
 
 # Update Base image
 RUN apk update && \
-    apk add --virtual build-deps gcc python-dev musl-dev && \
-    apk add postgresql-dev
-    
-# Addictional libraries for bot
-RUN pip install vk_api psycopg2-binary
+    apk add --no-cache-dir --virtual build-deps gcc python-dev musl-dev && \
+    apk add --no-cache-dir  postgresql-dev && \
+	pip install --no-cache-dir -r requirements.txt && \
+	apk del build-deps
 
 # Specify the port number the container should expose 
-EXPOSE 5000
+EXPOSE 42
 
 # Run the file
 CMD ["python", "-u", "./sessiyabot.py"]

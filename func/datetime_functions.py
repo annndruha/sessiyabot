@@ -156,9 +156,3 @@ def neareat_date(day_and_month):
         else:
             stopper = stopper + 1
             y = y + 1
-
-# Use in message_write to protect user from two notify messages in the same
-# minute
-def datetime_to_random_id():
-    i = datetime.datetime.strftime(datetime_now_obj(), '%y%m%d%H%M')
-    return int(i)

@@ -2,7 +2,15 @@
 # - analyze chat user commands
 # Маракулин Андрей @annndruha
 # 2019
+import signal
+from threading import Thread
+
+from math import sin, cos, tan, acos, asin, atan, sinh, cosh, tanh, asinh, acosh, atanh
+from math import sqrt, pow, exp, log, log10, log2
+from math import factorial, degrees, radians, pi, e
+
 from data import dictionary as dict
+from func import vk_functions as vk
 from func import database_functions as db
 from func import datetime_functions as dt
 
@@ -101,9 +109,17 @@ def stop(user):
             ans = dict.db_ans['unfollow']
     return ans
 
-def sessiya_mesage(user, param):
-    data = db.get_user(user.user_id)
+def cheer(user):
+    i = random.randint(1,15)
+    if i in range(1,1):
+        ans = dict.random_wish()
+        vk.write_msg(user.user_id, ans)
+    else:
+        attach = dict.random_audio()
+        vk.write_msg(user.user_id, 'Предлагаю вам послушать воодушевляющую аудиозапись:', attach)
 
+def sessiya_mesage(user):
+    data = db.get_user(user.user_id)
     # Calculate days_to_exam and s = degree of confidence
     if data is not None:
         user_id, examdate, notifytime, subscribe, tz, firstname, lastname = data
@@ -121,27 +137,103 @@ def sessiya_mesage(user, param):
         s = 'ns_'
 
     # Forming message by call parametr
-    if param == 'chat':
-        if days_to_exam > 1:
-            ans = dict.exam_message[s + 'time_until_exam'] + str(days_to_exam) + dict.numerals_days(days_to_exam) + '. ' + dict.exam_message['exam_date']+ dt.date_to_str(examdate)
-        elif days_to_exam == 1:
-            ans = dict.exam_message[s + 'exam_tomorrow']
-        elif days_to_exam == 0:
-            ans = dict.exam_message[s + 'exam_today']
-        elif days_to_exam < 0:
-            ans = dict.exam_message[s + 'ask_exam_past']
+    if days_to_exam > 1:
+        ans = dict.exam_message[s + 'time_until_exam'] + str(days_to_exam) + dict.numerals_days(days_to_exam) + '. ' + dict.exam_message['exam_date'] + dt.date_to_str(examdate)
+    elif days_to_exam == 1:
+        ans = dict.exam_message[s + 'exam_tomorrow']
+    elif days_to_exam == 0:
+        ans = dict.exam_message[s + 'exam_today']
+    elif days_to_exam < 0:
+        ans = dict.exam_message[s + 'ask_exam_past']
 
-    elif param == 'notify':
-        if days_to_exam > 1:
-            ans = dict.random_greeting() + ', ' + firstname + '! ' + dict.exam_message[s + 'time_until_exam'] + str(days_to_exam) + dict.numerals_days(days_to_exam) + '. ' + dict.random_wish()
-        elif days_to_exam == 1:
-            ans = dict.exam_message['exam_tomorrow']
-        elif days_to_exam == 0:
-            ans = dict.exam_message['exam_today']
-        elif days_to_exam == -1:
-            ans = dict.exam_message['exam_in_past']
-        elif days_to_exam < -1:
-            db.set_subscribe(user_id, False)
-            ans = dict.exam_message['auto_unsubscribe']
+#bookmarks bar
+replace = {
+    'i':'j',
+    'факториал':'factorial',
+    'чёртова дюжина':'13',
+    'чертова дюжина':'13',
+    'дюжина':'12',
+    'возвести в степень':'**',
+    'умножить на': '*',
+    'разделить на':'/',
+    'мнимое':'j',
+    'сложить с':'+',
+    'единица':'1',
+    'едино':'1',
+    'один':'1',
+    'ноль':'0',
+    'два':'2',
+    'три':'3',
+    'четыре':'4',
+    'пять':'5',
+    'шесть':'6',
+    'восемь':'8',
+    'семь':'7',
+    'факт':'factorial',
+    'девять':'9',
+    'десять':'10',
 
-    return ans
+    'умножить':'*',
+    'плюс':'+',
+    'минус':'-',
+    'отнять':'-',
+    'корень':'sqrt',
+    'точка':'.',
+
+    'в степени':'**',
+    'разделить':'/',
+    'прибавить':'+',
+
+    'жды':'*',
+    'на':'*',
+    'ю':'*',
+
+    '^':'**',
+    ' ':''
+
+    #'десять':'10',
+    #'двадцать':'20',
+    #'тридцать':'30',
+    #'сорок':'40',
+    #'пятьдесят':'50',
+    #'шестьдесят':'60',
+    #'семьдесят':'70',
+    #'восемьдесят':'80',
+    #'девяносто':'90',
+    }
+
+
+def validate_expression(message):
+    for word in replace:
+        if message.find(word)>=0:
+            message = message.replace(word, replace[word])
+    #Проверить выражение
+    return message
+
+def calculate(message):
+    message = validate_expression(message)
+    print('Вы ввели: '+str(message.replace('**','^').replace('j','i')))
+    try:
+        response = str(eval(message))
+        response = response.replace('j','i')
+        response = response.replace('(','')
+        response = response.replace(')','')
+        #округлить?
+        print('Ответ: '+response)
+        return response
+    except:
+        response= 'Не могу посчитать'
+        print(response)
+        return response
+
+def calculator(message):#New thread + alert timer
+    #calc = Thread(target=calculate(message))
+    #calc.start()
+    #calc.join(1)
+    #calc.is_alive()
+    return None
+
+
+print('start')
+while True:
+    print(calculate(input()))

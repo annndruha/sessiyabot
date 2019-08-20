@@ -4,40 +4,30 @@
 # 2019
 import time
 import traceback
-import json
+import random
 
 import psycopg2
-from vk_api import VkApi
-from vk_api.longpoll import VkLongPoll, VkEventType
-from vk_api.utils import get_random_id
 
 from data import config
 from data import dictionary as dict
-from data.class_user import User
 from func import chat_functions as chat
 from func import datetime_functions as dt
+from func import vk_functions as vk
 from core import keybords as kb
 
-vk = VkApi(token=config.access_token)# Auth with community token
-longpoll = VkLongPoll(vk)# Create a longpull variable
-
-def vk_reconnect():
-    global vk
-    global longpoll
-    vk = VkApi(token=config.access_token)
-    longpoll = VkLongPoll(vk)
-
-def vk_user_get(user_id):
-    return vk.method('users.get', {'user_ids': user_id})
-
-def write_msg(user_id, message):
-    vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': get_random_id()})
+class User:
+    def __init__(self, user_id, message, first_name, last_name):
+        self.user_id = user_id
+        self.message = message
+        self.first_name = first_name
+        self.last_name = last_name
 
 def message_analyzer(user):
     try:
         user.message = (user.message).lower()
         l = len(user.message)
         open_kb = False
+        already_send = False
         if   (l <= 0):
             ans = dict.errors['null_length']
         elif (l >= 300):
@@ -64,7 +54,7 @@ def message_analyzer(user):
                 if (user.message.find(keyword) >= 0):
                     k = dict.functions[keyword]
                     if k == 0:
-                        ans = chat.sessiya_mesage(user, 'chat')
+                        ans = chat.sessiya_mesage(user)
                     if k == 1:
                         ans = chat.time(user)
                     if k == 2:
@@ -74,108 +64,39 @@ def message_analyzer(user):
                     if k == 4:
                         ans = chat.tz(user)
                     if k == 5:
-                        ans = dict.random_wish()
+                        chat.cheer(user)
+                        already_send = True
                     ans_exist = True
 
             if ((ans_exist == False) and (user.message.find('?') >= 0)):
                 ans = dict.random_answer()
             elif ans_exist == False:
-                ans = 'Я разучился гуглить'
+                ans = random_not_found()
                 #ans = chat.find_in_wiki(user_id, user.message)
         if open_kb:
             kb.main_page(user.user_id, ans)
-        else:
-            write_msg(user.user_id, ans)
+        elif already_send is False:
+            vk.write_msg(user.user_id, ans)
     except BaseException as err:
         print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Unknown Exception (message_analyzer)", time.localtime())))
         traceback.print_tb(err.__traceback__)
         print('\t'+str(err.args))
         ans = dict.errors['im_broken']
-        write_msg(user.user_id, ans)
-
-def keyboard_browser(user, str_payload):
-    try:
-        payload = json.loads(str_payload)
-        if not isinstance(payload, list):
-            ans = dict.hello['начать']
-            kb.main_page(user.user_id, ans)
-        elif payload[0] == 'command':
-            start_time = time.time()
-            if payload[1] == 'cancel':
-                kb.main_page(user.user_id)
-            elif payload[1] == 'set_time':
-                user.message = payload[2]
-                ans = chat.time(user)
-                kb.main_page(user.user_id, ans)
-            elif payload[1] == 'set_tz':
-                user.message = payload[2]
-                ans = chat.tz(user)
-                kb.main_page(user.user_id, ans)
-            elif payload[1] == 'set_date':
-                user.message = dt.neareat_date(payload[2])
-                ans = chat.date(user)
-                kb.main_page(user.user_id, ans)
-            elif payload[1] == 'set_subcribe':
-                if payload[2] == 'start':
-                    user.message = payload[2]
-                    ans = chat.time(user)
-                elif payload[2] == 'stop':
-                    user.message = payload[2]
-                    ans = chat.stop(user)
-                kb.main_page(user.user_id, ans)
-            print("--- %s seconds ---" % (time.time() - start_time))
-
-        elif payload[0] == 'next_page':
-            if payload[1] == 'notify_page':
-                kb.notify_page(user.user_id)
-            elif payload[1] == 'month_page':
-                kb.month_page(user.user_id)
-            elif payload[1] == 'hour_page1':
-                kb.hour_page1(user.user_id)
-            elif payload[1] == 'hour_page2':
-                kb.hour_page2(user.user_id)
-            elif payload[1] == 'tz_page':
-                kb.tz_page(user.user_id)
-
-        elif payload[0] == 'jump':
-            if payload[1] == 'minute_page':
-                kb.minute_page(user.user_id, payload[2])
-            elif payload[1] == 'day_page1':
-                kb.day_page1(user.user_id, payload[2])
-            elif payload[1] == 'day_page2':
-                kb.day_page2(user.user_id, payload[2])
-            elif payload[1] == 'day_page3':
-                kb.day_page3(user.user_id, payload[2])
-
-    except psycopg2.Error as err:
-        ans = dict.errors['not_available']
-        write_msg(user.user_id, ans)
-        print(time.strftime("---[%Y-%m-%d %H:%M:%S] Database Error (keyboard_browser), raise:", time.localtime()))
-        raise err
-
-    except OSError as err:
-        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] OSError (keyboard_browser), description:", time.localtime())))
-        raise err
-    except BaseException as err:
-        print(time.strftime("---[%Y-%m-%d %H:%M:%S] Unknown Exception (keyboard_browser)", time.localtime()))
-        traceback.print_tb(err.__traceback__)
-        print(str(err.args))
-        ans = dict.errors['kb_error']
-        write_msg(user.user_id, ans)
+        vk.write_msg(user.user_id, ans)
 
 
 def longpull_loop():
     while True:
         try:
             for event in longpoll.listen():
-                if (event.type == VkEventType.MESSAGE_NEW and event.to_me):
-                    vk_user = vk_user_get(event.user_id)
+                if (event.type == vk.VkEventType.MESSAGE_NEW and event.to_me):
+                    vk_user = vk.user_get(event.user_id)
                     first_name = (vk_user[0])['first_name']
                     last_name = (vk_user[0])['last_name']
                     user = User(event.user_id, event.text, first_name, last_name)
 
                     try:
-                        keyboard_browser(user, event.payload)
+                        kb.keyboard_browser(user, event.payload)
                     except AttributeError:
                         message_analyzer(user)
 
