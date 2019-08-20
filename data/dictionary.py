@@ -1,6 +1,6 @@
 ﻿# sessiyabot/data/dictionary
-# - Bot natural language knowlage (Russian)
-# Маракулин Андрей @annndruha
+# - natural language knowlage (Russian)
+# Marakulin Andrey @annndruha
 # 2019
 from random import randint
 
@@ -333,7 +333,8 @@ functions = {
     'set_tz':4,
 
     'подбодри меня':5,
-    'поддержи меня':5
+    'поддержи меня':5,
+    'музык': 6
 }
 db_ans = {
     'incorrect_time':'Некорректный формат времени для ежедневных набпоминаний, правильный пример:\nstart 07:30',
@@ -381,6 +382,22 @@ def random_audio():
         2:'audio478143147_456239492'# БХЦТ // Прекрасное далёко
         }
     return audio[randint(1, 2)]
+
+# Cheer user with raomdom cheer message
+def cheer(user, force_music = False):
+    if not force_music:
+        i = randint(1,15)
+        if i in range(1,14):
+            ans = random_wish()
+            attach = None
+        else:
+            ans = 'Предлагаю вам послушать воодушевляющую аудиозапись:'
+            attach = random_audio()
+    else:
+        ans = 'Предлагаю вам послушать воодушевляющую аудиозапись:'
+        attach = random_audio()
+    ans_and_attach = (ans, attach)
+    return ans_and_attach
 
 def random_answer():
     answer = {

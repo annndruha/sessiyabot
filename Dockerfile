@@ -15,8 +15,8 @@ WORKDIR sessiyabot
 
 # Update Base image
 RUN apk update && \
-    apk add --no-cache-dir --virtual build-deps gcc python-dev musl-dev && \
-    apk add --no-cache-dir  postgresql-dev && \
+    apk add --no-cache --virtual build-deps gcc python-dev musl-dev && \
+    apk add --no-cache postgresql-dev && \
 	pip install --no-cache-dir -r requirements.txt && \
 	apk del build-deps
 

@@ -2,17 +2,13 @@
 # - analyze chat user commands
 # Маракулин Андрей @annndruha
 # 2019
-import signal
-from threading import Thread
-
 from math import sin, cos, tan, acos, asin, atan, sinh, cosh, tanh, asinh, acosh, atanh
 from math import sqrt, pow, exp, log, log10, log2
 from math import factorial, degrees, radians, pi, e
 
 from data import dictionary as dict
-from func import vk_functions as vk
-from func import database_functions as db
 from func import datetime_functions as dt
+from func import database_functions as db
 
 # Start notify or change notify time
 def time(user):
@@ -109,15 +105,7 @@ def stop(user):
             ans = dict.db_ans['unfollow']
     return ans
 
-def cheer(user):
-    i = random.randint(1,15)
-    if i in range(1,1):
-        ans = dict.random_wish()
-        vk.write_msg(user.user_id, ans)
-    else:
-        attach = dict.random_audio()
-        vk.write_msg(user.user_id, 'Предлагаю вам послушать воодушевляющую аудиозапись:', attach)
-
+# Sessiya mesage return days to exam
 def sessiya_mesage(user):
     data = db.get_user(user.user_id)
     # Calculate days_to_exam and s = degree of confidence
@@ -145,6 +133,7 @@ def sessiya_mesage(user):
         ans = dict.exam_message[s + 'exam_today']
     elif days_to_exam < 0:
         ans = dict.exam_message[s + 'ask_exam_past']
+    return ans
 
 #bookmarks bar
 replace = {
@@ -202,7 +191,6 @@ replace = {
     #'девяносто':'90',
     }
 
-
 def validate_expression(message):
     for word in replace:
         if message.find(word)>=0:
@@ -210,7 +198,7 @@ def validate_expression(message):
     #Проверить выражение
     return message
 
-def calculate(message):
+def calculator(message):#New thread + alert timer
     message = validate_expression(message)
     print('Вы ввели: '+str(message.replace('**','^').replace('j','i')))
     try:
@@ -226,14 +214,7 @@ def calculate(message):
         print(response)
         return response
 
-def calculator(message):#New thread + alert timer
-    #calc = Thread(target=calculate(message))
-    #calc.start()
-    #calc.join(1)
-    #calc.is_alive()
-    return None
 
-
-print('start')
-while True:
-    print(calculate(input()))
+#print('start')
+#while True:
+#    print(calculate(input()))

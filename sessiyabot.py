@@ -5,27 +5,55 @@
 import time
 import traceback
 
-from threading import Thread
+import psycopg2
 
-from core import chat_module
-from core import notify_module
+from func import vkontakte_functions as vk
+from core import keybords as kb
+from core import analyzer
 
 while True:
     try:
-        Thread_chat = Thread(target=chat_module.longpull_loop)
-        Thread_notification = Thread(target=notify_module.notify_loop)
+        for event in vk.longpoll.listen():
+            if (event.type == vk.VkEventType.MESSAGE_NEW and event.to_me):
+                vk_user = vk.user_get(event.user_id)
+                first_name = (vk_user[0])['first_name']
+                last_name = (vk_user[0])['last_name']
+                user = vk.User(event.user_id, event.text, first_name, last_name)
 
-        Thread_chat.start()
-        print('-------------------------\tCHAT MODULE START\t------------------------')
-        Thread_notification.start()
-        print('-------------------------\tNOTIFY MODULE START\t------------------------')
+                try:
+                    kb.keyboard_browser(user, event.payload)
+                except AttributeError:
+                    analyzer.message_analyzer(user)
 
-        print('=========================\tBOT START SUCCSESSFULLY\t========================')
-        Thread_chat.join()
-        Thread_notification.join()
+    except psycopg2.Error as err:
+        print(time.strftime("---[%Y-%m-%d %H:%M:%S] Database Error (longpull_loop), description:", time.localtime()))
+        #traceback.print_tb(err.__traceback__)
+        print(err.args[0])
+        try:
+            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect database...", time.localtime())))
+            db.reconnect()
+            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Database connected successful", time.localtime())))
+            time.sleep(2)
+        except:
+            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect database failed", time.localtime())))
+            time.sleep(3)
+        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.localtime())))
+    except OSError as err:
+        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] OSError (longpull_loop), description:", time.localtime())))
+        #traceback.print_tb(err.__traceback__)
+        print(err.args[0])
+        try:
+            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect VK...", time.localtime())))
+            vk_reconnect()
+            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] VK connected successful", time.localtime())))
+            time.sleep(2)
+        except:
+            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect VK failed", time.localtime())))
+            time.sleep(3)
+        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.localtime())))
     except BaseException as err:
-        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] BaseException in sessiyabot, way:", time.localtime())))
+        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] BaseException (longpull_loop), description:", time.localtime())))
         traceback.print_tb(err.__traceback__)
-        print(err.args)
-        time.sleep(10)
-        print('-------------------------\tBOT REBOOT\t------------------------')
+        print(err.args[0])
+        time.sleep(3)
+        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.localtime())))

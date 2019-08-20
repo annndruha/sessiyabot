@@ -3,15 +3,16 @@
 # Маракулин Андрей @annndruha
 # 2019
 import json
+import time
+import traceback
 
 import psycopg2
 
-from func import vk_functions as vk
-from data import config
 from data import dictionary as dict
-from func import database_functions as db
+from func import vkontakte_functions as vk
 from func import datetime_functions as dt
-from func import chat_functions as chat
+from func import database_functions as db
+from core import engine as eng
 
 # Pages of keyboard menu:
 # main_page
@@ -28,7 +29,7 @@ def main_page(user_id, ans='Главное меню:'):
 # notify_page
 def notify_page(user_id, ans='Напоминания:'):
     kb = vk.VkKeyboard(one_time=False)
-    data =db.get_user(user_id)
+    data = db.get_user(user_id)
     if data is not None:
         if data[2] is not None:
             if (data[3] == False):
@@ -51,7 +52,7 @@ def notify_page(user_id, ans='Напоминания:'):
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
 # hour_page1
-def hour_page1(user_id, ans = 'Выберите новое время:'):
+def hour_page1(user_id, ans='Выберите новое время:'):
     kb = vk.VkKeyboard(one_time=False)
 
     kb.add_button('00:', color='primary', payload = ["jump","minute_page","00"])
@@ -75,7 +76,7 @@ def hour_page1(user_id, ans = 'Выберите новое время:'):
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
 # hour_page2
-def hour_page2(user_id, ans = 'Выберите новое время:'):
+def hour_page2(user_id, ans='Выберите новое время:'):
     kb = vk.VkKeyboard(one_time=False)
 
     kb.add_button('12:', color='primary', payload = ["jump","minute_page","12"])
@@ -99,7 +100,7 @@ def hour_page2(user_id, ans = 'Выберите новое время:'):
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
 # minute_page
-def minute_page(user_id, hour, ans = 'Завершите выбор времени:'):
+def minute_page(user_id, hour, ans='Завершите выбор времени:'):
     kb = vk.VkKeyboard(one_time=False)
 
     kb.add_button(hour + ':00', color='primary', payload = ["command","set_time","time " + hour + ":00"])
@@ -122,14 +123,14 @@ def minute_page(user_id, hour, ans = 'Завершите выбор времен
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
 # tz_page
-def tz_page(user_id, ans = 'Установите новый часовой пояс:'):
+def tz_page(user_id, ans='Установите новый часовой пояс:'):
     kb = vk.VkKeyboard(one_time=False)
     
-    my_col = ['primary']*12
+    my_col = ['primary'] * 12
     data = db.get_user(user_id)
 
     if data is not None:
-        if ((data[4] >-2) and (data[4] <10)):
+        if ((data[4] > -2) and (data[4] < 10)):
             index = data[4] + 1
             my_col[index] = 'positive'
 
@@ -152,7 +153,7 @@ def tz_page(user_id, ans = 'Установите новый часовой по�
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
 # month_page
-def month_page(user_id, ans = 'Установите месяц:'):
+def month_page(user_id, ans='Установите месяц:'):
     kb = vk.VkKeyboard(one_time=False)
 
     kb.add_button('Январь', color='primary', payload = ["jump","day_page1","01"])
@@ -176,7 +177,7 @@ def month_page(user_id, ans = 'Установите месяц:'):
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
 # day_page1
-def day_page1(user_id, month, ans ='Установите день:'):
+def day_page1(user_id, month, ans='Установите день:'):
     kb = vk.VkKeyboard(one_time=False)
 
     kb.add_button('01', color='primary', payload = ["command","set_date","01." + month])
@@ -200,7 +201,7 @@ def day_page1(user_id, month, ans ='Установите день:'):
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
 # day_page2
-def day_page2(user_id, month, ans = 'Установите день:'):
+def day_page2(user_id, month, ans='Установите день:'):
     kb = vk.VkKeyboard(one_time=False)
 
     kb.add_button('13', color='primary', payload = ["command","set_date","13." + month])
@@ -225,7 +226,7 @@ def day_page2(user_id, month, ans = 'Установите день:'):
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
 # day_page3
-def day_page3(user_id, month, ans = 'Установите день:'):
+def day_page3(user_id, month, ans='Установите день:'):
     kb = vk.VkKeyboard(one_time=False)
 
     kb.add_button('25', color='primary', payload = ["command","set_date","25." + month])
@@ -248,6 +249,7 @@ def day_page3(user_id, month, ans = 'Установите день:'):
 
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
+# Browsing between keybord pages
 def keyboard_browser(user, str_payload):
     try:
         payload = json.loads(str_payload)
@@ -259,23 +261,23 @@ def keyboard_browser(user, str_payload):
                 main_page(user.user_id)
             elif payload[1] == 'set_time':
                 user.message = payload[2]
-                ans = chat.time(user)
+                ans = eng.time(user)
                 main_page(user.user_id, ans)
             elif payload[1] == 'set_tz':
                 user.message = payload[2]
-                ans = chat.tz(user)
+                ans = eng.tz(user)
                 main_page(user.user_id, ans)
             elif payload[1] == 'set_date':
                 user.message = dt.neareat_date(payload[2])
-                ans = chat.date(user)
+                ans = eng.date(user)
                 main_page(user.user_id, ans)
             elif payload[1] == 'set_subcribe':
                 if payload[2] == 'start':
                     user.message = payload[2]
-                    ans = chat.time(user)
+                    ans = eng.time(user)
                 elif payload[2] == 'stop':
                     user.message = payload[2]
-                    ans = chat.stop(user)
+                    ans = eng.stop(user)
                 main_page(user.user_id, ans)
 
         elif payload[0] == 'next_page':
@@ -306,11 +308,10 @@ def keyboard_browser(user, str_payload):
         print(time.strftime("---[%Y-%m-%d %H:%M:%S] Database Error (keyboard_browser), raise:", time.localtime()))
         raise err
     except OSError as err:
-        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] OSError (keyboard_browser), description:", time.localtime())))
         raise err
     except BaseException as err:
-        print(time.strftime("---[%Y-%m-%d %H:%M:%S] Unknown Exception (keyboard_browser)", time.localtime()))
-        traceback.print_tb(err.__traceback__)
-        print(str(err.args))
         ans = dict.errors['kb_error']
         vk.write_msg(user.user_id, ans)
+        print(time.strftime("---[%Y-%m-%d %H:%M:%S] Unknown Exception (keyboard_browser), description:", time.localtime()))
+        traceback.print_tb(err.__traceback__)
+        print(str(err.args))
