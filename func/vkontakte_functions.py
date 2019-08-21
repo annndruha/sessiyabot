@@ -1,17 +1,16 @@
 # sessiyabot/func/vk_functions
 # - vk functions
-# Маракулин Андрей @annndruha
+# Marakulin Andrey @annndruha
 # 2019
-from data import config
-
 from vk_api import VkApi
 from vk_api.longpoll import VkLongPoll, VkEventType
 from vk_api.keyboard import VkKeyboard
 from vk_api.utils import get_random_id
 
+from data import config
+
 vk = VkApi(token=config.access_token)# Auth with community token
 longpoll = VkLongPoll(vk)# Create a longpull variable
-
 class User:
     def __init__(self, user_id, message, first_name, last_name):
         self.user_id = user_id

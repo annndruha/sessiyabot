@@ -1,6 +1,6 @@
 # sessiyabot/core/keybords
 # - list of keybords pages
-# Маракулин Андрей @annndruha
+# Marakulin Andrey @annndruha
 # 2019
 import json
 import time
@@ -8,7 +8,7 @@ import traceback
 
 import psycopg2
 
-from data import dictionary as dict
+from data import ru_dictionary as dict
 from func import vkontakte_functions as vk
 from func import datetime_functions as dt
 from func import database_functions as db
@@ -16,43 +16,43 @@ from core import engine as eng
 
 # Pages of keyboard menu:
 # main_page
-def main_page(user_id, ans='Главное меню:'):
+def main_page(user_id, ans=dict.kb_ans['main_menu']):
     kb = vk.VkKeyboard(one_time=False)
-    kb.add_button('Настройки напоминаний', color='primary', payload = ["next_page","notify_page"])
+    kb.add_button(dict.kb_ans['notify_settings'], color='primary', payload = ["next_page","notify_page"])
     kb.add_line()
-    kb.add_button('Сменить дату экзамена', color='primary', payload = ["next_page","month_page"])
+    kb.add_button(dict.kb_ans['exam_settings'], color='primary', payload = ["next_page","month_page"])
     kb.add_line()
-    kb.add_button('Подбодри меня!', color='positive')
+    kb.add_button(dict.kb_ans['cheer_me'], color='positive')
 
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
 # notify_page
-def notify_page(user_id, ans='Напоминания:'):
+def notify_page(user_id, ans=dict.kb_ans['notify_settings']):
     kb = vk.VkKeyboard(one_time=False)
     data = db.get_user(user_id)
     if data is not None:
         if data[2] is not None:
             if (data[3] == False):
-                kb.add_button('Включить напоминания', color='positive', payload = ["command","set_subcribe", "start"])
+                kb.add_button(dict.kb_ans['turn_on'], color='positive', payload = ["command","set_subcribe", "start"])
                 kb.add_line()
-                kb.add_button('Изменить время напоминаний', color='primary', payload = ["next_page","hour_page1"])
+                kb.add_button(dict.kb_ans['change_time'], color='primary', payload = ["next_page","hour_page1"])
             else:
-                kb.add_button('Выключить напоминания', color='negative', payload = ["command","set_subcribe", "stop"])
+                kb.add_button(dict.kb_ans['turn_off'], color='negative', payload = ["command","set_subcribe", "stop"])
                 kb.add_line()
-                kb.add_button('Изменить время напоминаний', color='primary', payload = ["next_page","hour_page1"])
+                kb.add_button(dict.kb_ans['change_time'], color='primary', payload = ["next_page","hour_page1"])
         else:
-            kb.add_button('Настроить впервые', color='positive', payload = ["next_page","hour_page1"])
+            kb.add_button(dict.kb_ans['change_time_first'], color='positive', payload = ["next_page","hour_page1"])
     else:
-        kb.add_button('Настроить напоминания', color='positive', payload = ["next_page","hour_page1"])
+        kb.add_button(dict.kb_ans['set_time'], color='positive', payload = ["next_page","hour_page1"])
     kb.add_line()
-    kb.add_button('Изменить часовой пояс', color='primary', payload = ["next_page","tz_page"])
+    kb.add_button(dict.kb_ans['change_tz'], color='primary', payload = ["next_page","tz_page"])
     kb.add_line()
-    kb.add_button('Отмена', color='default', payload = ["command","cancel"])
+    kb.add_button(dict.kb_ans['cancel'], color='default', payload = ["command","cancel"])
 
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
 # hour_page1
-def hour_page1(user_id, ans='Выберите новое время:'):
+def hour_page1(user_id, ans=dict.kb_ans['set_new_time']):
     kb = vk.VkKeyboard(one_time=False)
 
     kb.add_button('00:', color='primary', payload = ["jump","minute_page","00"])
@@ -70,13 +70,13 @@ def hour_page1(user_id, ans='Выберите новое время:'):
     kb.add_button('10:', color='primary', payload = ["jump","minute_page","10"])
     kb.add_button('11:', color='primary', payload = ["jump","minute_page","11"])
     kb.add_line()
-    kb.add_button('Отменить', color='default', payload = ["command","cancel"])
-    kb.add_button('Далее ->', color='default', payload = ["next_page","hour_page2"])
+    kb.add_button(dict.kb_ans['cancel'], color='default', payload = ["command","cancel"])
+    kb.add_button(dict.kb_ans['next'], color='default', payload = ["next_page","hour_page2"])
 
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
 # hour_page2
-def hour_page2(user_id, ans='Выберите новое время:'):
+def hour_page2(user_id, ans=dict.kb_ans['set_new_time']):
     kb = vk.VkKeyboard(one_time=False)
 
     kb.add_button('12:', color='primary', payload = ["jump","minute_page","12"])
@@ -94,13 +94,13 @@ def hour_page2(user_id, ans='Выберите новое время:'):
     kb.add_button('22:', color='primary', payload = ["jump","minute_page","22"])
     kb.add_button('23:', color='primary', payload = ["jump","minute_page","23"])
     kb.add_line()
-    kb.add_button('<- Назад', color='default', payload = ["next_page","hour_page1"])
-    kb.add_button('Отменить', color='default', payload = ["command","cancel"])
+    kb.add_button(dict.kb_ans['back'], color='default', payload = ["next_page","hour_page1"])
+    kb.add_button(dict.kb_ans['cancel'], color='default', payload = ["command","cancel"])
 
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
 # minute_page
-def minute_page(user_id, hour, ans='Завершите выбор времени:'):
+def minute_page(user_id, hour, ans=dict.kb_ans['end_new_time']):
     kb = vk.VkKeyboard(one_time=False)
 
     kb.add_button(hour + ':00', color='primary', payload = ["command","set_time","time " + hour + ":00"])
@@ -118,12 +118,12 @@ def minute_page(user_id, hour, ans='Завершите выбор времени
     kb.add_button(hour + ':50', color='primary', payload = ["command","set_time","time " + hour + ":50"])
     kb.add_button(hour + ':55', color='primary', payload = ["command","set_time","time " + hour + ":55"])
     kb.add_line()
-    kb.add_button('Отменить', color='default', payload = ["command","cancel"])
+    kb.add_button(dict.kb_ans['cancel'], color='default', payload = ["command","cancel"])
 
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
 # tz_page
-def tz_page(user_id, ans='Установите новый часовой пояс:'):
+def tz_page(user_id, ans=dict.kb_ans['set_new_tz']):
     kb = vk.VkKeyboard(one_time=False)
     
     my_col = ['primary'] * 12
@@ -134,50 +134,50 @@ def tz_page(user_id, ans='Установите новый часовой поя�
             index = data[4] + 1
             my_col[index] = 'positive'
 
-    kb.add_button('МСК-1', color=my_col[0], payload = ["command","set_tz","tz -1"])
-    kb.add_button('МСК', color=my_col[1], payload = ["command","set_tz","tz 0"])
-    kb.add_button('МСК+1', color=my_col[2], payload = ["command","set_tz","tz 1"])
+    kb.add_button(dict.tz_format(-1), color=my_col[0], payload = ["command","set_tz","tz -1"])
+    kb.add_button(dict.tz_format(0), color=my_col[1], payload = ["command","set_tz","tz 0"])
+    kb.add_button(dict.tz_format(1), color=my_col[2], payload = ["command","set_tz","tz 1"])
     kb.add_line()
-    kb.add_button('МСК+2', color=my_col[3], payload = ["command","set_tz","tz 2"])
-    kb.add_button('МСК+3', color=my_col[4], payload = ["command","set_tz","tz 3"])
-    kb.add_button('МСК+4', color=my_col[5], payload = ["command","set_tz","tz 4"])
-    kb.add_button('МСК+5', color=my_col[6], payload = ["command","set_tz","tz 5"])
+    kb.add_button(dict.tz_format(2), color=my_col[3], payload = ["command","set_tz","tz 2"])
+    kb.add_button(dict.tz_format(3), color=my_col[4], payload = ["command","set_tz","tz 3"])
+    kb.add_button(dict.tz_format(4), color=my_col[5], payload = ["command","set_tz","tz 4"])
+    kb.add_button(dict.tz_format(5), color=my_col[6], payload = ["command","set_tz","tz 5"])
     kb.add_line()
-    kb.add_button('МСК+6', color=my_col[7], payload = ["command","set_tz","tz 6"])
-    kb.add_button('МСК+7', color=my_col[8], payload = ["command","set_tz","tz 7"])
-    kb.add_button('МСК+8', color=my_col[9], payload = ["command","set_tz","tz 8"])
-    kb.add_button('МСК+9', color=my_col[10], payload = ["command","set_tz","tz 9"])
+    kb.add_button(dict.tz_format(6), color=my_col[7], payload = ["command","set_tz","tz 6"])
+    kb.add_button(dict.tz_format(7), color=my_col[8], payload = ["command","set_tz","tz 7"])
+    kb.add_button(dict.tz_format(8), color=my_col[9], payload = ["command","set_tz","tz 8"])
+    kb.add_button(dict.tz_format(9), color=my_col[10], payload = ["command","set_tz","tz 9"])
     kb.add_line()
-    kb.add_button('Отменить', color='default', payload = ["command","cancel"])
+    kb.add_button(dict.kb_ans['cancel'], color='default', payload = ["command","cancel"])
 
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
 # month_page
-def month_page(user_id, ans='Установите месяц:'):
+def month_page(user_id, ans=dict.kb_ans['set_month']):
     kb = vk.VkKeyboard(one_time=False)
 
-    kb.add_button('Январь', color='primary', payload = ["jump","day_page1","01"])
-    kb.add_button('Февраль', color='primary', payload = ["jump","day_page1","02"])
-    kb.add_button('Март', color='primary', payload = ["jump","day_page1","03"])
+    kb.add_button(dict.kb_ans['01'], color='primary', payload = ["jump","day_page1","01"])
+    kb.add_button(dict.kb_ans['02'], color='primary', payload = ["jump","day_page1","02"])
+    kb.add_button(dict.kb_ans['03'], color='primary', payload = ["jump","day_page1","03"])
     kb.add_line()
-    kb.add_button('Апрель', color='primary', payload = ["jump","day_page1","04"])
-    kb.add_button('Май', color='primary', payload = ["jump","day_page1","05"])
-    kb.add_button('Июнь', color='primary', payload = ["jump","day_page1","06"])
+    kb.add_button(dict.kb_ans['04'], color='primary', payload = ["jump","day_page1","04"])
+    kb.add_button(dict.kb_ans['05'], color='primary', payload = ["jump","day_page1","05"])
+    kb.add_button(dict.kb_ans['06'], color='primary', payload = ["jump","day_page1","06"])
     kb.add_line()
-    kb.add_button('Июль', color='primary', payload = ["jump","day_page1","07"])
-    kb.add_button('Август', color='primary', payload = ["jump","day_page1","08"])
-    kb.add_button('Сентябрь', color='primary', payload = ["jump","day_page1","09"])
+    kb.add_button(dict.kb_ans['07'], color='primary', payload = ["jump","day_page1","07"])
+    kb.add_button(dict.kb_ans['08'], color='primary', payload = ["jump","day_page1","08"])
+    kb.add_button(dict.kb_ans['09'], color='primary', payload = ["jump","day_page1","09"])
     kb.add_line()
-    kb.add_button('Октябрь', color='primary', payload = ["jump","day_page1","10"])
-    kb.add_button('Ноябрь', color='primary', payload = ["jump","day_page1","11"])
-    kb.add_button('Декабрь', color='primary', payload = ["jump","day_page1","12"])
+    kb.add_button(dict.kb_ans['10'], color='primary', payload = ["jump","day_page1","10"])
+    kb.add_button(dict.kb_ans['11'], color='primary', payload = ["jump","day_page1","11"])
+    kb.add_button(dict.kb_ans['12'], color='primary', payload = ["jump","day_page1","12"])
     kb.add_line()
-    kb.add_button('Отменить', color='default', payload = ["command","cancel"])
+    kb.add_button(dict.kb_ans['cancel'], color='default', payload = ["command","cancel"])
 
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
 # day_page1
-def day_page1(user_id, month, ans='Установите день:'):
+def day_page1(user_id, month, ans=dict.kb_ans['set_day']):
     kb = vk.VkKeyboard(one_time=False)
 
     kb.add_button('01', color='primary', payload = ["command","set_date","01." + month])
@@ -195,13 +195,13 @@ def day_page1(user_id, month, ans='Установите день:'):
     kb.add_button('11', color='primary', payload = ["command","set_date","11." + month])
     kb.add_button('12', color='primary', payload = ["command","set_date","12." + month])
     kb.add_line()
-    kb.add_button('Отменить', color='default', payload = ["command","cancel"])
-    kb.add_button('Далее ->', color='default', payload = ["jump","day_page2", month])
+    kb.add_button(dict.kb_ans['cancel'], color='default', payload = ["command","cancel"])
+    kb.add_button(dict.kb_ans['next'], color='default', payload = ["jump","day_page2", month])
 
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
 # day_page2
-def day_page2(user_id, month, ans='Установите день:'):
+def day_page2(user_id, month, ans=dict.kb_ans['set_day']):
     kb = vk.VkKeyboard(one_time=False)
 
     kb.add_button('13', color='primary', payload = ["command","set_date","13." + month])
@@ -219,14 +219,14 @@ def day_page2(user_id, month, ans='Установите день:'):
     kb.add_button('23', color='primary', payload = ["command","set_date","23." + month])
     kb.add_button('24', color='primary', payload = ["command","set_date","24." + month])
     kb.add_line()
-    kb.add_button('<- Назад', color='default', payload = ["jump","day_page1", month])
-    kb.add_button('Отменить', color='default', payload = ["command","cancel"])
-    kb.add_button('Далее ->', color='default', payload = ["jump","day_page3", month])
+    kb.add_button(dict.kb_ans['back'], color='default', payload = ["jump","day_page1", month])
+    kb.add_button(dict.kb_ans['cancel'], color='default', payload = ["command","cancel"])
+    kb.add_button(dict.kb_ans['next'], color='default', payload = ["jump","day_page3", month])
 
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
 # day_page3
-def day_page3(user_id, month, ans='Установите день:'):
+def day_page3(user_id, month, ans=dict.kb_ans['set_day']):
     kb = vk.VkKeyboard(one_time=False)
 
     kb.add_button('25', color='primary', payload = ["command","set_date","25." + month])
@@ -244,8 +244,8 @@ def day_page3(user_id, month, ans='Установите день:'):
         kb.add_button('30', color='primary', payload = ["command","set_date","30." + month])
         kb.add_button('31', color='primary', payload = ["command","set_date","31." + month])
     kb.add_line()
-    kb.add_button('<- Назад', color='default', payload = ["jump", "day_page2", month])
-    kb.add_button('Отменить', color='default', payload = ["command", "cancel"])
+    kb.add_button(dict.kb_ans['back'], color='default', payload = ["jump", "day_page2", month])
+    kb.add_button(dict.kb_ans['cancel'], color='default', payload = ["command", "cancel"])
 
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
@@ -254,7 +254,7 @@ def keyboard_browser(user, str_payload):
     try:
         payload = json.loads(str_payload)
         if not isinstance(payload, list):
-            ans = dict.hello['начать']
+            ans = dict.hello['start']
             main_page(user.user_id, ans)
         elif payload[0] == 'command':
             if payload[1] == 'cancel':

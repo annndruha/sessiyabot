@@ -1,6 +1,6 @@
 ﻿# sessiyabot/func/database_functions
 # - PostgreSQL functions for work with database
-# Маракулин Андрей @annndruha
+# Marakulin Andrey @annndruha
 # 2019
 
 # PostgreSQL database settings:

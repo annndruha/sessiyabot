@@ -1,10 +1,9 @@
-﻿# sessiyabot/data/dictionary
+﻿# sessiyabot/data/ru_dictionary
 # - natural language knowlage (Russian)
 # Marakulin Andrey @annndruha
 # 2019
 from random import randint
 
-wiki_language = 'RU'
 default_exam_date = '04.01.2020'
 default_time = '07:30'
 
@@ -44,7 +43,7 @@ small_message = {
     'эх':'Эх...',
     'tz':'Некорректный формат временной зоны',
     'яд':'Зачем вам яд?'
-}
+    }
 
 answer = {
     'ааа':'аааа',
@@ -182,6 +181,7 @@ answer = {
     # Noun
     'хозяин':'Мой хозяин Маракулин Андрей, классный парень.',
     'создатель':'Мой создатель Маракулин Андрей - хороший человек.',
+    'разраб':'Мой разработчик - Маракулин Андрей. Неоценимый вклад в развите проекта внесли Роман Дьяков и Максим Клоченко.',
     'девуш':'Девушки- милейшие создания (но не всегда)',
     'девочк':'Девочки - милейшие создания',
     'сервер':'Хорошо, мне нравится сервер в котором я живу.',
@@ -296,7 +296,7 @@ answer = {
     'отстань':'ок(',
     'уйди':'ок(',
     'отъебись':'ок('
-}
+    }
 hello = {
     # Greetings with open kb
     'клавиатур':'Клавиатура открыта',
@@ -335,7 +335,7 @@ functions = {
     'подбодри меня':5,
     'поддержи меня':5,
     'музык': 6
-}
+    }
 db_ans = {
     'incorrect_time':'Некорректный формат времени для ежедневных набпоминаний, правильный пример:\nstart 07:30',
     'incorrect_date':'Некорректный формат даты, правильный пример:\n/change ' + default_exam_date,
@@ -352,11 +352,44 @@ db_ans = {
     'sub_back':'Напоминания возобновлены на ',
     'unfollow_yet':'Вы уже отписались от напоминаний, чтобы снова подписаться воспользуйтесь командой: start чч:мм',
     'unfollow':'Я больше не буду присылать вам напоминания о сессии. Надеюсь у вас всё получится и без меня!'
-}
+    }
+kb_ans = {
+    'next':'Далее ->',
+    'back':'<- Назад',
+    'cancel':'Отменить',
+    'main_menu':'Главное меню:',
+    'notify_settings':'Настройки напоминаний',
+    'exam_settings':'Сменить дату экзамена',
+    'cheer_me':'Подбодри меня!',
+    'turn_on':'Включить напоминания',
+    'turn_off':'Выключить напоминания',
+    'change_time_first':'Настроить впервые',
+    'change_time':'Изменить время напоминаний',
+    'set_time':'Настроить напоминания',
+    'change_tz':'Изменить часовой пояс',
+    'set_new_time':'Выберите новое время:',
+    'end_new_time':'Завершите выбор времени:',
+    'set_new_tz':'Установите новый часовой пояс:',
+    'set_month':'Установите месяц:',
+    'set_day':'Установите день:',
+
+    '01':'Январь',
+    '02':'Февраль',
+    '03':'Март',
+    '04':'Апрель',
+    '05':'Май',
+    '06':'Июнь',
+    '07':'Июль',
+    '08':'Август',
+    '09':'Сентябрь',
+    '10':'Октябрь',
+    '11':'Ноябрь',
+    '12':'Декабрь'
+    }
 errors = {
     'not_available':'К сожалению, действие временно недоступно',
     'hm':'&#128580;',
-    'null_length':'Я распознаю только текст.\n¯\_(ツ)_/¯',
+    'null_length':'Я распознаю только текст. ¯\_(ツ)_/¯',
     'big_lenght':'Длина вашего сообщения слишком большая',
     'im_broken':'Глубоко внутри меня что-то сломалось...',
     'kb_error':'Ошибка клавиатуры, попробуйте текстом'
@@ -375,29 +408,7 @@ exam_message = {
     'exam_in_past':'Здравствуйте!\nЭкзамен прошёл, надеюсь вы хорошо его сдали. Чтобы поставить новую дату ближайшего экзамена воспользуйтесть командой:\nchange дд.мм.гггг\n\n Помните что в любой момент вы можете отписаться командой:\nstop',
     
     'auto_unsubscribe':'Здравствуйте!\n Вы были автоматически отписаны от напоминаний.\nЧтобы вновь на них подписаться поставьте актуальную дату экзамена командой:\n\tchange дд.мм.гггг\n и назначьте заново время напоминаний командой:\n\tstart чч:мм'
-}
-def random_audio():
-    audio = {
-        1:'audio478143147_456239493',# Высоцкий // Здесь вам не равнина
-        2:'audio478143147_456239492'# БХЦТ // Прекрасное далёко
-        }
-    return audio[randint(1, 2)]
-
-# Cheer user with raomdom cheer message
-def cheer(user, force_music = False):
-    if not force_music:
-        i = randint(1,15)
-        if i in range(1,14):
-            ans = random_wish()
-            attach = None
-        else:
-            ans = 'Предлагаю вам послушать воодушевляющую аудиозапись:'
-            attach = random_audio()
-    else:
-        ans = 'Предлагаю вам послушать воодушевляющую аудиозапись:'
-        attach = random_audio()
-    ans_and_attach = (ans, attach)
-    return ans_and_attach
+    }
 
 def random_answer():
     answer = {
@@ -410,7 +421,7 @@ def random_answer():
         7:'Я не компетентен в таких вопросах',
         8:'Не знаю, увы'
         }
-    return answer[randint(1, 8)]
+    return answer[randint(1, len(answer))]
 
 def random_not_found():
     not_found = {
@@ -424,17 +435,7 @@ def random_not_found():
         8:'Не знаю, увы',
         9:'Мне сложно ответить на ваш вопрос.'
         }
-    return not_found[randint(1, 9)]
-
-def random_greeting():
-    greetings = {
-        1:'Здравствуйте',
-        2:'Приветик',
-        3:'Привет',
-        4:'Приветствую',
-        5:'Доброго времени суток'
-        }
-    return greetings[randint(1, 5)]
+    return not_found[randint(1, len(not_found))]
 
 def random_wish():
     wish = {
@@ -448,7 +449,31 @@ def random_wish():
         8:'Не загружайте голову лишними вещами &#128465;',
         9:'Попробуйте подойти к делам творчески &#127912;'
         }
-    return wish[randint(1, 9)]
+    return wish[randint(1, len(wish))]
+
+def random_audio():
+    audio = {
+        1:'audio478143147_456239493',# Высоцкий // Здесь вам не равнина
+        2:'audio478143147_456239492'# Большой хор центрального телевидения // Прекрасное далёко
+        }
+    return audio[randint(1, len(audio))]
+
+# Cheer user with random cheer message
+# Different probability of text and attachments
+def cheer(user, force_music=False):
+    if not force_music:
+        i = randint(1,15)
+        if i in range(1,14):
+            ans = random_wish()
+            attach = None
+        else:
+            ans = 'Предлагаю вам послушать воодушевляющую пластинку:'
+            attach = random_audio()
+    else:
+        ans = 'Предлагаю вам послушать воодушевляющую пластинку:'
+        attach = random_audio()
+    ans_and_attach = (ans, attach)
+    return ans_and_attach
 
 def numerals_days(n):
     if ((10 < n) and (n < 20)):

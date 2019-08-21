@@ -1,2 +1,2 @@
 from . import config
-from . import dictionary
+from . import ru_dictionary

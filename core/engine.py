@@ -1,12 +1,12 @@
-# sessiyabot/func/chat_fuctions
-# - analyze chat user commands
-# Маракулин Андрей @annndruha
+# sessiyabot/core/engine
+# - run chat commands and others
+# Marakulin Andrey @annndruha
 # 2019
 from math import sin, cos, tan, acos, asin, atan, sinh, cosh, tanh, asinh, acosh, atanh
 from math import sqrt, pow, exp, log, log10, log2
 from math import factorial, degrees, radians, pi, e
 
-from data import dictionary as dict
+from data import ru_dictionary as dict
 from func import datetime_functions as dt
 from func import database_functions as db
 
@@ -193,24 +193,24 @@ replace = {
 
 def validate_expression(message):
     for word in replace:
-        if message.find(word)>=0:
+        if message.find(word) >= 0:
             message = message.replace(word, replace[word])
     #Проверить выражение
     return message
 
 def calculator(message):#New thread + alert timer
     message = validate_expression(message)
-    print('Вы ввели: '+str(message.replace('**','^').replace('j','i')))
+    print('Вы ввели: ' + str(message.replace('**','^').replace('j','i')))
     try:
         response = str(eval(message))
         response = response.replace('j','i')
         response = response.replace('(','')
         response = response.replace(')','')
         #округлить?
-        print('Ответ: '+response)
+        print('Ответ: ' + response)
         return response
     except:
-        response= 'Не могу посчитать'
+        response = 'Не могу посчитать'
         print(response)
         return response
 

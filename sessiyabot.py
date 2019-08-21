@@ -1,6 +1,6 @@
 # sessiyabot
 # - Chat bot vk.com for students
-# Маракулин Андрей @annndruha
+# Marakulin Andrey @annndruha
 # 2019
 import time
 import traceback
@@ -11,6 +11,7 @@ from func import vkontakte_functions as vk
 from core import keybords as kb
 from core import analyzer
 
+print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] CHAT BOT START", time.localtime())))
 while True:
     try:
         for event in vk.longpoll.listen():
@@ -37,7 +38,7 @@ while True:
         except:
             print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect database failed", time.localtime())))
             time.sleep(3)
-        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.localtime())))
+        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] CHAT BOT RESTART", time.localtime())))
     except OSError as err:
         print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] OSError (longpull_loop), description:", time.localtime())))
         #traceback.print_tb(err.__traceback__)
@@ -50,10 +51,10 @@ while True:
         except:
             print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect VK failed", time.localtime())))
             time.sleep(3)
-        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.localtime())))
+        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] CHAT BOT RESTART", time.localtime())))
     except BaseException as err:
         print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] BaseException (longpull_loop), description:", time.localtime())))
         traceback.print_tb(err.__traceback__)
         print(err.args[0])
         time.sleep(3)
-        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.localtime())))
+        print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] CHAT BOT RESTART", time.localtime())))
