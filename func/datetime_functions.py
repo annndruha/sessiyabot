@@ -97,7 +97,7 @@ def validate_datetime(datetime_text):
 def validate_tz(tz_text):
     try:
         i = int(tz_text)
-        if (i > -13 and i < 13):
+        if (i > -16 and i < 10):
             return True
         else:
             return False

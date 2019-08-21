@@ -2,6 +2,8 @@
 # - run chat commands and others
 # Marakulin Andrey @annndruha
 # 2019
+import signal
+
 from math import sin, cos, tan, acos, asin, atan, sinh, cosh, tanh, asinh, acosh, atanh
 from math import sqrt, pow, exp, log, log10, log2
 from math import factorial, degrees, radians, pi, e
@@ -136,85 +138,61 @@ def sessiya_mesage(user):
     return ans
 
 #bookmarks bar
-replace = {
-    'i':'j',
-    'факториал':'factorial',
-    'чёртова дюжина':'13',
-    'чертова дюжина':'13',
-    'дюжина':'12',
-    'возвести в степень':'**',
-    'умножить на': '*',
-    'разделить на':'/',
-    'мнимое':'j',
-    'сложить с':'+',
-    'единица':'1',
-    'едино':'1',
-    'один':'1',
-    'ноль':'0',
-    'два':'2',
-    'три':'3',
-    'четыре':'4',
-    'пять':'5',
-    'шесть':'6',
-    'восемь':'8',
-    'семь':'7',
-    'факт':'factorial',
-    'девять':'9',
-    'десять':'10',
-
-    'умножить':'*',
-    'плюс':'+',
-    'минус':'-',
-    'отнять':'-',
-    'корень':'sqrt',
-    'точка':'.',
-
-    'в степени':'**',
-    'разделить':'/',
-    'прибавить':'+',
-
-    'жды':'*',
-    'на':'*',
-    'ю':'*',
-
-    '^':'**',
-    ' ':''
-
-    #'десять':'10',
-    #'двадцать':'20',
-    #'тридцать':'30',
-    #'сорок':'40',
-    #'пятьдесят':'50',
-    #'шестьдесят':'60',
-    #'семьдесят':'70',
-    #'восемьдесят':'80',
-    #'девяносто':'90',
-    }
 
 def validate_expression(message):
-    for word in replace:
+    for word in dict.calc_replace:
         if message.find(word) >= 0:
-            message = message.replace(word, replace[word])
-    #Проверить выражение
-    return message
+            message = message.replace(word, dict.calc_replace[word])
+
+    allowed_characters = ['.',',','+','-','*','/','%','^','(',')','0','1','2','3','4','5','6','7','8','9',
+        'j','e','pi','pow','exp','tan','cos','sin','log','tanh','cosh','sinh','acos','asin','atan',
+        'sqrt','atanh','acosh','asinh','degrees','radians','factorial']
+
+    last_index = 0
+    found_index = -1
+    found_word = ''
+    passer = True
+    l = len(message)
+    while last_index < l:
+        for word in allowed_characters:
+            i = message.find(word, last_index)
+            if i == last_index:
+                found_index = i
+                found_word = word
+
+        if not found_index == last_index:
+            last_index = l
+            passer = False
+
+        last_index +=len(found_word)
+        if found_word == '':
+            last_index = l
+            passer = False
+
+        found_index = -1
+        found_word = ''
+    return passer
 
 def calculator(message):#New thread + alert timer
-    message = validate_expression(message)
-    print('Вы ввели: ' + str(message.replace('**','^').replace('j','i')))
     try:
-        response = str(eval(message))
-        response = response.replace('j','i')
-        response = response.replace('(','')
-        response = response.replace(')','')
-        #округлить?
-        print('Ответ: ' + response)
-        return response
+        signal.alarm(1)
+        equation = message
+        for word in dict.calc_replace:
+            if equation.find(word) >= 0:
+                equation = equation.replace(word, dict.calc_replace[word])
+
+        str_input = equation.replace('**','^').replace('j','i')
+        try:
+            response = str(eval(equation)).replace('j','i').replace('(','').replace(')','')
+            ans = dict.other['input'] + str_input + dict.other['ans'] + response
+            if len(ans) > 4000:
+                ans = dict.errors['big_slove']
+            if equation == response:
+                ans = dict.other['arifmetic']
+            signal.alarm(0)
+            return ans
+        except:
+            signal.alarm(0)
+            return dict.errors['cant_slove']
     except:
-        response = 'Не могу посчитать'
-        print(response)
-        return response
-
-
-#print('start')
-#while True:
-#    print(calculate(input()))
+        return dict.errors['calc_error']
