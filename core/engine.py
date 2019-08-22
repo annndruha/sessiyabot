@@ -2,8 +2,6 @@
 # - run chat commands and others
 # Marakulin Andrey @annndruha
 # 2019
-import signal
-
 from math import sin, cos, tan, acos, asin, atan, sinh, cosh, tanh, asinh, acosh, atanh
 from math import sqrt, pow, exp, log, log10, log2
 from math import factorial, degrees, radians, pi, e
@@ -137,8 +135,6 @@ def sessiya_mesage(user):
         ans = dict.exam_message[s + 'ask_exam_past']
     return ans
 
-#bookmarks bar
-
 def validate_expression(message):
     for word in dict.calc_replace:
         if message.find(word) >= 0:
@@ -175,7 +171,6 @@ def validate_expression(message):
 
 def calculator(message):#New thread + alert timer
     try:
-        signal.alarm(1)
         equation = message
         for word in dict.calc_replace:
             if equation.find(word) >= 0:
@@ -189,10 +184,8 @@ def calculator(message):#New thread + alert timer
                 ans = dict.errors['big_slove']
             if equation == response:
                 ans = dict.other['arifmetic']
-            signal.alarm(0)
             return ans
         except:
-            signal.alarm(0)
-            return dict.errors['cant_slove']
+            ans = dict.errors['cant_slove']
     except:
-        return dict.errors['calc_error']
+        ans = dict.errors['calc_error']

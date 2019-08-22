@@ -1,7 +1,8 @@
-# sessiyabot
-# - Chat bot vk.com for students
-# Marakulin Andrey @annndruha
-# 2019
+"""sessiyabot
+- Chat bot vk.com for students
+Marakulin Andrey @annndruha
+2019
+"""
 import time
 import traceback
 

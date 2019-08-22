@@ -57,8 +57,8 @@ def message_analyzer(user):
                     if k == 6:
                         ans, attach = dict.cheer(user, True)
 
-            if ans == None and eng.validate_expression(user.message)==True:
-                ans = eng.calculator(user.message)
+            #if ans == None and eng.validate_expression(user.message)==True:
+            #    ans = eng.calculator(user.message)
 
         if (ans is None) and (user.message.find('?') >= 0):
             ans = dict.random_answer()
