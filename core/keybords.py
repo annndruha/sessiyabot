@@ -261,23 +261,23 @@ def keyboard_browser(user, str_payload):
                 main_page(user.user_id)
             elif payload[1] == 'set_time':
                 user.message = payload[2]
-                ans = eng.time(user)
+                ans = eng.alter_time(user)
                 main_page(user.user_id, ans)
             elif payload[1] == 'set_tz':
                 user.message = payload[2]
-                ans = eng.tz(user)
+                ans = eng.alter_tz(user)
                 main_page(user.user_id, ans)
             elif payload[1] == 'set_date':
                 user.message = dt.neareat_date(payload[2])
-                ans = eng.date(user)
+                ans = eng.alter_date(user)
                 main_page(user.user_id, ans)
             elif payload[1] == 'set_subcribe':
                 if payload[2] == 'start':
                     user.message = payload[2]
-                    ans = eng.time(user)
+                    ans = eng.alter_time(user)
                 elif payload[2] == 'stop':
                     user.message = payload[2]
-                    ans = eng.stop(user)
+                    ans = eng.alter_stop(user)
                 main_page(user.user_id, ans)
 
         elif payload[0] == 'next_page':

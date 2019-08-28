@@ -2,6 +2,11 @@
 # - run chat commands and others
 # Marakulin Andrey @annndruha
 # 2019
+import time
+import multiprocessing
+import requests
+import re
+import urllib.parse
 from math import sin, cos, tan, acos, asin, atan, sinh, cosh, tanh, asinh, acosh, atanh
 from math import sqrt, pow, exp, log, log10, log2
 from math import factorial, degrees, radians, pi, e
@@ -11,7 +16,7 @@ from func import datetime_functions as dt
 from func import database_functions as db
 
 # Start notify or change notify time
-def time(user):
+def alter_time(user):
     data = db.get_user(user.user_id)
     if (len(user.message.split(' ')) < 2):
         if data == None:
@@ -48,7 +53,7 @@ def time(user):
     return ans
 
 #Change or set exam date
-def date(user):
+def alter_date(user):
     if (len(user.message.split(' ')) < 2):
         ans = dict.db_ans['incorrect_date']
     elif (dt.validate_date(user.message.split(' ')[1]) == False):
@@ -65,8 +70,8 @@ def date(user):
             ans = dict.db_ans['set_date'] + str_user_date
     return ans
 
-#Change time zone
-def tz(user):
+# Change time zone
+def alter_tz(user):
     if (len(user.message.split(' ')) < 2):
         ans = dict.db_ans['incorrect_tz']
     elif (dt.validate_tz(user.message.split(' ')[1]) == False):
@@ -92,7 +97,7 @@ def tz(user):
     return ans
 
 # Stop notify message from user
-def stop(user):
+def alter_stop(user):
     data = db.get_user(user.user_id)
     if data == None:
         ans = dict.db_ans['no_sub']
@@ -105,8 +110,8 @@ def stop(user):
             ans = dict.db_ans['unfollow']
     return ans
 
-# Sessiya mesage return days to exam
-def sessiya_mesage(user):
+# Sessiya message return days to exam
+def sessiya_message(user):
     data = db.get_user(user.user_id)
     # Calculate days_to_exam and s = degree of confidence
     if data is not None:
@@ -135,12 +140,47 @@ def sessiya_mesage(user):
         ans = dict.exam_message[s + 'ask_exam_past']
     return ans
 
+def find_in_internet(message):
+    try:
+        message = message.replace(' ', '%20')
+        get_page_summary ='https://ru.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles='+message
+        resp = (requests.get(get_page_summary, timeout=1)).json()
+        pages = resp['query']['pages']
+        for i in pages:
+            summary = pages[i]['extract']
+
+        summary = re.sub(r'\([^)]*\)', '', summary)
+        summary = summary.replace('..','.').replace('́','').replace('. .','.')
+
+        if len(summary)>300:
+            n = len(summary)-320
+            summary = summary[:-n]
+            if summary.rfind(' ')!= -1:
+                n = len(summary)-summary.rfind(' ')
+                summary = summary[:-n]
+
+        get_page_url = 'https://ru.wikipedia.org/w/api.php?format=json&action=query&prop=info&inprop=url&redirects=1&titles='+message
+        resp = (requests.get(get_page_url, timeout=1)).json()
+        pages = resp['query']['pages']
+        for i in pages:
+            url = pages[i]['fullurl']
+        url = urllib.parse.unquote(url)
+        url = url.replace('https://','')
+
+
+        ans = summary+'... Источник: '+url
+        return ans
+    except:
+        return None
+
+
+# Here and below are calculator functions
 def validate_expression(message):
     for word in dict.calc_replace:
         if message.find(word) >= 0:
             message = message.replace(word, dict.calc_replace[word])
 
-    allowed_characters = ['.',',','+','-','*','/','%','^','(',')','0','1','2','3','4','5','6','7','8','9',
+    allowed_characters = ['.',',','+','-','*','/','%','(',')','0','1','2','3','4','5','6','7','8','9',
         'j','e','pi','pow','exp','tan','cos','sin','log','tanh','cosh','sinh','acos','asin','atan',
         'sqrt','atanh','acosh','asinh','degrees','radians','factorial']
 
@@ -169,23 +209,40 @@ def validate_expression(message):
         found_word = ''
     return passer
 
-def calculator(message):#New thread + alert timer
+def slove(message, shm):
     try:
+        ans = dict.errors['cant_slove']
         equation = message
         for word in dict.calc_replace:
             if equation.find(word) >= 0:
                 equation = equation.replace(word, dict.calc_replace[word])
 
+        response = str(eval(equation)) # Let's do this
+
         str_input = equation.replace('**','^').replace('j','i')
-        try:
-            response = str(eval(equation)).replace('j','i').replace('(','').replace(')','')
-            ans = dict.other['input'] + str_input + dict.other['ans'] + response
-            if len(ans) > 4000:
-                ans = dict.errors['big_slove']
-            if equation == response:
-                ans = dict.other['arifmetic']
-            return ans
-        except:
-            ans = dict.errors['cant_slove']
+        ans = dict.other['input'] + str_input + dict.other['ans'] + response.replace('j','i').replace('(','').replace(')','')
+
+        if len(response) > 4000:
+            ans = dict.errors['big_slove']
+        if equation == response:
+            ans = dict.other['arifmetic']
+        shm.put(ans)
     except:
-        ans = dict.errors['calc_error']
+        ans = dict.errors['cant_slove']
+        shm.put(ans)
+
+# Main calc function, started a new process with slover
+def calculator(message):
+    shm = multiprocessing.Queue() # Shared memory between processes
+    p = multiprocessing.Process(target=slove, args = (message, shm))
+
+    p.start()
+    time.sleep(1)
+
+    p.terminate()
+    try:
+        ans = shm.get(timeout = 1)
+    except:
+        ans = dict.errors['too_long']
+    p.join()
+    return ans

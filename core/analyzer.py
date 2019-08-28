@@ -43,29 +43,32 @@ def message_analyzer(user):
                 if (user.message.find(keyword) >= 0):
                     k = dict.functions[keyword]
                     if k == 0:
-                        ans = eng.sessiya_mesage(user)
+                        ans = eng.sessiya_message(user)
                     if k == 1:
-                        ans = eng.time(user)
+                        ans = eng.alter_time(user)
                     if k == 2:
-                        ans = eng.date(user)
+                        ans = eng.alter_date(user)
                     if k == 3:
-                        ans = eng.stop(user)
+                        ans = eng.alter_stop(user)
                     if k == 4:
-                        ans = eng.tz(user)
+                        ans = eng.alter_tz(user)
                     if k == 5:
                         ans, attach = dict.cheer(user)
                     if k == 6:
                         ans, attach = dict.cheer(user, True)
 
-            #if ans == None and eng.validate_expression(user.message)==True:
-            #    ans = eng.calculator(user.message)
+            if ans == None and eng.validate_expression(user.message)==True:
+                ans = eng.calculator(user.message)
+            if ans == None:
+                ans = eng.find_in_internet(user.message)
+            if ans == None:
+                if user.message.find('?') >= 0:
+                    ans = dict.random_answer()
 
-        if (ans is None) and (user.message.find('?') >= 0):
-            ans = dict.random_answer()
-        elif ans is None:
+        if ans == None:
             ans = dict.random_not_found()
-                #ans = eng.find_in_wiki(user_id, user.message)
-                #max idi nahui
+            #max idi nahui
+
         if open_kb:
             kb.main_page(user.user_id, ans)
         else:
