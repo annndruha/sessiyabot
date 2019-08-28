@@ -221,11 +221,13 @@ def slove(message, shm):
 
         str_input = equation.replace('**','^').replace('j','i')
         ans = dict.other['input'] + str_input + dict.other['ans'] + response.replace('j','i').replace('(','').replace(')','')
-
+        if ans.find('.0')==len(ans)-2:
+            ans = ans[:-2]
         if len(response) > 4000:
             ans = dict.errors['big_slove']
         if equation == response:
             ans = dict.other['arifmetic']
+
         shm.put(ans)
     except:
         ans = dict.errors['cant_slove']

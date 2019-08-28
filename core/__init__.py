@@ -1,3 +1,3 @@
 from . import engine
 from . import keybords
-from . import analyzer
+from . import chat_module
