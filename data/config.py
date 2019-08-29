@@ -5,7 +5,7 @@
 access_token = '***'
 
 db_host = '***'
-db_port = '**'
+db_port = '***'
 db_account = '***'
 db_password = '***'
 db_name = '***'

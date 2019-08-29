@@ -141,17 +141,17 @@ def sessiya_message(user):
     return ans
 
 def find_in_internet(message):
-    try:
-        message = message.replace(' ', '%20')
-        get_page_summary ='https://ru.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles='+message
+    try:# Make a wiki api request
+        get_page_summary ='https://ru.wikipedia.org/w/api.php?format=json&action=query&prop=extracts|info&inprop=url&exintro&explaintext&redirects=1&titles='+message
         resp = (requests.get(get_page_summary, timeout=1)).json()
+        #Parsing summary and url
         pages = resp['query']['pages']
         for i in pages:
             summary = pages[i]['extract']
+            url = pages[i]['fullurl']
 
-        summary = re.sub(r'\([^)]*\)', '', summary)
-        summary = summary.replace('..','.').replace('́','').replace('. .','.')
-
+        summary = re.sub(r'\([^\(\)]*(\([^\(\)]*(\([^\(\)]*\))*[^\(\)]*\))*[^\(\)]*\)', '', summary)
+        summary = summary.replace('..','.').replace('́','').replace('. .','.').replace(' ,', ' ')
         if len(summary)>300:
             n = len(summary)-320
             summary = summary[:-n]
@@ -159,20 +159,13 @@ def find_in_internet(message):
                 n = len(summary)-summary.rfind(' ')
                 summary = summary[:-n]
 
-        get_page_url = 'https://ru.wikipedia.org/w/api.php?format=json&action=query&prop=info&inprop=url&redirects=1&titles='+message
-        resp = (requests.get(get_page_url, timeout=1)).json()
-        pages = resp['query']['pages']
-        for i in pages:
-            url = pages[i]['fullurl']
         url = urllib.parse.unquote(url)
         url = url.replace('https://','')
-
 
         ans = summary+'... Источник: '+url
         return ans
     except:
         return None
-
 
 # Here and below are calculator functions
 def validate_expression(message):

@@ -68,11 +68,14 @@ def message_analyzer(user):
         if ans == None:
             ans = dict.random_not_found()
             if user.user_id ==231000957:
-                ans = 'https://sun9-44.userapi.com/c855616/v855616825/d9fda/0INeMdNvsXA.jpg'
+                ans = 'https://sun9-17.userapi.com/c850128/v850128524/1c19ce/CIlLU_8UbNw.jpg'
         if open_kb:
             kb.main_page(user.user_id, ans)
         else:
-            vk.write_msg(user.user_id, ans, attach)
+            if ans == 'https://sun9-17.userapi.com/c850128/v850128524/1c19ce/CIlLU_8UbNw.jpg':
+                vk.write_msg(user.user_id, ans, None, True)
+            else:
+                vk.write_msg(user.user_id, ans, attach)
 
     except psycopg2.Error:
         raise err
@@ -81,12 +84,12 @@ def message_analyzer(user):
     except BaseException as err:
         ans = dict.errors['im_broken']
         vk.write_msg(user.user_id, ans)
-        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Unknown Exception (message_analyzer), description:", time.localtime())))
+        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Unknown Exception (message_analyzer), description:", time.gmtime())))
         traceback.print_tb(err.__traceback__)
         print(str(err.args))
 
 def chat_loop():
-    print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] CHAT MODULE START", time.localtime())))
+    print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] CHAT MODULE START", time.gmtime())))
     while True:
         try:
             for event in vk.longpoll.listen():
@@ -102,34 +105,34 @@ def chat_loop():
                         message_analyzer(user)
 
         except psycopg2.Error as err:
-            print(time.strftime("---[%Y-%m-%d %H:%M:%S] Database Error (longpull_loop), description:", time.localtime()))
+            print(time.strftime("---[%Y-%m-%d %H:%M:%S] Database Error (longpull_loop), description:", time.gmtime()))
             #traceback.print_tb(err.__traceback__)
             print(err.args)
             try:
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect database...", time.localtime())))
+                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect database...", time.gmtime())))
                 db.reconnect()
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Database connected successful", time.localtime())))
+                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Database connected successful", time.gmtime())))
                 time.sleep(1)
             except:
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect database failed", time.localtime())))
+                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect database failed", time.gmtime())))
                 time.sleep(10)
-            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.localtime())))
+            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.gmtime())))
         except OSError as err:
-            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] OSError (longpull_loop), description:", time.localtime())))
+            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] OSError (longpull_loop), description:", time.gmtime())))
             #traceback.print_tb(err.__traceback__)
             print(err.args)
             try:
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect VK...", time.localtime())))
+                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect VK...", time.gmtime())))
                 vk_reconnect()
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] VK connected successful", time.localtime())))
+                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] VK connected successful", time.gmtime())))
                 time.sleep(1)
             except:
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect VK failed", time.localtime())))
+                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect VK failed", time.gmtime())))
                 time.sleep(10)
-            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.localtime())))
+            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.gmtime())))
         except BaseException as err:
-            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] BaseException (longpull_loop), description:", time.localtime())))
+            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] BaseException (longpull_loop), description:", time.gmtime())))
             traceback.print_tb(err.__traceback__)
             print(err.args)
             time.sleep(5)
-            print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.localtime())))
+            print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.gmtime())))

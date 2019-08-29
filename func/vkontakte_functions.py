@@ -40,11 +40,20 @@ def reconnect():
 def user_get(user_id):
     return vk.method('users.get', {'user_ids': user_id})
 
-def write_msg(user_id, message, attach=None):
-    if attach is None:
-        vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': get_random_id(), 'dont_parse_links':1})
-    else:
-        vk.method('messages.send', {'user_id': user_id, 'message': message, 'attachment':attach,'random_id': get_random_id(), 'dont_parse_links':1})
+def write_msg(user_id, message=None, attach=None, parse_links = False):
+    params = {'user_id': user_id, 'random_id': get_random_id()}
+
+    if message is not None and attach is not None:
+        params['message']=message
+        params['attachment']=attach
+    elif message is not None and attach is None:
+        params['message']=message
+    elif message is None and attach is not None:
+        params['attachment']=attach
+    if parse_links == False:
+        params['dont_parse_links']=1
+
+    vk.method('messages.send', params)
 
 def write_notify_msg(user_id, message):
     vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': datetime_to_random_id()})
@@ -98,14 +107,15 @@ def update_members():
         members_ids = members['items']
 
 def followers_monitor():
+    time.altzone = 3
     while True:
         get_members()
-        print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] FOLLOWERS MONITOR START", time.localtime())))
+        print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] FOLLOWERS MONITOR START", time.gmtime())))
         try:
             while True:
                 update_members()
                 time.sleep(20)
         except BaseException as err:
-            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] BaseException (followers_monitor), description:", time.localtime())))
+            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] BaseException (followers_monitor), description:", time.gmtime())))
             print(err.args)
             time.sleep(120)

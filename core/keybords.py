@@ -305,13 +305,13 @@ def keyboard_browser(user, str_payload):
     except psycopg2.Error as err:
         ans = dict.errors['not_available']
         vk.write_msg(user.user_id, ans)
-        print(time.strftime("---[%Y-%m-%d %H:%M:%S] Database Error (keyboard_browser), raise:", time.localtime()))
+        print(time.strftime("---[%Y-%m-%d %H:%M:%S] Database Error (keyboard_browser), raise:", time.gmtime()))
         raise err
     except OSError as err:
         raise err
     except BaseException as err:
         ans = dict.errors['kb_error']
         vk.write_msg(user.user_id, ans)
-        print(time.strftime("---[%Y-%m-%d %H:%M:%S] Unknown Exception (keyboard_browser), description:", time.localtime()))
+        print(time.strftime("---[%Y-%m-%d %H:%M:%S] Unknown Exception (keyboard_browser), description:", time.gmtime()))
         traceback.print_tb(err.__traceback__)
         print(str(err.args))

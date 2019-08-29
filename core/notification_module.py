@@ -51,7 +51,7 @@ def notify_mesage(data):
 
 #Main code
 def notify_loop():
-    print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] NOTIFY MODULE START", time.localtime())))
+    print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] NOTIFY MODULE START", time.gmtime())))
     last_send_time = -1
     while True:
         try:
@@ -67,34 +67,34 @@ def notify_loop():
             time.sleep(10)
 
         except psycopg2.Error as err:
-            print(time.strftime("---[%Y-%m-%d %H:%M:%S] psycopg2.Error error (notify_loop), description:", time.localtime()))
+            print(time.strftime("---[%Y-%m-%d %H:%M:%S] psycopg2.Error error (notify_loop), description:", time.gmtime()))
             #traceback.print_tb(err.__traceback__)
             print(err.args[0])
             try:
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect database", time.localtime())))
+                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect database", time.gmtime())))
                 db.reconnect()
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Database connected successful", time.localtime())))
+                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Database connected successful", time.gmtime())))
                 time.sleep(2)
             except:
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect database failed", time.localtime())))
+                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect database failed", time.gmtime())))
                 time.sleep(10)
-            print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] NOTIFY MODULE RESTART", time.localtime())))
+            print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] NOTIFY MODULE RESTART", time.gmtime())))
         except OSError as err:
-            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] OSError (notify_loop), description:", time.localtime())))
+            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] OSError (notify_loop), description:", time.gmtime())))
             #traceback.print_tb(err.__traceback__)
             print(err.args[0])
             try:
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect VK...", time.localtime())))
+                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect VK...", time.gmtime())))
                 vk_reconnect()
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] VK connected successful", time.localtime())))
+                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] VK connected successful", time.gmtime())))
                 time.sleep(2)
             except:
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect VK failed", time.localtime())))
+                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect VK failed", time.gmtime())))
                 time.sleep(10)
-            print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] NOTIFY MODULE RESTART", time.localtime())))
+            print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] NOTIFY MODULE RESTART", time.gmtime())))
         except BaseException as err:
-            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Unknown Exception (notify_loop):", time.localtime())))
+            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Unknown Exception (notify_loop):", time.gmtime())))
             traceback.print_tb(err.__traceback__)
             print(err.args[0])
             time.sleep(10)
-            print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] NOTIFY MODULE RESTART", time.localtime())))
+            print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] NOTIFY MODULE RESTART", time.gmtime())))
