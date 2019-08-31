@@ -158,6 +158,8 @@ def find_in_internet(message):
             if summary.rfind(' ')!= -1:
                 n = len(summary)-summary.rfind(' ')
                 summary = summary[:-n]
+        if summary.find('''{''')>=0:
+            return None
 
         url = urllib.parse.unquote(url)
         url = url.replace('https://','')
