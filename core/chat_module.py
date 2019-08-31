@@ -64,18 +64,13 @@ def message_analyzer(user):
             if ans == None:
                 if user.message.find('?') >= 0:
                     ans = dict.random_answer()
-
         if ans == None:
             ans = dict.random_not_found()
-            if user.user_id ==231000957:
-                ans = 'https://sun9-17.userapi.com/c850128/v850128524/1c19ce/CIlLU_8UbNw.jpg'
+
         if open_kb:
             kb.main_page(user.user_id, ans)
         else:
-            if ans == 'https://sun9-17.userapi.com/c850128/v850128524/1c19ce/CIlLU_8UbNw.jpg':
-                vk.write_msg(user.user_id, ans, None, True)
-            else:
-                vk.write_msg(user.user_id, ans, attach)
+            vk.write_msg(user.user_id, ans, attach)
 
     except psycopg2.Error:
         raise err
