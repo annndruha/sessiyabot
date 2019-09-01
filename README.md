@@ -1,7 +1,7 @@
 # Sessiya-bot
 ![Logo](https://sun9-28.userapi.com/c856020/v856020225/d2ad8/h3nhdDVN5qk.jpg)
 ## VK Chat-bot for students
-Chatbot for students, which helps them prepare for the session, based on vk-community chat.
+Chatbot for students, which helps them prepare for the session, based on vk-community chat. See more in my community: https://vk.com/sessiyabot
 
 Features:
 + Maintain conversation
