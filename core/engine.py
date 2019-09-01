@@ -8,7 +8,7 @@ import requests
 import re
 import urllib.parse
 from math import sin, cos, tan, acos, asin, atan, sinh, cosh, tanh, asinh, acosh, atanh
-from math import sqrt, pow, exp, log, log10, log2
+from math import sqrt, pow, exp, log, log10, log2, fabs
 from math import factorial, degrees, radians, pi, e
 
 from data import ru_dictionary as dict
@@ -176,7 +176,7 @@ def validate_expression(message):
             message = message.replace(word, dict.calc_replace[word])
 
     allowed_characters = ['.',',','+','-','*','/','%','(',')','0','1','2','3','4','5','6','7','8','9',
-        'j','e','pi','pow','exp','tan','cos','sin','log','tanh','cosh','sinh','acos','asin','atan',
+        'j','e','pi','pow','exp','tan','cos','sin','log','tanh','cosh','sinh','fabs','acos','asin','atan',
         'sqrt','atanh','acosh','asinh','degrees','radians','factorial']
 
     last_index = 0
@@ -212,7 +212,18 @@ def slove(message, shm):
             if equation.find(word) >= 0:
                 equation = equation.replace(word, dict.calc_replace[word])
 
-        response = str(eval(equation)) # Let's do this
+        response = eval(equation) # Let's do this
+        
+        if isinstance(response, complex):# Type check and polishing
+            if fabs(response.imag)<10**-9:
+                response = complex(response.real, 0)
+            if fabs(response.real)<10**-9:
+                response = complex(0, response.imag)
+        if isinstance(response, float):
+            if fabs(response)<10**-9:
+                response = 0
+
+        response =str(response)
 
         str_input = equation.replace('**','^').replace('j','i')
         ans = dict.other['input'] + str_input + dict.other['ans'] + response.replace('j','i').replace('(','').replace(')','')
