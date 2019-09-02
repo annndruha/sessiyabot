@@ -24,9 +24,9 @@ Features:
 
 And paste PostgreSQL settings like 'host, user, etc.' in data/config.py
 
-**Constants:**
+**Language and time constants:**
 
-Default code configurated for Moscow and Russian language. All language constants may change in data/ru_dictionary.py as well as exam date, but to change reference Moscow timezone(UTC+3) (using to write in database) you need open func/datetime_functions.py. Logs timestamp always in UTC timezone.
+Default code configurated for Moscow and Russian language. All language constants may change in data/ru_dictionary.py as well as exam date, but to change reference Moscow timezone(UTC+3) (using to write in database) you need open func/datetime_functions.py. Also you need to change wikipedia language: core/engine find_in_internet in request string. Logs timestamp always in UTC timezone.
 
 ### Supported Python Version
 Python 3.7 are fully  tested.
