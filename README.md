@@ -41,11 +41,11 @@ vk-api==11.5.0
 ### Docker
 If you use  docker, you can run bot with this example docker command:
 ```bash
-docker run -d --name sessiyabot imaginename
+docker run -d --name sessiyabot imagename
 ```
 Or this, if you want to keep config data in secret:
 ```bash
-docker run -d --name sessiyabot -v /root/sessiyabot/configvolume.py:/sessiyabot/data/config.py imaginename
+docker run -d --name sessiyabot -v /root/sessiyabot/configvolume.py:/sessiyabot/data/config.py imagename
 ```
 See logs:
 ```bash
