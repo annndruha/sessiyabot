@@ -1,5 +1,5 @@
 # Sessiya-bot
-![Logo](https://sun9-28.userapi.com/c856020/v856020225/d2ad8/h3nhdDVN5qk.jpg)
+![Logo](https://camo.githubusercontent.com/29fe12ed3ec7c9493f63eab6ce2f76a8ee6ebff2/68747470733a2f2f73756e392d32382e757365726170692e636f6d2f633835363032302f763835363032303232352f64326164382f68336e686444564e35716b2e6a7067)
 ## VK Chat-bot for students
 Chatbot for students, which helps them prepare for the session, based on vk-community chat. See more in my community: https://vk.com/sessiyabot
 
@@ -52,4 +52,4 @@ See logs:
 docker logs sessiyabot -follow
 ```
 ## Project imports schema:
-![Schema](https://sun9-22.userapi.com/c857736/v857736714/59499/kxmdJLOJl_4.jpg)
+![Schema](https://camo.githubusercontent.com/abf77df95628ee77413d6bfc5658ed0b64e8ccaa/68747470733a2f2f73756e392d32322e757365726170692e636f6d2f633835373733362f763835373733363731342f35393439392f6b786d644a4c4f4a6c5f342e6a7067)
