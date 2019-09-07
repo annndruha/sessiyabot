@@ -151,7 +151,7 @@ def find_in_internet(message):
             url = pages[i]['fullurl']
 
         summary = re.sub(r'\([^\(\)]*(\([^\(\)]*(\([^\(\)]*\))*[^\(\)]*\))*[^\(\)]*\)', '', summary)
-        summary = summary.replace('..','.').replace('́','').replace('. .','.').replace(' ,', ' ')
+        summary = summary.replace('..','.').replace('́','').replace('. .','.').replace(' ,', ' ').replace('  ', ' ').replace(' .', '.')
         if len(summary)>300:
             n = len(summary)-320
             summary = summary[:-n]
@@ -164,7 +164,7 @@ def find_in_internet(message):
         url = urllib.parse.unquote(url)
         url = url.replace('https://','')
 
-        ans = summary+'... Источник: '+url
+        ans = summary+'... '+url
         return ans
     except:
         return None
