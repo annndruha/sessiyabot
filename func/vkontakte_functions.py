@@ -84,7 +84,7 @@ def update_members():
         while i <= new_members_count and ex == False:
             if new_ids[i] != members_ids[i]:
                 user = user_get(members_ids[i])
-                message = '&#10006; Отписался: [id' + str(members_ids[i]) + '|' + (user[0])['first_name'] + ' ' + (user[0])['last_name'] + ']\nЧисло участников: ' + str(new_members_count)
+                message = '&#10006; Отписался: [id' + str(members_ids[i]) + '|' + (user[0])['first_name'] + ' ' + (user[0])['last_name'] + ']\nЧисло ботающих: ' + str(new_members_count)
                 write_msg(478143147,message)
                 write_msg(members_ids[i], dict.other['unfollow'])
                 ex = True
@@ -99,7 +99,7 @@ def update_members():
         while i <= members_count and ex == False:
             if new_ids[i] != members_ids[i]:
                 user = user_get(new_ids[i])
-                message = '&#10133; Подписался: [id' + str(new_ids[i]) + '|' + (user[0])['first_name'] + ' ' + (user[0])['last_name'] + ']\nЧисло участников: ' + str(new_members_count)
+                message = '&#10133; Новый подписчик: [id' + str(new_ids[i]) + '|' + (user[0])['first_name'] + ' ' + (user[0])['last_name'] + ']\nЧисло ботающих: ' + str(new_members_count)
                 write_msg(478143147,message)
                 ex = True
             i+=1
