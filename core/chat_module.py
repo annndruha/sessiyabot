@@ -9,6 +9,7 @@ import psycopg2
 
 from data import ru_dictionary as dict
 from func import vkontakte_functions as vk
+from func import database_functions as db
 from core import engine as eng
 from core import keybords as kb
 
@@ -118,7 +119,7 @@ def chat_loop():
             print(err.args)
             try:
                 print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect VK...", time.gmtime())))
-                vk_reconnect()
+                vk.reconnect()
                 print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] VK connected successful", time.gmtime())))
                 time.sleep(1)
             except:
@@ -131,3 +132,5 @@ def chat_loop():
             print(err.args)
             time.sleep(5)
             print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.gmtime())))
+        except:
+            print('---Something go wrong. (chat_loop)')

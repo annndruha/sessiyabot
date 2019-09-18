@@ -115,7 +115,20 @@ def followers_monitor():
             while True:
                 update_members()
                 time.sleep(20)
+        except OSError as err:
+            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] OSError (followers_monitor), description:", time.gmtime())))
+            #traceback.print_tb(err.__traceback__)
+            print(err.args)
+            try:
+                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect VK...", time.gmtime())))
+                reconnect()
+                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] VK connected successful", time.gmtime())))
+                time.sleep(1)
+            except:
+                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect VK failed", time.gmtime())))
+                time.sleep(10)
+            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] FOLLOWERS MONITOR RESTART", time.gmtime())))
         except BaseException as err:
             print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] BaseException (followers_monitor), description:", time.gmtime())))
             print(err.args)
-            time.sleep(120)
+            time.sleep(60)

@@ -85,7 +85,7 @@ def notify_loop():
             print(err.args[0])
             try:
                 print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect VK...", time.gmtime())))
-                vk_reconnect()
+                vk.reconnect()
                 print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] VK connected successful", time.gmtime())))
                 time.sleep(2)
             except:
@@ -98,3 +98,5 @@ def notify_loop():
             print(err.args[0])
             time.sleep(10)
             print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] NOTIFY MODULE RESTART", time.gmtime())))
+        except:
+            print('---Something go wrong. (notify_loop)')
