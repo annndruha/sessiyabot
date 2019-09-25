@@ -4,6 +4,7 @@
 # 2019
 import time
 import traceback
+import datetime
 
 import psycopg2
 
@@ -11,6 +12,9 @@ from data import ru_dictionary as dict
 from func import database_functions as db
 from func import datetime_functions as dt
 from func import vkontakte_functions as vk
+
+def timestamp():
+    return "["+str(datetime.datetime.strftime(datetime.datetime.now(datetime.timezone(datetime.timedelta(hours = 3))), '%d.%m.%Y %H:%M:%S'))+"]"
 
 def greeting(local_time):
     if local_time < dt.str_to_time('05:40'):
@@ -51,7 +55,7 @@ def notify_mesage(data):
 
 #Main code
 def notify_loop():
-    print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] NOTIFY MODULE START", time.gmtime())))
+    print(f"====={timestamp()} NOTIFY MODULE START")
     last_send_time = -1
     while True:
         try:
@@ -67,36 +71,36 @@ def notify_loop():
             time.sleep(10)
 
         except psycopg2.Error as err:
-            print(time.strftime("---[%Y-%m-%d %H:%M:%S] psycopg2.Error error (notify_loop), description:", time.gmtime()))
+            print(f"---{timestamp()} psycopg2.Error error (notify_loop), description:")
             #traceback.print_tb(err.__traceback__)
             print(err.args[0])
             try:
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect database", time.gmtime())))
+                print(f"---{timestamp()} Try to recconnect database")
                 db.reconnect()
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Database connected successful", time.gmtime())))
+                print(f"---{timestamp()} Database connected successful")
                 time.sleep(2)
             except:
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect database failed", time.gmtime())))
+                print(f"---{timestamp()} Recconnect database failed")
                 time.sleep(10)
-            print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] NOTIFY MODULE RESTART", time.gmtime())))
+            print(f"==={timestamp()} NOTIFY MODULE RESTART")
         except OSError as err:
-            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] OSError (notify_loop), description:", time.gmtime())))
+            print(f"---{timestamp()} OSError (notify_loop), description:")
             #traceback.print_tb(err.__traceback__)
             print(err.args[0])
             try:
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect VK...", time.gmtime())))
+                print(f"---{timestamp()} Try to recconnect VK...")
                 vk.reconnect()
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] VK connected successful", time.gmtime())))
+                print(f"---{timestamp()} VK connected successful")
                 time.sleep(2)
             except:
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect VK failed", time.gmtime())))
+                print(f"---{timestamp()} Recconnect VK failed")
                 time.sleep(10)
-            print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] NOTIFY MODULE RESTART", time.gmtime())))
+            print(f"==={timestamp()} NOTIFY MODULE RESTART")
         except BaseException as err:
-            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Unknown Exception (notify_loop):", time.gmtime())))
+            print(f"---{timestamp()} Unknown Exception (notify_loop):")
             traceback.print_tb(err.__traceback__)
             print(err.args[0])
             time.sleep(10)
-            print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] NOTIFY MODULE RESTART", time.gmtime())))
+            print(f"==={timestamp()} NOTIFY MODULE RESTART")
         except:
             print('---Something go wrong. (notify_loop)')

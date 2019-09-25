@@ -4,6 +4,7 @@
 # 2019
 import time
 import traceback
+import datetime
 
 import psycopg2
 
@@ -12,6 +13,9 @@ from func import vkontakte_functions as vk
 from func import database_functions as db
 from core import engine as eng
 from core import keybords as kb
+
+def timestamp():
+    return "["+str(datetime.datetime.strftime(datetime.datetime.now(datetime.timezone(datetime.timedelta(hours = 3))), '%d.%m.%Y %H:%M:%S'))+"]"
 
 def message_analyzer(user):
     try:
@@ -80,12 +84,12 @@ def message_analyzer(user):
     except BaseException as err:
         ans = dict.errors['im_broken']
         vk.write_msg(user.user_id, ans)
-        print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Unknown Exception (message_analyzer), description:", time.gmtime())))
+        print(f"---{timestamp()} Unknown Exception (message_analyzer), description:")
         traceback.print_tb(err.__traceback__)
         print(str(err.args))
 
 def chat_loop():
-    print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] CHAT MODULE START", time.gmtime())))
+    print(f"====={timestamp()} CHAT MODULE START")
     while True:
         try:
             for event in vk.longpoll.listen():
@@ -101,36 +105,36 @@ def chat_loop():
                         message_analyzer(user)
 
         except psycopg2.Error as err:
-            print(time.strftime("---[%Y-%m-%d %H:%M:%S] Database Error (longpull_loop), description:", time.gmtime()))
+            print(f"---{timestamp()} Database Error (longpull_loop), description:")
             #traceback.print_tb(err.__traceback__)
             print(err.args)
             try:
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect database...", time.gmtime())))
+                print(f"---{timestamp()} Try to recconnect database...")
                 db.reconnect()
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Database connected successful", time.gmtime())))
+                print(f"---{timestamp()} Database connected successful")
                 time.sleep(1)
             except:
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect database failed", time.gmtime())))
+                print(f"---{timestamp()} Recconnect database failed")
                 time.sleep(10)
-            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.gmtime())))
+            print(f"==={timestamp()} CHAT MODULE RESTART")
         except OSError as err:
-            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] OSError (longpull_loop), description:", time.gmtime())))
+            print(f"---{timestamp()} OSError (longpull_loop), description:")
             #traceback.print_tb(err.__traceback__)
             print(err.args)
             try:
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect VK...", time.gmtime())))
+                print(f"---{timestamp()} Try to recconnect VK...")
                 vk.reconnect()
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] VK connected successful", time.gmtime())))
+                print(f"---{timestamp()} VK connected successful")
                 time.sleep(1)
             except:
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect VK failed", time.gmtime())))
+                print(f"---{timestamp()} Recconnect VK failed")
                 time.sleep(10)
-            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.gmtime())))
+            print(f"==={timestamp()} CHAT MODULE RESTART")
         except BaseException as err:
-            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] BaseException (longpull_loop), description:", time.gmtime())))
+            print(f"---{timestamp()} BaseException (longpull_loop), description:")
             traceback.print_tb(err.__traceback__)
             print(err.args)
             time.sleep(5)
-            print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] CHAT MODULE RESTART", time.gmtime())))
+            print(f"==={timestamp()} CHAT MODULE RESTART")
         except:
             print('---Something go wrong. (chat_loop)')

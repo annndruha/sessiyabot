@@ -106,29 +106,32 @@ def update_members():
         members_count = new_members_count
         members_ids = members['items']
 
+def timestamp():
+    return "["+str(datetime.datetime.strftime(datetime.datetime.now(datetime.timezone(datetime.timedelta(hours = 3))), '%d.%m.%Y %H:%M:%S'))+"]"
+
 def followers_monitor():
-    time.altzone = 3
+    print(f"====={timestamp()} FOLLOWERS MONITOR START")
     while True:
         get_members()
-        print(str(time.strftime("===[%Y-%m-%d %H:%M:%S] FOLLOWERS MONITOR START", time.gmtime())))
         try:
             while True:
                 update_members()
                 time.sleep(20)
         except OSError as err:
-            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] OSError (followers_monitor), description:", time.gmtime())))
+            print(f"---{timestamp()} OSError (followers_monitor), description:")
             #traceback.print_tb(err.__traceback__)
             print(err.args)
             try:
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Try to recconnect VK...", time.gmtime())))
+                print(f"---{timestamp()} Try to recconnect VK...")
                 reconnect()
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] VK connected successful", time.gmtime())))
+                print(f"---{timestamp()} VK connected successful")
                 time.sleep(1)
             except:
-                print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] Recconnect VK failed", time.gmtime())))
+                print(f"---{timestamp()} Recconnect VK failed")
                 time.sleep(10)
-            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] FOLLOWERS MONITOR RESTART", time.gmtime())))
+            print(f"==={timestamp()} FOLLOWERS MONITOR RESTART")
         except BaseException as err:
-            print(str(time.strftime("---[%Y-%m-%d %H:%M:%S] BaseException (followers_monitor), description:", time.gmtime())))
+            print(f"---{timestamp()} BaseException (followers_monitor), description:")
             print(err.args)
             time.sleep(60)
+            print(f"==={timestamp()} FOLLOWERS MONITOR RESTART")
