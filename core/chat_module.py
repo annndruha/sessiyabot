@@ -89,9 +89,11 @@ def message_analyzer(user):
         print(str(err.args))
 
 def chat_loop():
-    print(f"====={timestamp()} CHAT MODULE START")
     while True:
+        print(f"==={timestamp()} CHAT MODULE RESTART")
         try:
+            db.reconnect()
+            vk.reconnect()
             for event in vk.longpoll.listen():
                 if (event.type == vk.VkEventType.MESSAGE_NEW and event.to_me):
                     vk_user = vk.user_get(event.user_id)
@@ -116,7 +118,7 @@ def chat_loop():
             except:
                 print(f"---{timestamp()} Recconnect database failed")
                 time.sleep(10)
-            print(f"==={timestamp()} CHAT MODULE RESTART")
+            
         except OSError as err:
             print(f"---{timestamp()} OSError (longpull_loop), description:")
             #traceback.print_tb(err.__traceback__)
@@ -129,12 +131,12 @@ def chat_loop():
             except:
                 print(f"---{timestamp()} Recconnect VK failed")
                 time.sleep(10)
-            print(f"==={timestamp()} CHAT MODULE RESTART")
+
         except BaseException as err:
             print(f"---{timestamp()} BaseException (longpull_loop), description:")
             traceback.print_tb(err.__traceback__)
             print(err.args)
             time.sleep(5)
-            print(f"==={timestamp()} CHAT MODULE RESTART")
+
         except:
             print('---Something go wrong. (chat_loop)')

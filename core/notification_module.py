@@ -55,20 +55,23 @@ def notify_mesage(data):
 
 #Main code
 def notify_loop():
-    print(f"====={timestamp()} NOTIFY MODULE START")
-    last_send_time = -1
     while True:
-        try:
-            if (last_send_time != dt.time_now_obj()):
-                last_send_time = -1
-                users = db.get_users_who_sub_at(dt.time_now_obj())
-                for data in users:
-                    user_id, examdate, notifytime, subscribe, tz, firstname, lastname = data
+        print(f"====={timestamp()} NOTIFY MODULE RESTART")
+        try:  
+            db.reconnect()
+            vk.reconnect()
+            last_send_time = -1
+            while True:
+                if (last_send_time != dt.time_now_obj()):
+                    last_send_time = -1
+                    users = db.get_users_who_sub_at(dt.time_now_obj())
+                    for data in users:
+                        user_id, examdate, notifytime, subscribe, tz, firstname, lastname = data
 
-                    ans = notify_mesage(data)
-                    vk.write_notify_msg(data[0], ans)
-                    last_send_time = dt.time_now_obj()
-            time.sleep(10)
+                        ans = notify_mesage(data)
+                        vk.write_notify_msg(data[0], ans)
+                        last_send_time = dt.time_now_obj()
+                time.sleep(10)
 
         except psycopg2.Error as err:
             print(f"---{timestamp()} psycopg2.Error error (notify_loop), description:")
@@ -82,7 +85,7 @@ def notify_loop():
             except:
                 print(f"---{timestamp()} Recconnect database failed")
                 time.sleep(10)
-            print(f"==={timestamp()} NOTIFY MODULE RESTART")
+            
         except OSError as err:
             print(f"---{timestamp()} OSError (notify_loop), description:")
             #traceback.print_tb(err.__traceback__)
@@ -95,12 +98,12 @@ def notify_loop():
             except:
                 print(f"---{timestamp()} Recconnect VK failed")
                 time.sleep(10)
-            print(f"==={timestamp()} NOTIFY MODULE RESTART")
+
         except BaseException as err:
             print(f"---{timestamp()} Unknown Exception (notify_loop):")
             traceback.print_tb(err.__traceback__)
             print(err.args[0])
             time.sleep(10)
-            print(f"==={timestamp()} NOTIFY MODULE RESTART")
+
         except:
             print('---Something go wrong. (notify_loop)')

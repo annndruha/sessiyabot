@@ -4,6 +4,7 @@
 # 2019
 import time
 import datetime
+import traceback
 
 from vk_api import VkApi
 from vk_api.longpoll import VkLongPoll, VkEventType
@@ -110,13 +111,14 @@ def timestamp():
     return "["+str(datetime.datetime.strftime(datetime.datetime.now(datetime.timezone(datetime.timedelta(hours = 3))), '%d.%m.%Y %H:%M:%S'))+"]"
 
 def followers_monitor():
-    print(f"====={timestamp()} FOLLOWERS MONITOR START")
     while True:
-        get_members()
+        print(f"==={timestamp()} FOLLOWERS MONITOR RESTART")
         try:
+            reconnect()
+            get_members()
             while True:
                 update_members()
-                time.sleep(20)
+                time.sleep(10)
         except OSError as err:
             print(f"---{timestamp()} OSError (followers_monitor), description:")
             #traceback.print_tb(err.__traceback__)
@@ -129,9 +131,10 @@ def followers_monitor():
             except:
                 print(f"---{timestamp()} Recconnect VK failed")
                 time.sleep(10)
-            print(f"==={timestamp()} FOLLOWERS MONITOR RESTART")
         except BaseException as err:
             print(f"---{timestamp()} BaseException (followers_monitor), description:")
             print(err.args)
             time.sleep(60)
-            print(f"==={timestamp()} FOLLOWERS MONITOR RESTART")
+        except:
+            print('---Something go wrong. (followers_monitor)')
+            
