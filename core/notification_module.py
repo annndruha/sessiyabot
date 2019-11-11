@@ -56,7 +56,7 @@ def notify_mesage(data):
 #Main code
 def notify_loop():
     while True:
-        print(f"====={timestamp()} NOTIFY MODULE RESTART")
+        print(f"==={timestamp()} NOTIFY MODULE RESTART")
         try:  
             db.reconnect()
             vk.reconnect()
