@@ -18,6 +18,8 @@ if __name__=='__main__':
     notify_thread = Thread(target= notification_module.notify_loop)
     notify_thread.start()
 
+    print("===============BOT START===============")
+
     chat_thread.join()
     monitor_thread.join()
     notify_thread.join()
