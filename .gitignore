@@ -2,3 +2,4 @@
 .vs/
 .git/
 __pycache__/
+data/config.py
