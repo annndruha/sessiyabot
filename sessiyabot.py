@@ -12,8 +12,8 @@ if __name__=='__main__':
     chat_thread = Thread(target= chat_module.chat_loop)
     chat_thread.start()
 
-    monitor_thread = Thread(target= vkontakte_functions.followers_monitor)
-    monitor_thread.start()
+    #monitor_thread = Thread(target= vkontakte_functions.followers_monitor)
+    #monitor_thread.start()
 
     notify_thread = Thread(target= notification_module.notify_loop)
     notify_thread.start()

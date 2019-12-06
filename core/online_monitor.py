@@ -11,7 +11,7 @@ import psycopg2
 import numpy as np
 import matplotlib.pyplot as plt
 
-import config ## from data !!!!!!!!!
+from data import config ## !!!!!!!!!
 
 connection = psycopg2.connect(dbname=config.db_name,
     user=config.db_account,
@@ -50,10 +50,6 @@ def yesterday_plot(id):
 
 
 
-    from collections import Counter
-    print(Counter(hour_bins).keys())
-    print(Counter(hour_bins).values())
-
     fig, axs = plt.subplots()
 
     yesterday = timestamps[0][0] - datetime.timedelta(hours=24)
@@ -69,11 +65,11 @@ def yesterday_plot(id):
     plt.xlim([0,24])
 
     axs.legend()
-    plt.savefig('./temp.png', dpi=400, bbox_inches='tight')
-    plt.show()
+    plt.savefig('data/temp.png', dpi=400, bbox_inches='tight')
+    #plt.show()
 
     time_online = str(datetime.timedelta(minutes= len(hour_bins)))
-    return 'Вчера вы были онлайн: '+ time_online.split(':')[0]+'ч '+time_online.split(':')[1]+'м'
+    return 'Вчера вы были онлайн: '+ time_online.split(':')[0]+' ч '+time_online.split(':')[1]+' м'
 
 
 def day_plot(id):
@@ -122,12 +118,8 @@ def day_plot(id):
     plt.xlim(last_hour-23, last_hour+1)
 
     axs.legend()
-    plt.savefig('./temp.png', dpi=400, bbox_inches='tight')
-    plt.show()
+    plt.savefig('data/temp.png', dpi=400, bbox_inches='tight')
+    #plt.show()
 
     time_online = str(datetime.timedelta(minutes= len(hour_bins)))
-    return 'За последние сутки вы были онлайн: '+ time_online.split(':')[0]+'ч '+time_online.split(':')[1]+'м'
-
-
-id = 478143147
-print(day_plot(id))
+    return 'За последние сутки вы были онлайн: '+ time_online.split(':')[0]+' ч '+time_online.split(':')[1]+' м'

@@ -13,6 +13,7 @@ from func import vkontakte_functions as vk
 from func import database_functions as db
 from core import engine as eng
 from core import keybords as kb
+from core import online_monitor as om
 
 def timestamp():
     return "["+str(datetime.datetime.strftime(datetime.datetime.now(datetime.timezone(datetime.timedelta(hours = 3))), '%d.%m.%Y %H:%M:%S'))+"]"
@@ -61,6 +62,19 @@ def message_analyzer(user):
                         ans, attach = dict.cheer(user)
                     if k == 6:
                         ans, attach = dict.cheer(user, True)
+                    if k == 7:
+                        try:
+                            ans = om.day_plot(user.user_id)
+                        except Extention('small data'):
+                            ans = 'Скорей всего вы подписались недавно, эта функция заработает для вас через 10 минут.'
+                        else:
+                            attach = vk.get_attach_str(user.user_id)
+                    if k == 8:
+                        ans = om.yesterday_plot(user.user_id)
+                        attach = vk.get_attach_str(user.user_id)
+                    if k == 9:
+                        ans = om.yesterday_plot(user.user_id)
+                        attach = vk.get_attach_str(user.user_id)
 
             if eng.validate_expression(user.message)==True:
                 ans = eng.calculator(user.message)
@@ -97,9 +111,10 @@ def chat_loop():
             for event in vk.longpoll.listen():
                 if (event.type == vk.VkEventType.MESSAGE_NEW and event.to_me):
                     vk_user = vk.user_get(event.user_id)
+                    id = event.user_id
                     first_name = (vk_user[0])['first_name']
                     last_name = (vk_user[0])['last_name']
-                    user = vk.User(event.user_id, event.text, first_name, last_name)
+                    user = vk.User(id, event.text, first_name, last_name)
 
                     try:
                         kb.keyboard_browser(user, event.payload)
