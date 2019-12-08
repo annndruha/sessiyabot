@@ -65,7 +65,7 @@ def send_keyboard(user_id, kb, message, attach = None):
     if attach==None:
         vk.method('messages.send', {'user_id': user_id, 'keyboard': kb, 'message': message, 'random_id': get_random_id()})
     else:
-        vk.method('messages.send', {'user_id': user_id, 'keyboard': kb, 'message': message, 'random_id': get_random_id()})
+        vk.method('messages.send', {'user_id': user_id, 'keyboard': kb, 'message': message, 'attachment':attach,'random_id': get_random_id()})
 
 # Sending message to admin when followers count change: Followers monitor
 members_ids = None

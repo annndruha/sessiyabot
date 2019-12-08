@@ -29,32 +29,30 @@ def reconnect_db():
 
 def yesterday_plot(id):
     with connection.cursor() as cur:
-        cur.execute("SELECT tstamp FROM sessiyabot.online WHERE id=%s ORDER BY tstamp DESC LIMIT 2880;", (id,))
-        timestamps = cur.fetchmany(2880)
+        cur.execute("SELECT tstamp, status FROM sessiyabot.online WHERE id=%s ORDER BY tstamp DESC LIMIT 2880;", (id,))
+        time_and_status = cur.fetchmany(2880)
 
-        cur.execute("SELECT status FROM sessiyabot.online WHERE id=%s ORDER BY tstamp DESC LIMIT 2880;", (id,))
-        status = cur.fetchmany(2880)
-
-
-    if len(timestamps)<3:
-        raise Exception('small data') # Скорей всего вы подписались недавно, эта функция заработает для вас через 10 минут 
+    if len(time_and_status)<3:
+        raise NameError('small data') # Скорей всего вы подписались недавно, эта функция заработает для вас через 10 минут 
 
     hour_bins = []
-    current_dat = timestamps[0][0].day
-    for i, timestamp in enumerate(timestamps):
-        if status[i][0]==1:
-            con = ((current_dat==1)and(timestamp[0].day==31)) or ((current_dat==1)and(timestamp[0].day==30)) or ((current_dat==1)and(timestamp[0].day==29)) or ((current_dat==1)and(timestamp[0].day==28))
-            if (timestamp[0].day == current_dat-1) or con:
-                h = timestamp[0].hour
+    current_dat = time_and_status[0][0].day
+    for i, ts_point in enumerate(time_and_status):
+        if ts_point[1]==1:
+            con = ((current_dat==1)and(ts_point[0].day==31)) or ((current_dat==1)and(ts_point[0].day==30)) or ((current_dat==1)and(ts_point[0].day==29)) or ((current_dat==1)and(ts_point[0].day==28))
+            if (ts_point[0].day == current_dat-1) or con:
+                h = ts_point[0].hour
                 hour_bins.append(h)
 
 
 
     fig, axs = plt.subplots()
 
-    yesterday = timestamps[0][0] - datetime.timedelta(hours=24)
+    yesterday = time_and_status[0][0] - datetime.timedelta(hours=24)
     lbl = 'Статистика за '+str(yesterday.day)+'.'+str(yesterday.month)+'.'+str(yesterday.year)
-    plt.grid(True, linestyle =":")
+    axs.set_axisbelow(True)
+    axs.yaxis.grid(True, linestyle =":")
+    axs.xaxis.grid(True, linestyle =":")
     plt.xlabel('Часы')
     plt.ylabel('Минут в сети')
 
@@ -66,29 +64,31 @@ def yesterday_plot(id):
 
     axs.legend()
     plt.savefig('data/temp.png', dpi=400, bbox_inches='tight')
-    #plt.show()
+    plt.show()
 
     time_online = str(datetime.timedelta(minutes= len(hour_bins)))
     return 'Вчера вы были онлайн: '+ time_online.split(':')[0]+' ч '+time_online.split(':')[1]+' м'
 
 
 def day_plot(id):
-    with connection.cursor() as cur:
-        cur.execute("SELECT tstamp FROM sessiyabot.online WHERE id=%s ORDER BY tstamp DESC LIMIT 1440;", (id,))
-        timestamps = cur.fetchmany(1440)
-
-        cur.execute("SELECT status FROM sessiyabot.online WHERE id=%s ORDER BY tstamp DESC LIMIT 1440;", (id,))
-        status = cur.fetchmany(1440)
+    with connection.cursor() as cur: ## Объединить в один запрос!
+        cur.execute("SELECT tstamp, status FROM sessiyabot.online WHERE id=%s ORDER BY tstamp DESC LIMIT 1440;", (id,))
+        #cur.execute("select * from sessiyabot.day_bins where id =%s;")
+        time_and_status = cur.fetchmany(1440)
 
 
-    if len(timestamps)<3:
-        raise Exception('small data') # Скорей всего вы подписались недавно, эта функция заработает для вас через 10 минут 
+    #check in members
+    #raise ....
+
+
+    if len(time_and_status)<3:
+        raise NameError('small data') # Скорей всего вы подписались недавно, эта функция заработает для вас через 10 минут 
 
     hour_bins = []
-    last_hour = timestamps[0][0].hour
-    for i, timestamp in enumerate(timestamps):
-        if status[i][0]==1:
-            h = timestamp[0].hour
+    last_hour = time_and_status[0][0].hour
+    for i, ts_point in enumerate(time_and_status):
+        if ts_point[1]==1:
+            h = ts_point[0].hour
             if h>last_hour:
                 hour_bins.append(h-24)
             else:
@@ -98,7 +98,9 @@ def day_plot(id):
     fig, axs = plt.subplots()
 
     lbl = 'Статистика за последние сутки'
-    plt.grid(True, linestyle =":")
+    axs.set_axisbelow(True)
+    axs.yaxis.grid(True, linestyle =":")
+    axs.xaxis.grid(True, linestyle =":")
     plt.xlabel('Часы')
     plt.ylabel('Минут в сети')
 
@@ -123,3 +125,5 @@ def day_plot(id):
 
     time_online = str(datetime.timedelta(minutes= len(hour_bins)))
     return 'За последние сутки вы были онлайн: '+ time_online.split(':')[0]+' ч '+time_online.split(':')[1]+' м'
+
+print(yesterday_plot(35886154))

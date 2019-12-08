@@ -65,8 +65,9 @@ def message_analyzer(user):
                     if k == 7:
                         try:
                             ans = om.day_plot(user.user_id)
-                        except Extention('small data'):
+                        except NameError:
                             ans = 'Скорей всего вы подписались недавно, эта функция заработает для вас через 10 минут.'
+                            attach = None
                         else:
                             attach = vk.get_attach_str(user.user_id)
                     if k == 8:

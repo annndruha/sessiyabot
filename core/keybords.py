@@ -13,18 +13,19 @@ from func import vkontakte_functions as vk
 from func import datetime_functions as dt
 from func import database_functions as db
 from core import engine as eng
+from core import online_monitor as om
 
 # Pages of keyboard menu:
 # main_page
-def main_page(user_id, ans=dict.kb_ans['main_menu']):
+def main_page(user_id, ans=dict.kb_ans['main_menu'], attach = None):
     kb = vk.VkKeyboard(one_time=False)
     kb.add_button(dict.kb_ans['notify_settings'], color='primary', payload = ["next_page","notify_page"])
     kb.add_line()
-    kb.add_button(dict.kb_ans['exam_settings'], color='primary', payload = ["next_page","month_page"])
+    kb.add_button('Сколько я потратил на Вк?', color='primary', payload = ["next_page","online_page"])
     kb.add_line()
     kb.add_button(dict.kb_ans['cheer_me'], color='positive')
 
-    vk.send_keyboard(user_id, kb.get_keyboard(), ans)
+    vk.send_keyboard(user_id, kb.get_keyboard(), ans, attach=attach)
 
 # notify_page
 def notify_page(user_id, ans=dict.kb_ans['notify_settings']):
@@ -44,8 +45,9 @@ def notify_page(user_id, ans=dict.kb_ans['notify_settings']):
             kb.add_button(dict.kb_ans['change_time_first'], color='positive', payload = ["next_page","hour_page1"])
     else:
         kb.add_button(dict.kb_ans['set_time'], color='positive', payload = ["next_page","hour_page1"])
-    kb.add_line()
     kb.add_button(dict.kb_ans['change_tz'], color='primary', payload = ["next_page","tz_page"])
+    kb.add_line()
+    kb.add_button(dict.kb_ans['exam_settings'], color='primary', payload = ["next_page","month_page"])
     kb.add_line()
     kb.add_button(dict.kb_ans['cancel'], color='default', payload = ["command","cancel"])
 
@@ -249,6 +251,20 @@ def day_page3(user_id, month, ans=dict.kb_ans['set_day']):
 
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
+# online_page
+def online_page(user_id, ans = 'Выберите период:'):
+    kb = vk.VkKeyboard(one_time=False)
+
+    kb.add_button('За последние сутки', color='primary', payload = ["command","day"])
+    kb.add_line()
+    kb.add_button('Вчера', color='primary', payload = ["command","yesterday"])
+    kb.add_line()
+    kb.add_button('За неделю', color='primary', payload = ["command","week"])
+    kb.add_line()
+    kb.add_button(dict.kb_ans['cancel'], color='default', payload = ["command","cancel"])
+
+    vk.send_keyboard(user_id, kb.get_keyboard(), ans)
+
 # Browsing between keybord pages
 def keyboard_browser(user, str_payload):
     try:
@@ -259,6 +275,27 @@ def keyboard_browser(user, str_payload):
         elif payload[0] == 'command':
             if payload[1] == 'cancel':
                 main_page(user.user_id)
+            elif payload[1] == 'day':
+                try:
+                    ans = om.day_plot(user.user_id)
+                except NameError:
+                    ans = 'Скорей всего вы подписались недавно, эта функция заработает для вас через 10 минут.'
+                    attach = None
+                else:
+                    attach = vk.get_attach_str(user.user_id)
+                main_page(user.user_id, ans, attach)
+            elif payload[1] == 'yesterday':
+                try:
+                    ans = om.yesterday_plot(user.user_id)
+                except NameError:
+                    ans = 'Скорей всего вы подписались недавно, эта функция заработает для вас через 10 минут.'
+                    attach = None
+                else:
+                    attach = vk.get_attach_str(user.user_id)
+                main_page(user.user_id, ans, attach)
+            elif payload[1] == 'week':
+                ans = 'Допилю позже'
+                main_page(user.user_id, ans)
             elif payload[1] == 'set_time':
                 user.message = payload[2]
                 ans = eng.alter_time(user)
@@ -291,6 +328,8 @@ def keyboard_browser(user, str_payload):
                 hour_page2(user.user_id)
             elif payload[1] == 'tz_page':
                 tz_page(user.user_id)
+            elif payload[1] == 'online_page':
+                online_page(user.user_id)
 
         elif payload[0] == 'jump':
             if payload[1] == 'minute_page':
