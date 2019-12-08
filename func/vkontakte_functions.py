@@ -18,6 +18,7 @@ from data import ru_dictionary as dict
 
 vk = VkApi(token=config.access_token)# Auth with community token
 longpoll = VkLongPoll(vk)# Create a longpull variable
+
 class User:
     def __init__(self, user_id, message, first_name, last_name):
         self.user_id = user_id

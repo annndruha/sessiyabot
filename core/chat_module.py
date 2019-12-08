@@ -65,7 +65,7 @@ def message_analyzer(user):
                     if k == 7:
                         try:
                             ans = om.day_plot(user.user_id)
-                        except NameError:
+                        except SubscribeException:
                             ans = 'Скорей всего вы подписались недавно, эта функция заработает для вас через 10 минут.'
                             attach = None
                         else:
