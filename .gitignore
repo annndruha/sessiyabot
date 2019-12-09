@@ -2,8 +2,3 @@
 .vs/
 .git/
 __pycache__/
-config.py
-data/config.py
-core/config.py
-func/config.py
-temp.png

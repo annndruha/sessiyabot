@@ -5,8 +5,6 @@
 import time
 import datetime
 import traceback
-import requests
-import json
 
 from vk_api import VkApi
 from vk_api.longpoll import VkLongPoll, VkEventType
@@ -18,7 +16,6 @@ from data import ru_dictionary as dict
 
 vk = VkApi(token=config.access_token)# Auth with community token
 longpoll = VkLongPoll(vk)# Create a longpull variable
-
 class User:
     def __init__(self, user_id, message, first_name, last_name):
         self.user_id = user_id
@@ -62,11 +59,8 @@ def write_msg(user_id, message=None, attach=None, parse_links = False):
 def write_notify_msg(user_id, message):
     vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': datetime_to_random_id()})
 
-def send_keyboard(user_id, kb, message, attach = None):
-    if attach==None:
-        vk.method('messages.send', {'user_id': user_id, 'keyboard': kb, 'message': message, 'random_id': get_random_id()})
-    else:
-        vk.method('messages.send', {'user_id': user_id, 'keyboard': kb, 'message': message, 'attachment':attach,'random_id': get_random_id()})
+def send_keyboard(user_id, kb, message):
+    vk.method('messages.send', {'user_id': user_id, 'keyboard': kb, 'message': message, 'random_id': get_random_id()})
 
 # Sending message to admin when followers count change: Followers monitor
 members_ids = None
@@ -148,21 +142,3 @@ def followers_monitor():
         except:
             print('---Something go wrong. (followers_monitor)')
             
-
-
-def get_attach_str(user_id):
-    getMessagesUploadServer = vk.method('photos.getMessagesUploadServer', {'peer_id': user_id})
-    upload_url = getMessagesUploadServer['upload_url']
-
-    file = {'photo': open('data/temp.png', 'rb')}
-
-    ur = requests.post(upload_url, files= file).json()
-
-    photo = vk.method('photos.saveMessagesPhoto',{'photo':ur['photo'], 'server':ur['server'], 'hash':ur['hash']})
-
-    type = 'photo'
-    media_id = str(photo[0]['id'])
-    owner_id = str(photo[0]['owner_id'])
-    access_key = photo[0]['access_key']
-    at = type + owner_id +'_'+media_id+'_'+access_key
-    return at

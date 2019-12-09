@@ -13,11 +13,10 @@ from func import vkontakte_functions as vk
 from func import datetime_functions as dt
 from func import database_functions as db
 from core import engine as eng
-from core import online_monitor as om
 
 # Pages of keyboard menu:
 # main_page
-def main_page(user_id, ans=dict.kb_ans['main_menu'], attach = None):
+def main_page(user_id, ans=dict.kb_ans['main_menu']):
     kb = vk.VkKeyboard(one_time=False)
 
     kb.add_button(dict.kb_ans['notify_settings'], color='primary', payload = ["next_page","notify_page"])
@@ -26,7 +25,7 @@ def main_page(user_id, ans=dict.kb_ans['main_menu'], attach = None):
     kb.add_line()
     kb.add_button(dict.kb_ans['cheer_me'], color='positive')
 
-    vk.send_keyboard(user_id, kb.get_keyboard(), ans, attach=attach)
+    vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
 # notify_page
 def notify_page(user_id, ans=dict.kb_ans['notify_settings']):
@@ -50,7 +49,7 @@ def notify_page(user_id, ans=dict.kb_ans['notify_settings']):
         kb.add_button(dict.kb_ans['change_time_first'], color='positive', payload = ["next_page","hour_page1"])
     
     kb.add_line()
-    kb.add_button(dict.kb_ans['exam_settings'], color='primary', payload = ["next_page","month_page"])
+    kb.add_button(dict.kb_ans['change_tz'], color='primary', payload = ["next_page","tz_page"])
     kb.add_line()
     kb.add_button(dict.kb_ans['cancel'], color='default', payload = ["command","cancel"])
 
@@ -327,8 +326,6 @@ def keyboard_browser(user, str_payload):
                 hour_page2(user.user_id)
             elif payload[1] == 'tz_page':
                 tz_page(user.user_id)
-            elif payload[1] == 'online_page':
-                online_page(user.user_id)
 
         elif payload[0] == 'jump':
             if payload[1] == 'minute_page':
