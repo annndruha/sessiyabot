@@ -124,7 +124,10 @@ def followers_monitor():
             get_members()
             while True:
                 update_members()
-                time.sleep(10)
+                time.sleep(5)
+                if vk.method('groups.getOnlineStatus', {'group_id':'180973630'})['status'] == 'none':
+                    vk.method('groups.enableOnline', {'group_id':'180973630'})
+                time.sleep(5)
         except OSError as err:
             print(f"---{timestamp()} OSError (followers_monitor), description:")
             #traceback.print_tb(err.__traceback__)

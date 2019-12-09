@@ -275,27 +275,23 @@ def keyboard_browser(user, str_payload):
         elif payload[0] == 'command':
             if payload[1] == 'cancel':
                 main_page(user.user_id)
-            elif payload[1] == 'day':
+            elif payload[1] in ['day', 'yesterday','week']:
                 try:
-                    ans = om.day_plot(user.user_id)
+                    if payload[1] == 'day':
+                        ans = om.day_plot(user.user_id)
+                    if payload[1] == 'yesterday':
+                        ans = om.yesterday_plot(user.user_id)
+                    if payload[1] == 'week':
+                        ans = om.week_plot(user.user_id)
+                except KeyError:
+                    ans = 'По техническим причинам эта функция активна только для подписчиков.'
+                    attach = None
                 except NameError:
-                    ans = 'Скорей всего вы подписались недавно, эта функция заработает для вас через 10 минут.'
+                    ans = 'Скорей всего вы подписались недавно, эта функция заработает для вас через некоторое время.'
                     attach = None
                 else:
                     attach = vk.get_attach_str(user.user_id)
                 main_page(user.user_id, ans, attach)
-            elif payload[1] == 'yesterday':
-                try:
-                    ans = om.yesterday_plot(user.user_id)
-                except NameError:
-                    ans = 'Скорей всего вы подписались недавно, эта функция заработает для вас через 10 минут.'
-                    attach = None
-                else:
-                    attach = vk.get_attach_str(user.user_id)
-                main_page(user.user_id, ans, attach)
-            elif payload[1] == 'week':
-                ans = 'Допилю позже'
-                main_page(user.user_id, ans)
             elif payload[1] == 'set_time':
                 user.message = payload[2]
                 ans = eng.alter_time(user)

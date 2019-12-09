@@ -62,21 +62,22 @@ def message_analyzer(user):
                         ans, attach = dict.cheer(user)
                     if k == 6:
                         ans, attach = dict.cheer(user, True)
-                    if k == 7:
+                    if ((k == 7) or (k==8) or (k==9)):
                         try:
-                            ans = om.day_plot(user.user_id)
-                        except SubscribeException:
-                            ans = 'Скорей всего вы подписались недавно, эта функция заработает для вас через 10 минут.'
+                            if k == 7:
+                                ans = om.day_plot(user.user_id)
+                            if k==8:
+                                ans = om.yesterday_plot(user.user_id)
+                            if k==9:
+                                ans = om.week_plot(user.user_id)
+                        except KeyError:
+                            ans = 'По техническим причинам эта функция активна только для подписчиков.'
+                            attach = None
+                        except NameError:
+                            ans = 'Скорей всего вы подписались недавно, эта функция заработает для вас через некоторое время.'
                             attach = None
                         else:
                             attach = vk.get_attach_str(user.user_id)
-                    if k == 8:
-                        ans = om.yesterday_plot(user.user_id)
-                        attach = vk.get_attach_str(user.user_id)
-                    if k == 9:
-                        ans = om.yesterday_plot(user.user_id)
-                        attach = vk.get_attach_str(user.user_id)
-
             if eng.validate_expression(user.message)==True:
                 ans = eng.calculator(user.message)
             if ans == None:
