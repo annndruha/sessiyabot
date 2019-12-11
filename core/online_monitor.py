@@ -3,7 +3,6 @@
 # Marakulin Andrey @annndruha
 # 2019
 
-import time
 import datetime
 import traceback
 
@@ -31,6 +30,7 @@ def day_plot(id):
 
     # Parse data
     u_id, year, month, day, hour, sum_minutes = np.transpose(data)
+    
     hours_bins = list(hour)
     sum_minutes = list(sum_minutes)
     hours_labels = list(map(str, map(int, hours_bins)))
@@ -46,6 +46,9 @@ def day_plot(id):
     plt.xlim([0,len(hours_labels)])
     plt.savefig('data/temp.png', dpi=120, bbox_inches='tight')
     #plt.show()
+    plt.cla()
+    plt.clf()
+    plt.close('all')
 
     time_online = str(datetime.timedelta(minutes= int(sum(sum_minutes))))
     return 'За последние сутки вы были онлайн: '+ time_online.split(':')[0]+'ч '+time_online.split(':')[1]+'м'
@@ -81,6 +84,9 @@ def yesterday_plot(id):
     plt.xlim([0,len(hours_labels)])
     plt.savefig('data/temp.png', dpi=120, bbox_inches='tight')
     #plt.show()
+    plt.cla()
+    plt.clf()
+    plt.close('all')
 
     time_online = str(datetime.timedelta(minutes= int(sum(sum_minutes))))
     return 'Вчера вы были онлайн: '+ time_online.split(':')[0]+'ч '+time_online.split(':')[1]+'м'
@@ -115,9 +121,22 @@ def week_plot(id):
     plt.ylabel('Часов в сети')
     plt.savefig('data/temp.png', dpi=120, bbox_inches='tight')
 
+    plt.cla()
+    plt.clf()
+    plt.close('all')
+
     time_full = str(datetime.timedelta(hours= sum(sum_hours)))
     time_per_day = sum(sum_hours)/len(sum_hours)
     tpd = str(datetime.timedelta(hours= time_per_day))
-    return 'За последнюю неделю вы бесполезно потратили: '+ time_full.split(':')[0]+'ч '+time_full.split(':')[1]+'м\nВ среднем в день: '+ tpd.split(':')[0]+'ч '+tpd.split(':')[1]+'м'
 
-#day_plot(478143147)
+    d = time_full.split(' ')
+    if len(d)==1:
+        ans = 'За неделю вы бесполезно потратили: '+ time_full.split(':')[0]+'ч '+time_full.split(':')[1]+'м\nВ среднем '+ tpd.split(':')[0]+'ч '+tpd.split(':')[1]+'м  в день.'
+    else:
+        h = d[2].split(':')
+        if d[0]=='1':
+            ans = 'За неделю вы бесполезно потратили: 1 сутки '+ h[0]+'ч '+h[1]+'м\nВ среднем: '+ tpd.split(':')[0]+'ч '+tpd.split(':')[1]+'м  в день.'
+        else:
+            ans = 'За неделю вы бесполезно потратили: '+d[0]+' суток '+ h[0]+'ч '+h[1]+'м\nВ среднем'+ tpd.split(':')[0]+'ч '+tpd.split(':')[1]+'м в день.'
+
+    return ans
