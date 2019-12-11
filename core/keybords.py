@@ -19,6 +19,7 @@ from core import online_monitor as om
 # main_page
 def main_page(user_id, ans=dict.kb_ans['main_menu'], attach = None):
     kb = vk.VkKeyboard(one_time=False)
+
     kb.add_button(dict.kb_ans['notify_settings'], color='primary', payload = ["next_page","notify_page"])
     kb.add_line()
     kb.add_button(dict.kb_ans['time_vk'], color='primary', payload = ["next_page","online_page"])

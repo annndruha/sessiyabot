@@ -12,17 +12,23 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 from data import config
-from func.database_functions import connection
+import func.database_functions as db
 from func.vkontakte_functions import vk
 
 
 def day_plot(id):
+    import matplotlib.pyplot as plt
+    plt.cla()
+    plt.clf()
+    plt.close('all')
     # Check user in members
     if not vk.method('groups.isMember', {'group_id':'sessiyabot', 'user_id':id}):
         raise KeyError('Member doesnt subscribe')
 
     # Load data from database
-    with connection.cursor() as cur:
+    data=0
+    db.reconnect()
+    with db.connection.cursor() as cur:
         cur.execute("select * from sessiyabot.day_bins where id =%s;", (id,))
         data = cur.fetchall()
     if len(data)<5:
@@ -45,22 +51,31 @@ def day_plot(id):
     plt.ylabel('Минут в сети')
     plt.xlim([0,len(hours_labels)])
     plt.savefig('data/temp.png', dpi=120, bbox_inches='tight')
-    #plt.show()
+
     plt.cla()
     plt.clf()
     plt.close('all')
+    
 
     time_online = str(datetime.timedelta(minutes= int(sum(sum_minutes))))
+    axs, fig, plt, hour, hours_bins, hours_labels, data, month, sum_minutes, day, u_id, cur, year, id = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     return 'За последние сутки вы были онлайн: '+ time_online.split(':')[0]+'ч '+time_online.split(':')[1]+'м'
 
 
 def yesterday_plot(id):
+    import matplotlib.pyplot as plt
+    plt.cla()
+    plt.clf()
+    plt.close('all')
+
     # Check user in members
     if not vk.method('groups.isMember', {'group_id':'sessiyabot', 'user_id':id}):
         raise KeyError('Member doesnt subscribe')
 
     # Load data from database
-    with connection.cursor() as cur:
+    data=0
+    db.reconnect()
+    with db.connection.cursor() as cur:
         cur.execute("select * from sessiyabot.yesterday_bins where id =%s;", (id,))
         data = cur.fetchall()
     if len(data)<5:
@@ -89,16 +104,26 @@ def yesterday_plot(id):
     plt.close('all')
 
     time_online = str(datetime.timedelta(minutes= int(sum(sum_minutes))))
+
+    axs, fig, plt, hour, hours_bins, hours_labels, data, month, sum_minutes, day, u_id, cur, year, lbl, id = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    
     return 'Вчера вы были онлайн: '+ time_online.split(':')[0]+'ч '+time_online.split(':')[1]+'м'
 
 
 def week_plot(id):
+    import matplotlib.pyplot as plt
+    plt.cla()
+    plt.clf()
+    plt.close('all')
+
     # Check user in members
     if not vk.method('groups.isMember', {'group_id':'sessiyabot', 'user_id':id}):
         raise KeyError('Member doesnt subscribe')
 
     # Load data from database
-    with connection.cursor() as cur:
+    data=0
+    db.reconnect()
+    with db.connection.cursor() as cur:
         cur.execute("select * from sessiyabot.week_bins where id =%s;", (id,))
         data = cur.fetchall()
     if len(data)<3:
@@ -129,6 +154,7 @@ def week_plot(id):
     time_per_day = sum(sum_hours)/len(sum_hours)
     tpd = str(datetime.timedelta(hours= time_per_day))
 
+
     d = time_full.split(' ')
     if len(d)==1:
         ans = 'За неделю вы бесполезно потратили: '+ time_full.split(':')[0]+'ч '+time_full.split(':')[1]+'м\nВ среднем '+ tpd.split(':')[0]+'ч '+tpd.split(':')[1]+'м  в день.'
@@ -138,5 +164,5 @@ def week_plot(id):
             ans = 'За неделю вы бесполезно потратили: 1 сутки '+ h[0]+'ч '+h[1]+'м\nВ среднем: '+ tpd.split(':')[0]+'ч '+tpd.split(':')[1]+'м  в день.'
         else:
             ans = 'За неделю вы бесполезно потратили: '+d[0]+' суток '+ h[0]+'ч '+h[1]+'м\nВ среднем'+ tpd.split(':')[0]+'ч '+tpd.split(':')[1]+'м в день.'
-
+    axs, fig, plt, cur, u_id, year, month, day, sum_hours, d, data, days_bins, days_labels, h, time_full, time_per_day, tpd, id= 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     return ans
