@@ -9,6 +9,7 @@ import traceback
 
 import psycopg2
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 
 from data import config
@@ -18,15 +19,14 @@ from func.vkontakte_functions import vk
 
 def day_plot(id):
     # Check user in members
-    members = (vk.method('groups.getMembers', {'group_id':'sessiyabot'}))['items']
-    if (id not in members):
+    if not vk.method('groups.isMember', {'group_id':'sessiyabot', 'user_id':id}):
         raise KeyError('Member doesnt subscribe')
 
     # Load data from database
     with connection.cursor() as cur:
         cur.execute("select * from sessiyabot.day_bins where id =%s;", (id,))
         data = cur.fetchall()
-    if len(data)==0:
+    if len(data)<5:
         raise NameError('Small member data')
 
     # Parse data
@@ -44,7 +44,7 @@ def day_plot(id):
     plt.xlabel('Часы')
     plt.ylabel('Минут в сети')
     plt.xlim([0,len(hours_labels)])
-    plt.savefig('data/temp.png', dpi=400, bbox_inches='tight')
+    plt.savefig('data/temp.png', dpi=120, bbox_inches='tight')
     #plt.show()
 
     time_online = str(datetime.timedelta(minutes= int(sum(sum_minutes))))
@@ -53,15 +53,14 @@ def day_plot(id):
 
 def yesterday_plot(id):
     # Check user in members
-    members = (vk.method('groups.getMembers', {'group_id':'sessiyabot'}))['items']
-    if (id not in members):
+    if not vk.method('groups.isMember', {'group_id':'sessiyabot', 'user_id':id}):
         raise KeyError('Member doesnt subscribe')
 
     # Load data from database
     with connection.cursor() as cur:
         cur.execute("select * from sessiyabot.yesterday_bins where id =%s;", (id,))
         data = cur.fetchall()
-    if len(data)==0:
+    if len(data)<5:
         raise NameError('Small member data')
 
 
@@ -80,7 +79,7 @@ def yesterday_plot(id):
     plt.xlabel('Часы')
     plt.ylabel('Минут в сети')
     plt.xlim([0,len(hours_labels)])
-    plt.savefig('data/temp.png', dpi=400, bbox_inches='tight')
+    plt.savefig('data/temp.png', dpi=120, bbox_inches='tight')
     #plt.show()
 
     time_online = str(datetime.timedelta(minutes= int(sum(sum_minutes))))
@@ -89,8 +88,7 @@ def yesterday_plot(id):
 
 def week_plot(id):
     # Check user in members
-    members = (vk.method('groups.getMembers', {'group_id':'sessiyabot'}))['items']
-    if (id not in members):
+    if not vk.method('groups.isMember', {'group_id':'sessiyabot', 'user_id':id}):
         raise KeyError('Member doesnt subscribe')
 
     # Load data from database
@@ -115,9 +113,11 @@ def week_plot(id):
     axs.legend()
     plt.xticks(ticks=range(0,len(days_labels)), labels = days_labels)
     plt.ylabel('Часов в сети')
-    plt.savefig('data/temp.png', dpi=400, bbox_inches='tight')
+    plt.savefig('data/temp.png', dpi=120, bbox_inches='tight')
 
     time_full = str(datetime.timedelta(hours= sum(sum_hours)))
     time_per_day = sum(sum_hours)/len(sum_hours)
     tpd = str(datetime.timedelta(hours= time_per_day))
-    return 'За последнюю неделю вы были онлайн: '+ time_full.split(':')[0]+'ч '+time_full.split(':')[1]+'м\nВ среднем в день: '+ tpd.split(':')[0]+'ч '+tpd.split(':')[1]+'м'
+    return 'За последнюю неделю вы бесполезно потратили: '+ time_full.split(':')[0]+'ч '+time_full.split(':')[1]+'м\nВ среднем в день: '+ tpd.split(':')[0]+'ч '+tpd.split(':')[1]+'м'
+
+#day_plot(478143147)

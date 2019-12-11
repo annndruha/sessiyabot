@@ -5,21 +5,14 @@
 # 2019
 
 # Base image
-FROM python:3-alpine
+FROM python:latest
 
-# Add the main dirictory
-ADD ./ sessiyabot/
+# Create directoris inside container
+ADD ./ /home/sessiabot
+WORKDIR /home/sessiabot
 
-# Set that dirictory
-WORKDIR sessiyabot
-    
-# Update Base image
-RUN apk update && \
-    apk add --no-cache libpq && \
-    apk add --no-cache --virtual build-deps gcc python3-dev musl-dev libffi-dev && \
-    apk add --no-cache postgresql-dev && \
-    pip install --no-cache-dir -r requirements.txt && \
-    apk del build-deps
+# Install libs from requirements
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Specify the port number the container should expose 
 EXPOSE 42
@@ -27,7 +20,7 @@ EXPOSE 42
 # Run the file
 CMD ["python", "-u", "./sessiyabot.py"]
 
-# Example docker command:
+# Example docker Ubuntu command:
 # docker run -d --name sessiyabot -v /root/sessiyabot/configvolume.py:/sessiyabot/data/config.py imagename
 
 # See logs:

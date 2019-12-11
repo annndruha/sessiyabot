@@ -21,7 +21,7 @@ def main_page(user_id, ans=dict.kb_ans['main_menu'], attach = None):
     kb = vk.VkKeyboard(one_time=False)
     kb.add_button(dict.kb_ans['notify_settings'], color='primary', payload = ["next_page","notify_page"])
     kb.add_line()
-    kb.add_button('Сколько я потратил на Вк?', color='primary', payload = ["next_page","online_page"])
+    kb.add_button(dict.kb_ans['time_vk'], color='primary', payload = ["next_page","online_page"])
     kb.add_line()
     kb.add_button(dict.kb_ans['cheer_me'], color='positive')
 
@@ -252,14 +252,14 @@ def day_page3(user_id, month, ans=dict.kb_ans['set_day']):
     vk.send_keyboard(user_id, kb.get_keyboard(), ans)
 
 # online_page
-def online_page(user_id, ans = 'Выберите период:'):
+def online_page(user_id, ans=dict.kb_ans['choose_period']):
     kb = vk.VkKeyboard(one_time=False)
 
-    kb.add_button('За последние сутки', color='primary', payload = ["command","day"])
+    kb.add_button(dict.kb_ans['day'], color='primary', payload = ["command","day"])
     kb.add_line()
-    kb.add_button('Вчера', color='primary', payload = ["command","yesterday"])
+    kb.add_button(dict.kb_ans['yesterday'], color='primary', payload = ["command","yesterday"])
     kb.add_line()
-    kb.add_button('За неделю', color='primary', payload = ["command","week"])
+    kb.add_button(dict.kb_ans['week'], color='primary', payload = ["command","week"])
     kb.add_line()
     kb.add_button(dict.kb_ans['cancel'], color='default', payload = ["command","cancel"])
 
@@ -284,10 +284,10 @@ def keyboard_browser(user, str_payload):
                     if payload[1] == 'week':
                         ans = om.week_plot(user.user_id)
                 except KeyError:
-                    ans = 'По техническим причинам эта функция активна только для подписчиков.'
+                    ans = dict.errors['access_denied']
                     attach = None
                 except NameError:
-                    ans = 'Скорей всего вы подписались недавно, эта функция заработает для вас через некоторое время.'
+                    ans = dict.errors['young_member']
                     attach = None
                 else:
                     attach = vk.get_attach_str(user.user_id)

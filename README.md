@@ -48,12 +48,7 @@ Python 3.7
 
 ### Third Party Libraries and Dependencies
 
-The following libraries must be installed when using sessiyabot:
-
-```bash
-psycopg2==2.8.3
-vk-api==11.5.0
-```
+The  libraries  from requirements.txt must be installed when using sessiyabot.
 
 ### Docker
 
@@ -74,7 +69,3 @@ See logs:
 ```bash
 docker logs sessiyabot -follow
 ```
-
-## Project imports schema
-
-![Schema](https://camo.githubusercontent.com/abf77df95628ee77413d6bfc5658ed0b64e8ccaa/68747470733a2f2f73756e392d32322e757365726170692e636f6d2f633835373733362f763835373733363731342f35393439392f6b786d644a4c4f4a6c5f342e6a7067)

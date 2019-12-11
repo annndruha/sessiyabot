@@ -71,10 +71,10 @@ def message_analyzer(user):
                             if k==9:
                                 ans = om.week_plot(user.user_id)
                         except KeyError:
-                            ans = 'По техническим причинам эта функция активна только для подписчиков.'
+                            ans = dict.errors['access_denied']
                             attach = None
                         except NameError:
-                            ans = 'Скорей всего вы подписались недавно, эта функция заработает для вас через некоторое время.'
+                            ans = dict.errors['young_member']
                             attach = None
                         else:
                             attach = vk.get_attach_str(user.user_id)
