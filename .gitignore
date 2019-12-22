@@ -3,4 +3,3 @@
 .git/
 __pycache__/
 data/temp.png
-data/config.py
