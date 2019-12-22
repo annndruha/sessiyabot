@@ -1,4 +1,4 @@
-﻿# Marakulin Andrey @annndruha
+# Marakulin Andrey @annndruha
 # 2019
 from random import randint
 
