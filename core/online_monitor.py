@@ -17,6 +17,10 @@ from func.vkontakte_functions import vk
 
 
 def day_plot(id):
+    import matplotlib.pyplot as plt
+    plt.cla()
+    plt.clf()
+    plt.close('all')
     # Check user in members
     if not vk.method('groups.isMember', {'group_id':'sessiyabot', 'user_id':id}):
         raise KeyError('Member doesnt subscribe')
@@ -51,6 +55,7 @@ def day_plot(id):
     plt.cla()
     plt.clf()
     plt.close('all')
+    
 
     time_online = str(datetime.timedelta(minutes= int(sum(sum_minutes))))
     axs, fig, plt, hour, hours_bins, hours_labels, data, month, sum_minutes, day, u_id, cur, year, id = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
@@ -58,11 +63,17 @@ def day_plot(id):
 
 
 def yesterday_plot(id):
+    import matplotlib.pyplot as plt
+    plt.cla()
+    plt.clf()
+    plt.close('all')
+
     # Check user in members
     if not vk.method('groups.isMember', {'group_id':'sessiyabot', 'user_id':id}):
         raise KeyError('Member doesnt subscribe')
 
     # Load data from database
+    data=0
     db.reconnect()
     with db.connection.cursor() as cur:
         cur.execute("select * from sessiyabot.yesterday_bins where id =%s;", (id,))
@@ -93,16 +104,24 @@ def yesterday_plot(id):
     plt.close('all')
 
     time_online = str(datetime.timedelta(minutes= int(sum(sum_minutes))))
+
+    axs, fig, plt, hour, hours_bins, hours_labels, data, month, sum_minutes, day, u_id, cur, year, lbl, id = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     
     return 'Вчера вы были онлайн: '+ time_online.split(':')[0]+'ч '+time_online.split(':')[1]+'м'
 
 
 def week_plot(id):
+    import matplotlib.pyplot as plt
+    plt.cla()
+    plt.clf()
+    plt.close('all')
+
     # Check user in members
     if not vk.method('groups.isMember', {'group_id':'sessiyabot', 'user_id':id}):
         raise KeyError('Member doesnt subscribe')
 
     # Load data from database
+    data=0
     db.reconnect()
     with db.connection.cursor() as cur:
         cur.execute("select * from sessiyabot.week_bins where id =%s;", (id,))
@@ -137,17 +156,13 @@ def week_plot(id):
 
 
     d = time_full.split(' ')
-    if len(data)<7:
-        period = 'данный период'
-    else:
-        period = 'неделю'
-
     if len(d)==1:
-        ans = 'За '+period+' вы бесполезно потратили: '+ time_full.split(':')[0]+'ч '+time_full.split(':')[1]+'м\nВ среднем '+ tpd.split(':')[0]+'ч '+tpd.split(':')[1]+'м  в день.'
+        ans = 'За неделю вы бесполезно потратили: '+ time_full.split(':')[0]+'ч '+time_full.split(':')[1]+'м\nВ среднем '+ tpd.split(':')[0]+'ч '+tpd.split(':')[1]+'м  в день.'
     else:
         h = d[2].split(':')
         if d[0]=='1':
-            ans = 'За '+period+' вы бесполезно потратили: 1 сутки '+ h[0]+'ч '+h[1]+'м\nВ среднем: '+ tpd.split(':')[0]+'ч '+tpd.split(':')[1]+'м  в день.'
+            ans = 'За неделю вы бесполезно потратили: 1 сутки '+ h[0]+'ч '+h[1]+'м\nВ среднем: '+ tpd.split(':')[0]+'ч '+tpd.split(':')[1]+'м  в день.'
         else:
-            ans = 'За '+period+' вы бесполезно потратили: '+d[0]+' суток '+ h[0]+'ч '+h[1]+'м\nВ среднем: '+ tpd.split(':')[0]+'ч '+tpd.split(':')[1]+'м в день.'
+            ans = 'За неделю вы бесполезно потратили: '+d[0]+' суток '+ h[0]+'ч '+h[1]+'м\nВ среднем'+ tpd.split(':')[0]+'ч '+tpd.split(':')[1]+'м в день.'
+    axs, fig, plt, cur, u_id, year, month, day, sum_hours, d, data, days_bins, days_labels, h, time_full, time_per_day, tpd, id= 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     return ans

@@ -123,23 +123,22 @@ def followers_monitor():
             reconnect()
             get_members()
             while True:
-
                 update_members()
-                time.sleep(10)
+                time.sleep(5)
                 if vk.method('groups.getOnlineStatus', {'group_id':'180973630'})['status'] == 'none':
                     vk.method('groups.enableOnline', {'group_id':'180973630'})
-                time.sleep(10)
-
+                time.sleep(5)
         except OSError as err:
             print(f"---{timestamp()} OSError (followers_monitor), description:")
+            #traceback.print_tb(err.__traceback__)
             print(err.args)
             try:
-                #print(f"---{timestamp()} Try to recconnect VK...")
+                print(f"---{timestamp()} Try to recconnect VK...")
                 reconnect()
-                #print(f"---{timestamp()} VK connected successful")
+                print(f"---{timestamp()} VK connected successful")
                 time.sleep(1)
             except:
-                #print(f"---{timestamp()} Recconnect VK failed")
+                print(f"---{timestamp()} Recconnect VK failed")
                 time.sleep(10)
         except BaseException as err:
             print(f"---{timestamp()} BaseException (followers_monitor), description:")
