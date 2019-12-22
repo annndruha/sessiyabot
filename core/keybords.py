@@ -31,9 +31,10 @@ def main_page(user_id, ans=dict.kb_ans['main_menu'], attach = None):
 # notify_page
 def notify_page(user_id, ans=dict.kb_ans['notify_settings']):
     kb = vk.VkKeyboard(one_time=False)
+
     data = db.get_user(user_id)
-    if data is not None:
-        if data[2] is not None:
+    if data is not None: # If user exist in database
+        if data[2] is not None: # If set notify time, not only examdate
             if (data[3] == False):
                 kb.add_button(dict.kb_ans['turn_on'], color='positive', payload = ["command","set_subcribe", "start"])
                 kb.add_line()
@@ -42,11 +43,12 @@ def notify_page(user_id, ans=dict.kb_ans['notify_settings']):
                 kb.add_button(dict.kb_ans['turn_off'], color='negative', payload = ["command","set_subcribe", "stop"])
                 kb.add_line()
                 kb.add_button(dict.kb_ans['change_time'], color='primary', payload = ["next_page","hour_page1"])
+            kb.add_button(dict.kb_ans['change_tz'], color='primary', payload = ["next_page","tz_page"])
         else:
             kb.add_button(dict.kb_ans['change_time_first'], color='positive', payload = ["next_page","hour_page1"])
     else:
-        kb.add_button(dict.kb_ans['set_time'], color='positive', payload = ["next_page","hour_page1"])
-    kb.add_button(dict.kb_ans['change_tz'], color='primary', payload = ["next_page","tz_page"])
+        kb.add_button(dict.kb_ans['change_time_first'], color='positive', payload = ["next_page","hour_page1"])
+    
     kb.add_line()
     kb.add_button(dict.kb_ans['exam_settings'], color='primary', payload = ["next_page","month_page"])
     kb.add_line()
