@@ -58,14 +58,7 @@ def message_analyzer(user):
                     if k == 4:
                         ans = eng.alter_tz(user)
                     if k == 5:
-                        if (user.user_id==202484665):
-                            i = randint(1,2)
-                            if i==1:
-                                ans = 'Ну что ты ревешь, дура, иди умойся и выпей чаю!'
-                            else:
-                                ans, attach = dict.cheer(user)
-                        else:
-                            ans, attach = dict.cheer(user)
+                        ans, attach = dict.cheer(user)
                     if k == 6:
                         ans, attach = dict.cheer(user, True)
                     if ((k == 7) or (k==8) or (k==9)):
