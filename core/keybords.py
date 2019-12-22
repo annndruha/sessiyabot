@@ -326,6 +326,8 @@ def keyboard_browser(user, str_payload):
                 hour_page2(user.user_id)
             elif payload[1] == 'tz_page':
                 tz_page(user.user_id)
+            elif payload[1] == 'online_page':
+                online_page(user.user_id)
 
         elif payload[0] == 'jump':
             if payload[1] == 'minute_page':
