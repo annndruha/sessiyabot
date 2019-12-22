@@ -3,6 +3,7 @@
 # Marakulin Andrey @annndruha
 # 2019
 from threading import Thread
+import time
 
 from func import vkontakte_functions
 from core import chat_module
@@ -18,6 +19,7 @@ if __name__=='__main__':
     notify_thread = Thread(target= notification_module.notify_loop)
     notify_thread.start()
 
+    time.sleep(5)
     print("=============== BOT START ===============")
 
     chat_thread.join()
