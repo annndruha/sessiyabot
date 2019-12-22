@@ -2,4 +2,8 @@
 .vs/
 .git/
 __pycache__/
-data/temp.png
+config.py
+data/config.py
+core/config.py
+func/config.py
+temp.png

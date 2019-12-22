@@ -5,7 +5,7 @@
 import time
 import traceback
 import datetime
-from random import randint
+
 import psycopg2
 
 from data import ru_dictionary as dict
@@ -13,6 +13,7 @@ from func import vkontakte_functions as vk
 from func import database_functions as db
 from core import engine as eng
 from core import keybords as kb
+from core import online_monitor as om
 
 def timestamp():
     return "["+str(datetime.datetime.strftime(datetime.datetime.now(datetime.timezone(datetime.timedelta(hours = 3))), '%d.%m.%Y %H:%M:%S'))+"]"
@@ -112,9 +113,10 @@ def chat_loop():
             for event in vk.longpoll.listen():
                 if (event.type == vk.VkEventType.MESSAGE_NEW and event.to_me):
                     vk_user = vk.user_get(event.user_id)
+                    id = event.user_id
                     first_name = (vk_user[0])['first_name']
                     last_name = (vk_user[0])['last_name']
-                    user = vk.User(event.user_id, event.text, first_name, last_name)
+                    user = vk.User(id, event.text, first_name, last_name)
 
                     try:
                         kb.keyboard_browser(user, event.payload)

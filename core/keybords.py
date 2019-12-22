@@ -13,10 +13,11 @@ from func import vkontakte_functions as vk
 from func import datetime_functions as dt
 from func import database_functions as db
 from core import engine as eng
+from core import online_monitor as om
 
 # Pages of keyboard menu:
 # main_page
-def main_page(user_id, ans=dict.kb_ans['main_menu']):
+def main_page(user_id, ans=dict.kb_ans['main_menu'], attach = None):
     kb = vk.VkKeyboard(one_time=False)
 
     kb.add_button(dict.kb_ans['notify_settings'], color='primary', payload = ["next_page","notify_page"])
@@ -25,7 +26,7 @@ def main_page(user_id, ans=dict.kb_ans['main_menu']):
     kb.add_line()
     kb.add_button(dict.kb_ans['cheer_me'], color='positive')
 
-    vk.send_keyboard(user_id, kb.get_keyboard(), ans)
+    vk.send_keyboard(user_id, kb.get_keyboard(), ans, attach=attach)
 
 # notify_page
 def notify_page(user_id, ans=dict.kb_ans['notify_settings']):

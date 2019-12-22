@@ -1,4 +1,4 @@
-﻿# sessiyabot/data/ru_dictionary
+﻿﻿# sessiyabot/data/ru_dictionary
 # - natural language knowlage (Russian)
 # Marakulin Andrey @annndruha
 # 2019
