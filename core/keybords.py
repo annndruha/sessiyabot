@@ -31,7 +31,6 @@ def main_page(user_id, ans=dict.kb_ans['main_menu'], attach = None):
 # notify_page
 def notify_page(user_id, ans=dict.kb_ans['notify_settings']):
     kb = vk.VkKeyboard(one_time=False)
-
     data = db.get_user(user_id)
     if data is not None: # If user exist in database
         if data[2] is not None: # If set notify time, not only examdate
