@@ -49,7 +49,7 @@ def notify_page(user_id, ans=dict.kb_ans['notify_settings']):
         kb.add_button(dict.kb_ans['change_time_first'], color='positive', payload = ["next_page","hour_page1"])
     
     kb.add_line()
-    kb.add_button(dict.kb_ans['change_tz'], color='primary', payload = ["next_page","tz_page"])
+    kb.add_button(dict.kb_ans['exam_settings'], color='primary', payload = ["next_page","month_page"])
     kb.add_line()
     kb.add_button(dict.kb_ans['cancel'], color='default', payload = ["command","cancel"])
 

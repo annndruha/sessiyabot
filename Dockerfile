@@ -8,8 +8,8 @@
 FROM python:3.7
 
 # Create directoris inside container
-ADD ./ /home/sessiyabot
-WORKDIR /home/sessiyabot
+ADD ./ sessiyabot/
+WORKDIR /sessiyabot
 
 # Install libs from requirements
 RUN pip install --no-cache-dir -r requirements.txt
