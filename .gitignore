@@ -4,6 +4,8 @@
 __pycache__/
 config.py
 data/config.py
+data/4config.py
+data/mconfig.py
 core/config.py
 func/config.py
 temp.png

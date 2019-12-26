@@ -17,6 +17,7 @@ from func.vkontakte_functions import vk
 
 
 def day_plot(id):
+    global plt
     # Check user in members
     if not vk.method('groups.isMember', {'group_id':'sessiyabot', 'user_id':id}):
         raise KeyError('Member doesnt subscribe')
@@ -58,6 +59,7 @@ def day_plot(id):
 
 
 def yesterday_plot(id):
+    global plt
     # Check user in members
     if not vk.method('groups.isMember', {'group_id':'sessiyabot', 'user_id':id}):
         raise KeyError('Member doesnt subscribe')
@@ -98,6 +100,7 @@ def yesterday_plot(id):
 
 
 def week_plot(id):
+    global plt
     # Check user in members
     if not vk.method('groups.isMember', {'group_id':'sessiyabot', 'user_id':id}):
         raise KeyError('Member doesnt subscribe')

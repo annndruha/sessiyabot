@@ -19,7 +19,7 @@ if __name__=='__main__':
     notify_thread = Thread(target= notification_module.notify_loop)
     notify_thread.start()
 
-    time.sleep(3)
+    time.sleep(1)
     print("=============== BOT START ===============")
 
     chat_thread.join()
