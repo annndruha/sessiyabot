@@ -8,7 +8,6 @@ import traceback
 
 import psycopg2
 import numpy as np
-import matplotlib
 import matplotlib.pyplot as plt
 
 from data import config
@@ -17,7 +16,6 @@ from func.vkontakte_functions import vk
 
 
 def day_plot(id):
-    global plt
     # Check user in members
     if not vk.method('groups.isMember', {'group_id':'sessiyabot', 'user_id':id}):
         raise KeyError('Member doesnt subscribe')
@@ -49,8 +47,8 @@ def day_plot(id):
     plt.xlim([0,len(hours_labels)])
     plt.savefig('data/temp.png', dpi=120, bbox_inches='tight')
 
-    plt.cla()
-    plt.clf()
+    axs.cla()
+    fig.clf()
     plt.close('all')
 
     time_online = str(datetime.timedelta(minutes= int(sum(sum_minutes))))
@@ -59,7 +57,6 @@ def day_plot(id):
 
 
 def yesterday_plot(id):
-    global plt
     # Check user in members
     if not vk.method('groups.isMember', {'group_id':'sessiyabot', 'user_id':id}):
         raise KeyError('Member doesnt subscribe')
@@ -100,7 +97,6 @@ def yesterday_plot(id):
 
 
 def week_plot(id):
-    global plt
     # Check user in members
     if not vk.method('groups.isMember', {'group_id':'sessiyabot', 'user_id':id}):
         raise KeyError('Member doesnt subscribe')
