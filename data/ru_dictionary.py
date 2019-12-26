@@ -12,6 +12,7 @@ small_message = {
     'е':'Еее',
     'ы':'ыыы',
     'э':'Ага',
+    'F':'F',
     'я':'Что Вы?',
     '.':'Ой всё!',
     '((': '&#128575;',
@@ -584,7 +585,7 @@ def cheer(user, force_music=False):
             ans = 'Предлагаю вам послушать воодушевляющую композицию:'
             attach = random_audio()
     else:
-        ans = 'Предлагаю вам послушать воодушевляющую пластинку:'
+        ans = 'Предлагаю вам послушать воодушевляющую композицию:'
         attach = random_audio()
     ans_and_attach = (ans, attach)
     return ans_and_attach
