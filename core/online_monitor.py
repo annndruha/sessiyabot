@@ -8,6 +8,8 @@ import traceback
 
 import psycopg2
 import numpy as np
+import matplotlib
+matplotlib.use('AGG')
 import matplotlib.pyplot as plt
 
 from data import config
@@ -52,7 +54,6 @@ def day_plot(id):
     plt.close('all')
 
     time_online = str(datetime.timedelta(minutes= int(sum(sum_minutes))))
-    axs, fig, plt, hour, hours_bins, hours_labels, data, month, sum_minutes, day, u_id, cur, year, id = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     return 'За последние сутки вы были онлайн: '+ time_online.split(':')[0]+'ч '+time_online.split(':')[1]+'м'
 
 
@@ -69,7 +70,6 @@ def yesterday_plot(id):
     if len(data)<5:
         raise NameError('Small member data')
 
-
     # Parse data
     u_id, year, month, day, hour, sum_minutes = np.transpose(data)
     hours_bins = list(hour)
@@ -85,14 +85,16 @@ def yesterday_plot(id):
     plt.xlabel('Часы')
     plt.ylabel('Минут в сети')
     plt.xlim([0,len(hours_labels)])
+
+    # Save image
     plt.savefig('data/temp.png', dpi=120, bbox_inches='tight')
-    #plt.show()
-    plt.cla()
-    plt.clf()
+
+    # Clear memory
+    axs.cla()
+    fig.clf()
     plt.close('all')
 
     time_online = str(datetime.timedelta(minutes= int(sum(sum_minutes))))
-    
     return 'Вчера вы были онлайн: '+ time_online.split(':')[0]+'ч '+time_online.split(':')[1]+'м'
 
 
@@ -124,16 +126,18 @@ def week_plot(id):
     axs.legend()
     plt.xticks(ticks=range(0,len(days_labels)), labels = days_labels)
     plt.ylabel('Часов в сети')
+
+    # Save image
     plt.savefig('data/temp.png', dpi=120, bbox_inches='tight')
 
-    plt.cla()
-    plt.clf()
+    # Clear memory
+    axs.cla()
+    fig.clf()
     plt.close('all')
 
     time_full = str(datetime.timedelta(hours= sum(sum_hours)))
     time_per_day = sum(sum_hours)/len(sum_hours)
     tpd = str(datetime.timedelta(hours= time_per_day))
-
 
     d = time_full.split(' ')
     if len(data)<7:
