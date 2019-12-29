@@ -12,9 +12,9 @@ Features:
 + Look for unknown on wikipedia
 + Solve math expressions
 + Send everyday reassuring message
-+ Set exam date and time to send a reassuring message
-+ Set up it by text and vk-keybord
++ Set exam date and time to send a reassuring message (by text and vk-keybord)
 + Write data in PostgreSQL Database
++ Send graph with online statistic (need another repo 'update_users')
 + Print logs
 
 ## Requirements
@@ -36,6 +36,8 @@ db_password = 'userpassword'
 + Flags: "NotNone" flag for id, subcribe, tz
 + Default "false" for subcribe, default "0" for tz
 
++ table online for storage a online stats (update_users)
+
 And paste PostgreSQL settings like 'host, user, etc.' in data/config.py
 
 **Language and time constants:**
@@ -43,7 +45,7 @@ Default code configurated for Moscow and Russian language. All language constant
 
 ### System
 
-Supported Windows and Ubuntu
+Tested on Windows 10 and Ubuntu 18|16
 Python 3.7
 
 ### Third Party Libraries and Dependencies

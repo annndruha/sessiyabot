@@ -5,7 +5,7 @@
 # 2019
 
 # Base image
-FROM python:latest
+FROM python:3.7.6-stretch
 
 # Create directoris inside container
 ADD ./ /sessiyabot

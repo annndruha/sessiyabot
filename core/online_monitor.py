@@ -51,6 +51,8 @@ def day_plot(id):
 
     axs.cla()
     fig.clf()
+    plt.cla()
+    plt.clf()
     plt.close('all')
 
     time_online = str(datetime.timedelta(minutes= int(sum(sum_minutes))))
@@ -92,6 +94,8 @@ def yesterday_plot(id):
     # Clear memory
     axs.cla()
     fig.clf()
+    plt.cla()
+    plt.clf()
     plt.close('all')
 
     time_online = str(datetime.timedelta(minutes= int(sum(sum_minutes))))
@@ -133,6 +137,8 @@ def week_plot(id):
     # Clear memory
     axs.cla()
     fig.clf()
+    plt.cla()
+    plt.clf()
     plt.close('all')
 
     time_full = str(datetime.timedelta(hours= sum(sum_hours)))
