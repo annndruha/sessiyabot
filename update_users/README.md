@@ -46,7 +46,7 @@ AS SELECT online.id,
     sum(online.status) AS minutes
    FROM online
   WHERE (LOCALTIMESTAMP - '23:00:00'::interval hour) < online.tstamp
-  GROUP BY online.id, (date_part('day'::text, online.tstamp)), (date_part('hour'::text, online.tstamp)), (date_part('month'::text, online.tstamp)), (date_part('year'::text, online.tstamp))
+  GROUP BY online.id, (date_part('year'::text, online.tstamp)), (date_part('month'::text, online.tstamp)), (date_part('day'::text, online.tstamp)), (date_part('hour'::text, online.tstamp))  
   ORDER BY online.id, (date_part('day'::text, online.tstamp)), (date_part('hour'::text, online.tstamp));
 
 -- Permissions
