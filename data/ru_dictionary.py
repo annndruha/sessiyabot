@@ -2,7 +2,7 @@
 # 2019
 from random import randint
 
-default_exam_date = '04.01.2020'
+default_exam_date = '01.06.2020'
 default_time = '07:30'
 
 small_message = {
