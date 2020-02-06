@@ -57,24 +57,3 @@ while True:
             print('===RECONNECT at ' +  datetime.datetime.strftime(datetime.datetime.now(), "%Y.%m.%d %H:%M:%S"))
             time.sleep(10)
         time.sleep(60.0 - ((time.time() - start_time) % 60.0))
-
-
-# CREATE OR REPLACE FUNCTION sessiyabot.update_status(ids integer[], status integer[])
-# RETURNS integer
-# LANGUAGE plpgsql
-# AS $function$
-# DECLARE
-#     id integer;
-#     ts timestamp;
-#     n integer :=1;
-#     BEGIN
-#         ts = date_trunc('seconds', LOCALTIMESTAMP);
-#         FOREACH id IN ARRAY ids
-#             LOOP
-#                 execute 'INSERT INTO online (id, tstamp, status) VALUES('|| id || ','|| quote_literal(ts) || ','|| status[n] ||');';
-#                 n = n+1;
-#             END LOOP;
-#         DELETE FROM online WHERE tstamp < now() - interval '7 days';
-#         RETURN 0;
-#     END;
-# $function$;

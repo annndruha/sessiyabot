@@ -46,7 +46,7 @@ AS SELECT online.id,
     sum(online.status) AS minutes
    FROM online
   WHERE (LOCALTIMESTAMP - '23:00:00'::interval hour) < online.tstamp
-  GROUP BY online.id, (date_part('day'::text, online.tstamp)), (date_part('hour'::text, online.tstamp)), (date_part('month'::text, online.tstamp)), (date_part('year'::text, online.tstamp))
+  GROUP BY online.id, (date_part('year'::text, online.tstamp)), (date_part('month'::text, online.tstamp)), (date_part('day'::text, online.tstamp)), (date_part('hour'::text, online.tstamp))  
   ORDER BY online.id, (date_part('day'::text, online.tstamp)), (date_part('hour'::text, online.tstamp));
 
 -- Permissions
@@ -86,9 +86,9 @@ AS SELECT online.id,
     date_part('day'::text, online.tstamp) AS day,
     sum(online.status)::double precision / 60.0::double precision AS hours
    FROM online
-  WHERE date_part('day'::text, online.tstamp) < date_part('day'::text, LOCALTIMESTAMP) AND date_part('day'::text, online.tstamp) > date_part('day'::text, LOCALTIMESTAMP - '8 days'::interval day)
-  GROUP BY online.id, (date_part('day'::text, online.tstamp)), (date_part('month'::text, online.tstamp)), (date_part('year'::text, online.tstamp))
-  ORDER BY online.id, (date_part('day'::text, online.tstamp));
+  WHERE date_part('day'::text, online.tstamp) <> date_part('day'::text, LOCALTIMESTAMP) AND online.tstamp > (LOCALTIMESTAMP - '7 days'::interval day)
+  GROUP BY online.id, (date_part('year'::text, online.tstamp)), (date_part('month'::text, online.tstamp)), (date_part('day'::text, online.tstamp))
+  ORDER BY online.id, (date_part('year'::text, online.tstamp)), (date_part('month'::text, online.tstamp)), (date_part('day'::text, online.tstamp));
 
 -- Permissions
 
