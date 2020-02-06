@@ -118,7 +118,7 @@ def timestamp():
 
 def followers_monitor():
     while True:
-        print(f"==={timestamp()} FOLLOWERS MONITOR RESTART")
+        #print(f"==={timestamp()} FOLLOWERS MONITOR RESTART")
         try:
             reconnect()
             get_members()
@@ -131,8 +131,8 @@ def followers_monitor():
                 time.sleep(10)
 
         except OSError as err:
-            print(f"---{timestamp()} OSError (followers_monitor), description:")
-            print(err.args)
+            #print(f"---{timestamp()} OSError (followers_monitor), description:")
+            #print(err.args)
             try:
                 #print(f"---{timestamp()} Try to recconnect VK...")
                 reconnect()

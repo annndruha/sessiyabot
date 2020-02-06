@@ -56,7 +56,7 @@ def notify_mesage(data):
 #Main code
 def notify_loop():
     while True:
-        print(f"==={timestamp()} NOTIFY MODULE RESTART")
+        #print(f"==={timestamp()} NOTIFY MODULE RESTART")
         try:  
             db.reconnect()
             vk.reconnect()
@@ -74,29 +74,30 @@ def notify_loop():
                 time.sleep(10)
 
         except psycopg2.Error as err:
-            print(f"---{timestamp()} psycopg2.Error error (notify_loop), description:")
+            #print(f"---{timestamp()} psycopg2.Error error (notify_loop), description:")
             #traceback.print_tb(err.__traceback__)
-            print(err.args[0])
+            #print(err.args[0])
             try:
-                print(f"---{timestamp()} Try to recconnect database")
+                time.sleep(2)
+                #print(f"---{timestamp()} Try to recconnect database")
                 db.reconnect()
-                print(f"---{timestamp()} Database connected successful")
+                #print(f"---{timestamp()} Database connected successful")
                 time.sleep(2)
             except:
-                print(f"---{timestamp()} Recconnect database failed")
+                #print(f"---{timestamp()} Recconnect database failed")
                 time.sleep(10)
             
         except OSError as err:
-            print(f"---{timestamp()} OSError (notify_loop), description:")
+            #print(f"---{timestamp()} OSError (notify_loop), description:")
             #traceback.print_tb(err.__traceback__)
-            print(err.args[0])
+            #print(err.args[0])
             try:
-                print(f"---{timestamp()} Try to recconnect VK...")
+                #print(f"---{timestamp()} Try to recconnect VK...")
                 vk.reconnect()
-                print(f"---{timestamp()} VK connected successful")
+                #print(f"---{timestamp()} VK connected successful")
                 time.sleep(2)
             except:
-                print(f"---{timestamp()} Recconnect VK failed")
+                #print(f"---{timestamp()} Recconnect VK failed")
                 time.sleep(10)
 
         except BaseException as err:
