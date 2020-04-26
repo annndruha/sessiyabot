@@ -63,7 +63,7 @@ docker run -d --name sessiyabot imagename
 Or this, if you want to keep config data in secret:
 
 ```bash
-docker run -d --name sessiyabot -v /root/sessiyabot/configvolume.py:/sessiyabot/data/config.py imagename
+docker run -d --name sessiyabot --restart always -v /root/sessiyabot/configvolume.py:/sessiyabot/data/config.py imagename
 ```
 
 See logs:
