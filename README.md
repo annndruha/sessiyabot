@@ -1,6 +1,6 @@
 # Sessiya-bot
 
-![Logo](https://sun9-72.userapi.com/c204816/v204816407/baa7/aOaxjFaIo5U.jpg)
+![Logo](./data/header.png)
 
 ## VK Chat-bot for students
 
