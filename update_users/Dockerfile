@@ -2,7 +2,7 @@
 # 2019
 
 # Base image
-FROM python:3-alpine
+FROM python:3.9.1-alpine3.13
 
 # Add the main dirictory
 ADD ./ update_users/
