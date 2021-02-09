@@ -1,8 +1,0 @@
-.vs*
-.vs/
-.vscode/
-.vscode/*
-.git/
-config.py
-temp.png
-__pycache__/
