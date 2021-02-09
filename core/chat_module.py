@@ -124,29 +124,29 @@ def chat_loop():
                         message_analyzer(user)
 
         except psycopg2.Error as err:
-            #print(f"---{timestamp()} Database Error (longpull_loop), description:")
-            #traceback.print_tb(err.__traceback__)
-            #print(err.args)
+            print(f"---{timestamp()} Database Error (longpull_loop), description:")
+            traceback.print_tb(err.__traceback__)
+            print(err.args)
             try:
-                #print(f"---{timestamp()} Try to recconnect database...")
+                print(f"---{timestamp()} Try to recconnect database...")
                 db.reconnect()
-                #print(f"---{timestamp()} Database connected successful")
+                print(f"---{timestamp()} Database connected successful")
                 time.sleep(1)
             except:
-                #print(f"---{timestamp()} Recconnect database failed")
+                print(f"---{timestamp()} Recconnect database failed")
                 time.sleep(10)
             
         except OSError as err:
-            #print(f"---{timestamp()} OSError (longpull_loop), description:")
-            #traceback.print_tb(err.__traceback__)
-            #print(err.args)
+            print(f"---{timestamp()} OSError (longpull_loop), description:")
+            traceback.print_tb(err.__traceback__)
+            print(err.args)
             try:
-                #print(f"---{timestamp()} Try to recconnect VK...")
+                print(f"---{timestamp()} Try to recconnect VK...")
                 vk.reconnect()
-                #print(f"---{timestamp()} VK connected successful")
+                print(f"---{timestamp()} VK connected successful")
                 time.sleep(1)
             except:
-                #print(f"---{timestamp()} Recconnect VK failed")
+                print(f"---{timestamp()} Recconnect VK failed")
                 time.sleep(10)
 
         except BaseException as err:

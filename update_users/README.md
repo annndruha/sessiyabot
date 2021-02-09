@@ -43,7 +43,7 @@ AS SELECT online.id,
     date_part('month'::text, online.tstamp) AS month,
     date_part('day'::text, online.tstamp) AS day,
     date_part('hour'::text, online.tstamp) AS hour,
-    sum(online.status) AS minutes
+    sum(online.status::int) AS minutes
    FROM online
   WHERE (LOCALTIMESTAMP - '23:00:00'::interval hour) < online.tstamp
   GROUP BY online.id, (date_part('year'::text, online.tstamp)), (date_part('month'::text, online.tstamp)), (date_part('day'::text, online.tstamp)), (date_part('hour'::text, online.tstamp))  
@@ -64,7 +64,7 @@ AS SELECT online.id,
     date_part('month'::text, online.tstamp) AS month,
     date_part('day'::text, online.tstamp) AS day,
     date_part('hour'::text, online.tstamp) AS hour,
-    sum(online.status) AS minutes
+    sum(online.status::int) AS minutes
    FROM online
   WHERE date_part('day'::text, online.tstamp) = date_part('day'::text, LOCALTIMESTAMP - '1 day'::interval day)
   GROUP BY online.id, (date_part('day'::text, online.tstamp)), (date_part('hour'::text, online.tstamp)), (date_part('month'::text, online.tstamp)), (date_part('year'::text, online.tstamp))
@@ -84,7 +84,7 @@ AS SELECT online.id,
     date_part('year'::text, online.tstamp) AS year,
     date_part('month'::text, online.tstamp) AS month,
     date_part('day'::text, online.tstamp) AS day,
-    sum(online.status)::double precision / 60.0::double precision AS hours
+    sum(online.status::int)::double precision / 60.0::double precision AS hours
    FROM online
   WHERE date_part('day'::text, online.tstamp) <> date_part('day'::text, LOCALTIMESTAMP) AND online.tstamp > (LOCALTIMESTAMP - '7 days'::interval day)
   GROUP BY online.id, (date_part('year'::text, online.tstamp)), (date_part('month'::text, online.tstamp)), (date_part('day'::text, online.tstamp))
